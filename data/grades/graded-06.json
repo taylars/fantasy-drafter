@@ -1,0 +1,362 @@
+{
+  "season": "2026",
+  "batch": 6,
+  "players": [
+    {
+      "player_id": "10219",
+      "name": "Chris Rodriguez",
+      "pos": "RB",
+      "offense": -1,
+      "support": -1,
+      "exp_games": 14,
+      "upside": 1,
+      "note": "Confirmed on JAX (queue was right, not WAS); locked in a true committee with Tuten behind a bottom-tier interior line, and just came off left-foot surgery that cost him OTAs/minicamp before being cleared full-go for camp, but he'd take over the job if Tuten falters as a 2nd-year unproven back.",
+      "sources": [
+        "https://www.espn.com/nfl/story/_/id/49011003/jaguars-rb-chris-rodriguez-foot-expected-training-camp",
+        "https://www.si.com/onsi/fantasy/rankings/ranking-nfl-offenses-jacksonville-jaguars-no-25",
+        "https://blackandteal.com/latest-espn-offensive-line-ranking-exposes-an-ugly-jacksoville-jaguars-truth"
+      ]
+    },
+    {
+      "player_id": "5872",
+      "name": "Deebo Samuel",
+      "pos": "WR",
+      "offense": 1,
+      "support": -1,
+      "exp_games": 14.5,
+      "upside": 0,
+      "note": "Back in SF on a top-10 scoring offense with Purdy, but at 30 he's a part-time Z/wide-back behind Mike Evans and a hot rookie (Stribling), with Kittle and CMC also eating targets, and a minor-injury pattern (15/15/16 games the last three years) caps his floor further.",
+      "sources": [
+        "https://www.nbcsports.com/fantasy/football/player-news/2026-08-11/deebo-listed-as-starter-on-49ers-depth-chart",
+        "https://www.nbcsportsbayarea.com/nfl/san-francisco-49ers/brock-purdy-third-down/1905789/"
+      ]
+    },
+    {
+      "player_id": "9753",
+      "name": "Zach Charbonnet",
+      "pos": "RB",
+      "offense": 0,
+      "support": -1,
+      "exp_games": 4,
+      "upside": 1,
+      "note": "Tore his ACL in the Jan 17 playoff loss to SF, had surgery Feb 20, and opens the season on PUP with no confirmed return date, likely missing well beyond the mandatory first four games; once back he now sits behind rookie first-rounder Jadarian Price, who has taken over as the starter.",
+      "sources": [
+        "https://www.seahawks.com/news/seahawks-rb-zach-charbonnet-placed-on-pup-list",
+        "https://sports.yahoo.com/articles/updated-seahawks-rb-depth-chart-035807052.html"
+      ]
+    },
+    {
+      "player_id": "8132",
+      "name": "Tyler Allgeier",
+      "pos": "RB",
+      "offense": 0,
+      "support": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Signed by ARI in 2026 and now atop the backfield only because rookie Jeremiyah Love (high ankle sprain, targeting Week 1) and James Conner both dealt with camp injuries; once healthy this reverts to a three-man committee capping his ceiling.",
+      "sources": [
+        "https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/cardinals-depth-chart-lists-tyler-allgeier-as-no-1-rb-jeremiyah-love-as-no-2",
+        "https://www.cbssports.com/nfl/news/jeremiyah-love-injury-update-cardinals-rookie-has-high-ankle-sprain/"
+      ]
+    },
+    {
+      "player_id": "3163",
+      "name": "Jared Goff",
+      "pos": "QB",
+      "offense": 2,
+      "support": 1,
+      "exp_games": 16.5,
+      "upside": 0,
+      "note": "Detroit was the league's #2 scoring offense in 2025, but the interior line slipped to middling in 2026 and LaPorta is out with a hip injury (expected back early season), so weapons (St. Brown, Jameson Williams) offset a line that's no longer elite; Goff is a durability rock with no real injury history and no growth left to project at 31.",
+      "sources": [
+        "https://www.si.com/nfl/lions/onsi/news/lions-offensive-playmakers-ranked-second-nfl-2025",
+        "https://sports.yahoo.com/articles/sam-laporta-injured-lions-suffer-015824576.html",
+        "https://www.pff.com/news/nfl-offensive-line-rankings-2026"
+      ]
+    },
+    {
+      "player_id": "11655",
+      "name": "Tyrone Tracy",
+      "pos": "RB",
+      "offense": -1,
+      "support": -2,
+      "exp_games": 14,
+      "upside": 1,
+      "note": "RB2 in a suddenly crowded, roster-bubble backfield (Skattebo, newly-signed Najee Harris, Singletary, Eric Gray) behind a mediocre Giants offense; upside exists only if Skattebo's surgically-repaired ankle breaks down again, but Harris and Singletary now compete for that role too.",
+      "sources": [
+        "https://www.profootballrumors.com/2026/08/rb-tyrone-tracy-on-giants-roster-bubble",
+        "https://www.cbssports.com/fantasy/football/news/2026-outlook-tyrone-tracy-jr/"
+      ]
+    },
+    {
+      "player_id": "3214",
+      "name": "Hunter Henry",
+      "pos": "TE",
+      "offense": 0,
+      "support": -1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Maye is still developing and NE's offense is unproven as top-tier; adding A.J. Brown and Romeo Doubs pulls targets away from a 31-year-old TE who was already the clear #1 read behind Diggs, capping his ceiling at his settled veteran role.",
+      "sources": [
+        "https://www.nbcsportsboston.com/nfl/new-england-patriots/predicting-wide-receiver-room-aj-brown-2026/789186/",
+        "https://www.draftsharks.com/fantasy/injury-history/hunter-henry/7470"
+      ]
+    },
+    {
+      "player_id": "8134",
+      "name": "Khalil Shakir",
+      "pos": "WR",
+      "offense": 2,
+      "support": 1,
+      "exp_games": 13.5,
+      "upside": 0,
+      "note": "Elite Josh Allen offense but DJ Moore's arrival bumps him to WR2 and shrinks his target share, and he's nursing a recurring high-ankle sprain (same injury as last season) with an uncertain return before the opener.",
+      "sources": [
+        "https://www.si.com/nfl/bills/latest-news/khalil-shakir-injury-bills-top-wide-receiver-gonna-take-some-time-sean-mcdermott",
+        "https://www.nbcsports.com/fantasy/football/player-news/2026-08-20/khalil-shakir-sidelined-with-undisclosed-injury"
+      ]
+    },
+    {
+      "player_id": "4892",
+      "name": "Baker Mayfield",
+      "pos": "QB",
+      "offense": 0,
+      "support": 0,
+      "exp_games": 16,
+      "upside": 0,
+      "note": "Mike Evans is gone and a new OC (Zac Robinson replacing Liam Coen) adds scheme uncertainty, but Egbuka's emergence and a healthy Godwin keep the receiving corps average rather than a real weapon or liability; he's a settled 31-year-old QB1 who plays through nagging injuries yet has still started all 17 games in recent years.",
+      "sources": [
+        "https://www.buccaneers.com/news/looming-preseason-opener-means-first-bucs-depth-chart-2026",
+        "https://www.espn.com/nfl/story/_/id/49083803/bucs-baker-mayfield-pushes-back-durability-talks-contract"
+      ]
+    },
+    {
+      "player_id": "13345",
+      "name": "Jonah Coleman",
+      "pos": "RB",
+      "offense": 1,
+      "support": -1,
+      "exp_games": 15,
+      "upside": 2,
+      "note": "Third on the Broncos' RB depth chart behind RJ Harvey and JK Dobbins, but Dobbins already picked up a soft-tissue injury in camp and Coleman was getting RB2-level reps ahead of his official rookie-stacked depth slot, giving him a real path to work in Payton's playoff-caliber offense.",
+      "sources": [
+        "https://atozsports.com/nfl/denver-broncos-news/broncos-jk-dobbins-injury-glaring-reminder-how-important-rj-harvey-jonah-coleman-2026-nfl-season/",
+        "https://www.9news.com/article/sports/nfl/denver-broncos/broncos-first-official-depth-chart/73-7faf0a83-f98d-4bbb-ae88-11d74ca0ccd4"
+      ]
+    },
+    {
+      "player_id": "11646",
+      "name": "Jalen Coker",
+      "pos": "WR",
+      "offense": -1,
+      "support": -1,
+      "exp_games": 15,
+      "upside": 2,
+      "note": "Locked in as the WR2 opposite McMillan after a training-camp extension, but Bryce Young and the offense have looked shaky in preseason, capping the floor even as Coker's role trends upward.",
+      "sources": [
+        "https://www.si.com/nfl/panthers/panthers-wide-receiver-depth-chart-jalen-coker-hunter-renfrow-adam-thielen",
+        "https://sports.yahoo.com/articles/panthers-starting-offense-bryce-young-182215520.html"
+      ]
+    },
+    {
+      "player_id": "12474",
+      "name": "Woody Marks",
+      "pos": "RB",
+      "offense": 0,
+      "support": -1,
+      "exp_games": 15,
+      "upside": 2,
+      "note": "Committee timeshare with newly-acquired Montgomery caps the floor, but Marks keeps third-down/passing-game work and kickoff returns as a young ascending back behind an older, injury-prone starter.",
+      "sources": [
+        "https://sports.yahoo.com/articles/texans-reveal-woody-marks-david-154020419.html",
+        "https://www.cbssports.com/fantasy/football/news/texans-woody-marks-likely-to-back-up-montgomery/"
+      ]
+    },
+    {
+      "player_id": "8676",
+      "name": "Rashid Shaheed",
+      "pos": "WR",
+      "offense": 2,
+      "support": -1,
+      "exp_games": 13.5,
+      "upside": 1,
+      "note": "Confirmed on Seattle (not New Orleans) on a new 3yr/$51M deal; Seahawks were a top-3 scoring offense in 2025 but a run-heavy, 32nd-in-pass-rate team, and Shaheed is buried behind JSN with Kupp also on the roster, going under 30 yards in 7 of 9 games post-trade; a 2023 leg fracture plus limited/boom-bust usage caps both games and floor, with upside only from explosive-play/return TDs.",
+      "sources": [
+        "https://sports.yahoo.com/articles/rashid-shaheed-fantasy-outlook-2026-104916856.html",
+        "https://www.draftsharks.com/depth-chart/seattle-seahawks"
+      ]
+    },
+    {
+      "player_id": "6804",
+      "name": "Jordan Love",
+      "pos": "QB",
+      "offense": 0,
+      "support": 0,
+      "exp_games": 14,
+      "upside": 1,
+      "note": "Middle-of-pack Packers offense with a genuinely uncertain line (Jordan Morgan moving to LT) offsetting a strong receiving corps once Kraft and Watson are fully back from ACL tears; Love has a recurring pattern of in-season dings (2024 knee, 2025 preseason thumb, Week 17 concussion, Week 18 elbow) without ever missing extended time.",
+      "sources": [
+        "https://www.espn.com/nfl/story/_/id/47420884/packers-qb-jordan-love-ruled-due-concussion",
+        "https://www.si.com/onsi/fantasy/rankings/ranking-nfl-offenses-green-bay-packers",
+        "https://www.cbssports.com/nfl/news/packers-wr-christian-watson-returns-to-practice-for-first-time-since-acl-injury-in-january"
+      ]
+    },
+    {
+      "player_id": "5849",
+      "name": "Kyler Murray",
+      "pos": "QB",
+      "offense": 1,
+      "support": 1,
+      "exp_games": 10,
+      "upside": 0,
+      "note": "Named Week 1 starter over McCarthy behind strong protection (Darrisaw/O'Neill) and an elite Jefferson/Addison duo, but he's coming off a season-ending 2025 injury on top of the 2022 ACL tear and has not stayed healthy in three straight years.",
+      "sources": [
+        "https://www.espn.com/nfl/story/_/id/48188052/kyler-murray-signs-one-year-deal-vikings",
+        "https://www.cbssports.com/nfl/news/kyler-murray-injury-update-cardinals-future-trade-rumors/",
+        "https://www.vikings.com/news/preseason-2026-depth-chart-unofficial-nfl"
+      ]
+    },
+    {
+      "player_id": "13330",
+      "name": "Kenyon Sadiq",
+      "pos": "TE",
+      "offense": -1,
+      "support": -1,
+      "exp_games": 12,
+      "upside": 1,
+      "note": "Bottom-half NYJ offense with an unsettled QB room (Fields/Geno Smith/rookie Klubnik) and Sadiq buried behind Mason Taylor after a hernia-surgery setback cost him camp reps; young receiving-TE profile gives some upside if he claims snaps once healthy.",
+      "sources": [
+        "https://www.rotowire.com/football/headlines/kenyon-sadiq-injury-listed-behind-taylor-on-depth-chart-633089",
+        "https://bleacherreport.com/articles/25464146-kenyon-sadiqs-injury-timeline-updated-jets-aaron-glenn-after-hernia-setback",
+        "https://www.espn.com/nfl/story/_/id/49419756/new-york-jets-training-camp-2026-intel-updates"
+      ]
+    },
+    {
+      "player_id": "9480",
+      "name": "Brenton Strange",
+      "pos": "TE",
+      "offense": 0,
+      "support": 0,
+      "exp_games": 14,
+      "upside": 1,
+      "note": "Clear TE1 who led Jaguars in receiving EPA in 2025, but Trevor Lawrence is unspectacular and Brian Thomas/Travis Hunter plus new multi-TE looks cap his target share; a Week 5 hip injury cost him 5 games and a stint on IR.",
+      "sources": [
+        "https://sports.yahoo.com/articles/brenton-strange-fantasy-outlook-2026-161945139.html",
+        "https://www.si.com/nfl/jaguars/onsi/what-brenton-strange-return-meant-cardinals"
+      ]
+    },
+    {
+      "player_id": "8154",
+      "name": "Brian Robinson",
+      "pos": "RB",
+      "offense": 0,
+      "support": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Signed as backup behind a true workhorse (Bijan Robinson) in a run-leaning but middle-of-the-pack Falcons offense; touches only materialize if Bijan misses time.",
+      "sources": [
+        "https://www.thefalcoholic.com/atlanta-falcons-free-agecy/92505/atlanta-falcons-free-agency-2026-brian-robinson-jr-joins-the-running-back-room-bijan-robinson",
+        "https://www.draftsharks.com/fantasy/points-outlook/brian-robinson-jr/12581"
+      ]
+    },
+    {
+      "player_id": "4035",
+      "name": "Alvin Kamara",
+      "pos": "RB",
+      "offense": -1,
+      "support": -1,
+      "exp_games": 10,
+      "upside": 0,
+      "note": "Sprained MCL in Aug 2026 camp will cost at least a month and possibly an IR stint, and Travis Etienne's $52M offseason deal has already flipped him into the lead back with Kamara reduced to a third-down role even once healthy at 31.",
+      "sources": [
+        "https://www.cbssports.com/nfl/news/alvin-kamara-injury-saints-mcl-sprain-running-back-options/",
+        "https://bolavip.com/en/nfl/saints-updated-rb-depth-chart-with-travis-etienne-joining-alvin-kamara-in-2026"
+      ]
+    },
+    {
+      "player_id": "13346",
+      "name": "Denzel Boston",
+      "pos": "WR",
+      "offense": -1,
+      "support": -1,
+      "exp_games": 15,
+      "upside": 2,
+      "note": "Browns QB job is a live Watson/Sanders battle with neither settled by late Aug, and Boston is fighting Jeudy/Concepcion/Fannin for a crowded target pie even as he's climbed to a first-team WR3 role; second-round rookie still ascending gives real upside if he wins the boundary job outright.",
+      "sources": [
+        "https://www.nbcsports.com/fantasy/football/player-news/2026-08-11/boston-listed-as-no-1-wr-on-early-depth-chart",
+        "https://www.rotowire.com/football/article/cleveland-browns-starting-quarterback-2026-124745"
+      ]
+    },
+    {
+      "player_id": "13293",
+      "name": "Ja'Kobi Lane",
+      "pos": "WR",
+      "offense": 2,
+      "support": 0,
+      "exp_games": 13,
+      "upside": 2,
+      "note": "Lamar Jackson's offense is elite, but Lane is a Day 3 rookie fighting Sarratt/Walker for the WR3 spot behind Flowers and Bateman (who faces legal issues), so target share is very uncertain despite reportedly winning early camp reps.",
+      "sources": [
+        "https://www.si.com/nfl/ravens/onsi/ravens-rookie-wr-ja-kobi-lane-is-already-standing-out-in-training-camp-01kyt0hxz0ym"
+      ]
+    },
+    {
+      "player_id": "13305",
+      "name": "Mike Washington",
+      "pos": "RB",
+      "offense": -1,
+      "support": -1,
+      "exp_games": 16,
+      "upside": 2,
+      "note": "Clear RB2 behind Jeanty on a bottom-10 Raiders offense, but Jeanty's fresh ankle sprain plus a thin RB room give Washington a real path to touches if that recurs.",
+      "sources": [
+        "https://www.raiders.com/news/raiders-first-unofficial-depth-chart-of-2026-season-training-camp-preseason-vs-arizona-cardinals",
+        "https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/raiders-rb-ashton-jeanty-diagnosed-with-sprained-ankle"
+      ]
+    },
+    {
+      "player_id": "9511",
+      "name": "Keaton Mitchell",
+      "pos": "RB",
+      "offense": 1,
+      "support": -1,
+      "exp_games": 14,
+      "upside": 2,
+      "note": "Signed with LAC (not BAL) as clear RB2 behind rookie Omarion Hampton in a top-10 McDaniel offense, but Hampton's Week 5 ankle injury history and Mitchell's own two prior ACL tears create real touch volatility in either direction.",
+      "sources": [
+        "https://www.chargers.com/news/keaton-mitchell-free-agency-contract",
+        "https://www.si.com/onsi/fantasy/injuries/los-angeles-chargers-place-rb-omarion-hampton-on-ir-following-week-5-ankle-injury"
+      ]
+    },
+    {
+      "player_id": "5844",
+      "name": "T.J. Hockenson",
+      "pos": "TE",
+      "offense": 0,
+      "support": 0,
+      "exp_games": 13.5,
+      "upside": 0,
+      "note": "Kyler Murray upgrades the QB play but Jefferson and Addison soak up the high-value targets, leaving Hockenson a middling role; a shoulder injury cost him the last two games of 2025 on top of the 2023 ACL/MCL tear, and at 29 there's no path to a bigger workload.",
+      "sources": [
+        "https://www.espn.com/nfl/story/_/id/49583297/vikings-name-kyler-murray-starting-qb-sources-say",
+        "https://www.vikings.com/news/preseason-2026-depth-chart-unofficial-nfl",
+        "https://www.profootballnetwork.com/tj-hockenson-healthy-injuries-vikings-health-week-1/"
+      ]
+    },
+    {
+      "player_id": "8180",
+      "name": "Jalen Nailor",
+      "pos": "WR",
+      "offense": -1,
+      "support": -1,
+      "exp_games": 14,
+      "upside": 1,
+      "note": "Signed with LV in March 2026; Geno Smith is an average QB and Brock Bowers/Tre Tucker soak up targets ahead of him in a WR room with no clear No.1, though that same muddled depth chart gives him a path to more snaps.",
+      "sources": [
+        "https://bolavip.com/en/nfl/raiders-updated-wr-depth-chart-with-jalen-nailor-joining-las-vegas-from-vikings",
+        "https://sportsnaut.com/nfl/las-vegas-raiders/las-vegas-raiders-wide-receiver-depth-chart-2026",
+        "https://vikingsterritory.com/2025/news/top_news/injury-update-jalen-nailor-arrived"
+      ]
+    }
+  ]
+}

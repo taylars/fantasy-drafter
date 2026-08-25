@@ -1,0 +1,370 @@
+{
+  "season": "2026",
+  "batch": 4,
+  "players": [
+    {
+      "player_id": "5846",
+      "name": "DK Metcalf",
+      "pos": "WR",
+      "offense": 0,
+      "support": 0,
+      "exp_games": 14,
+      "upside": 1,
+      "note": "Pittsburgh's offense was a mediocre 15th in scoring and 16th in ANY/A in 2025, and Aaron Rodgers gives solid but age-42 QB play now facing real target competition from newly added Michael Pittman Jr.; a lingering Aug 2026 ankle/undisclosed injury (on top of a 2025 marred by suspension, an ankle injury, and a hospitalization scare) trims durability below the default even though he says he'll be ready for Week 1, but his league-leading career red-zone target volume keeps some touchdown-driven upside alive.",
+      "sources": [
+        "https://steelersnow.com/steelers-wr-dk-metcalf-gives-update-on-injury/",
+        "https://www.si.com/nfl/steelers/onsi/pittsburgh-steelers-quarterback-depth-chart-aaron-rodgers-will-howard-new-role",
+        "https://steelersdepot.com/2026/01/study-how-did-pittsburgh-finish-in-the-2025-any-a-rankings/"
+      ]
+    },
+    {
+      "player_id": "7611",
+      "name": "Rhamondre Stevenson",
+      "pos": "RB",
+      "offense": 1,
+      "support": -1,
+      "exp_games": 13.5,
+      "upside": 1,
+      "note": "Shares the backfield with Henderson on a still-unproven-but-improving line, capping his floor as a pure committee back; Henderson's undiagnosed right leg/ankle injury and Stevenson's healthiest camp in years give him a real (not certain) path to more work, while a three-year pattern of ankle/foot issues (season-ending IR in 2023) keeps his games projection short of a true workhorse number.",
+      "sources": [
+        "https://sports.yahoo.com/articles/happened-treveyon-henderson-latest-patriots-181254459.html",
+        "https://sports.yahoo.com/articles/patriots-made-clear-treveyon-henderson-154857176.html"
+      ]
+    },
+    {
+      "player_id": "3294",
+      "name": "Dak Prescott",
+      "pos": "QB",
+      "offense": 1,
+      "support": 1,
+      "exp_games": 14,
+      "upside": 0,
+      "note": "Cowboys finished 7th in scoring in 2025 with an unchanged offense returning intact behind an elite Lamb/Pickens WR duo, but the 2024 season-ending hamstring surgery (missed 9 games) and a prior 2020 season-ender temper durability despite a fully healthy, all-17-games 2025 season; at 33 in a settled role there's little room above the projection.",
+      "sources": [
+        "https://www.nfl.com/news/cowboys-qb-dak-prescott-to-undergo-season-ending-surgery-on-injured-hamstring",
+        "https://www.bloggingtheboys.com/dallas-cowboys-roster/204950/3-ways-brian-schottenheimer-improve-offense-2026",
+        "https://www.nbcsports.com/fantasy/football/news/dallas-cowboys-fantasy-preview-can-the-cowboys-support-two-no-1-wrs-again"
+      ]
+    },
+    {
+      "player_id": "7594",
+      "name": "Chuba Hubbard",
+      "pos": "RB",
+      "offense": -1,
+      "support": -1,
+      "exp_games": 13.5,
+      "upside": 0,
+      "note": "Bottom-10 Carolina offense with both starting tackles and both guards banged up ahead of a healthy, ascending Jonathon Brooks who threatens the touch share; hamstring kept him out the back half of preseason (targeting Week 1) after a Week 4 knee injury cost him his starting role for stretches of 2025.",
+      "sources": [
+        "https://www.wral.com/sports/chuba-hubbard-out-with-hamstring-injury-august-2026/",
+        "https://www.si.com/nfl/panthers/onsi/carolina-panthers-big-problem-backfield-chuba-hubbard-jonathon-brooks",
+        "https://www.si.com/onsi/fantasy/nfl/carolina-panthers-2025-fantasy-football-team-preview-bryce-young-rebound-chuba-hubbard"
+      ]
+    },
+    {
+      "player_id": "5967",
+      "name": "Tony Pollard",
+      "pos": "RB",
+      "offense": -1,
+      "support": -1,
+      "exp_games": 16,
+      "upside": 0,
+      "note": "Firmly RB1 in TN but stuck behind a bottom-5 run-blocking line (30th in rush yards, 4.2 YPC) on a bottom-half offense; remarkably durable (17, 16, 17 games last three years) but at 29 with only 5 TDs on 1,082 yards there's no touchdown role or age-driven upside to unlock.",
+      "sources": [
+        "https://www.si.com/nfl/titans/onsi/titans-offensive-line-receives-brutal-reality-check-ahead-of-2026-season",
+        "https://www.tennesseetitans.com/news/20-things-that-caught-my-eye-on-the-first-unofficial-depth-chart-for-the-titans-in-2026",
+        "https://www.pff.com/nfl/players/tony-pollard/27126"
+      ]
+    },
+    {
+      "player_id": "12489",
+      "name": "RJ Harvey",
+      "pos": "RB",
+      "offense": 0,
+      "support": 1,
+      "exp_games": 15,
+      "upside": 2,
+      "note": "Elite Denver OL (PFF's #1 unit for 2026) but a real committee with Dobbins capping his floor, and offense finished only 14th in scoring in 2025; upside is real since Dobbins (27, coming off a Lisfranc) is the injury-prone bell cow ahead of him and Harvey already showed a 12-TD role as a rookie.",
+      "sources": [
+        "https://www.si.com/onsi/fantasy/news/broncos-fantasy-football-depth-chart-debate-rj-harvey-vs-j-k-dobbins",
+        "https://www.pff.com/news/nfl-final-2025-nfl-offensive-line-rankings"
+      ]
+    },
+    {
+      "player_id": "6797",
+      "name": "Justin Herbert",
+      "pos": "QB",
+      "offense": 0,
+      "support": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Offense was 20th in scoring in 2025 and the McDaniel hire is unproven in LA; protection is the bigger worry with 60 sacks allowed last year and starting center Biadasz likely out for the season after an August 2026 knee injury in camp.",
+      "sources": [
+        "https://www.chargers.com/news/depth-chart-2026-season",
+        "https://www.yardbarker.com/nfl/articles/justin_herbert_facing_familiar_problems_after_latest_chargers_injuries/s1_13132_44190676",
+        "https://www.si.com/nfl/chargers/onsi/mike-mcdaniel-offense-realistic-expectations-chargers"
+      ]
+    },
+    {
+      "player_id": "5045",
+      "name": "Courtland Sutton",
+      "pos": "WR",
+      "offense": 0,
+      "support": -1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Denver's offense was middling (14th, 23.6 ppg) in 2025, and the Waddle trade adds a clear WR1-caliber target hog ahead of Sutton on a room that already had Franklin and Mims, so his target share shrinks rather than grows at 30.",
+      "sources": [
+        "https://predominantlyorange.com/updated-broncos-wide-receiver-depth-chart-following-massive-jaylen-waddle-trade",
+        "https://www.si.com/onsi/fantasy/rankings/ranking-nfl-offenses-denver-broncos",
+        "https://www.statmuse.com/nfl/ask/cortland-sutton-2025-stats"
+      ]
+    },
+    {
+      "player_id": "7021",
+      "name": "Rico Dowdle",
+      "pos": "RB",
+      "offense": 0,
+      "support": -1,
+      "exp_games": 13.5,
+      "upside": 1,
+      "note": "Signed in to split the backfield with Warren (and Johnson in the mix) behind a middling line, and he's already nursing a nagging injury that kept him out of a preseason game; only gets a real bump if Warren's snaps come loose.",
+      "sources": [
+        "https://www.cbssports.com/fantasy/football/news/steelers-rico-dowdle-listed-behind-warren-on-depth-chart/",
+        "https://www.steelernation.com/2026/08/15/steelers-new-offensive-weapon-injury"
+      ]
+    },
+    {
+      "player_id": "10232",
+      "name": "Michael Wilson",
+      "pos": "WR",
+      "offense": -1,
+      "support": -1,
+      "exp_games": 15.5,
+      "upside": 1,
+      "note": "Cardinals released Kyler Murray in March 2026, so Jacoby Brissett (with rookie Carson Beck behind him) is the QB now, a real downgrade that caps the passing game, and Wilson still splits targets with Marvin Harrison Jr. and Trey McBride despite his 1,006-yard 2025 breakout.",
+      "sources": [
+        "https://sports.yahoo.com/articles/jacoby-brissett-arizona-cardinals-starting-235626558.html",
+        "https://sports.yahoo.com/articles/early-training-camp-lessons-marvin-170201765.html"
+      ]
+    },
+    {
+      "player_id": "6806",
+      "name": "J.K. Dobbins",
+      "pos": "RB",
+      "offense": 1,
+      "support": -1,
+      "exp_games": 10,
+      "upside": 0,
+      "note": "Elite Broncos O-line is offset by a real three-way committee (Coleman impressing, Harvey on passing downs), and Dobbins already left an Aug 2026 camp practice with a soft-tissue injury on top of Achilles (2023), MCL (2024), and foot surgery (2025) the last three years.",
+      "sources": [
+        "https://www.milehighreport.com/denver-broncos-training-camp/182101/2026-denver-broncos-training-camp-day-12-news-and-notes",
+        "https://sports.yahoo.com/articles/denver-broncos-receive-glaring-reminder-002434456.html",
+        "https://www.pff.com/news/nfl-denver-broncos-2026-preview",
+        "https://x.com/jprug/status/2025984218543591666"
+      ]
+    },
+    {
+      "player_id": "13281",
+      "name": "Jordyn Tyson",
+      "pos": "WR",
+      "offense": 0,
+      "support": 0,
+      "exp_games": 8,
+      "upside": 2,
+      "note": "8th overall pick suffered a hamstring strain in August (his 4th in 4 years) and is expected out ~8 weeks with a week-5 return the earliest realistic case; QB Tyler Shough is unproven (9 career starts) but Kellen Moore's offense is genuinely hard to peg either way, and he'll compete with Chris Olave for targets once back, so he's a clear WR2-in-waiting with real upside if the hamstring holds up.",
+      "sources": [
+        "https://www.nfl.com/news/saints-rookie-wr-jordyn-tyson-hamstring-expected-to-miss-2-months",
+        "https://www.espn.com/nfl/story/_/id/49352514/has-new-orleans-saints-2026-nfl-wide-receivers-room-leveled-jordyn-tyson-chris-olave",
+        "https://www.espn.com/nfl/story/_/id/49475517/new-orleans-saints-enter-2026-training-camp-faith-tyler-shough-questions-defense"
+      ]
+    },
+    {
+      "player_id": "13294",
+      "name": "Makai Lemon",
+      "pos": "WR",
+      "offense": 1,
+      "support": 1,
+      "exp_games": 13.5,
+      "upside": 2,
+      "note": "AJ Brown's trade to NE opens a real WR2 role opposite DeVonta Smith with Hurts throwing, but a recurring hamstring issue (out since Aug 3, only just back to full practice Aug 24) and zero NFL track record temper the games projection for a rookie first-rounder.",
+      "sources": [
+        "https://www.nbcsportsphiladelphia.com/nfl/philadelphia-eagles/receiver-room-after-aj-brown-trade-devonta-smith-makai-lemon-dontayvion-wicks/735356/",
+        "https://www.inquirer.com/eagles/2026-training-camp-wide-receiver-makai-lemon-return-injury-20260824.html"
+      ]
+    },
+    {
+      "player_id": "4217",
+      "name": "George Kittle",
+      "pos": "TE",
+      "offense": 1,
+      "support": 0,
+      "exp_games": 11,
+      "upside": 0,
+      "note": "Purdy is solid but unspectacular and now splits red-zone/perimeter looks with newly-signed Mike Evans, capping Kittle's ceiling; recovering from a January Achilles tear on top of hamstring absences in both 2024 and 2025 (off PUP, targeting Week 1 but recurrence/management risk is real) is the whole story here.",
+      "sources": [
+        "https://www.washingtontimes.com/news/2026/aug/23/san-francisco-49ers-take-star-te-george-kittle-pup-list-10-days/",
+        "https://www.yardbarker.com/nfl/articles/george_kittle_bullish_on_49ers_2026_outlook_and_mike_evans_addition/s1_17111_43935879",
+        "https://sports.yahoo.com/articles/george-kittle-injury-history-timeline-235701662.html"
+      ]
+    },
+    {
+      "player_id": "11583",
+      "name": "Jonathon Brooks",
+      "pos": "RB",
+      "offense": -1,
+      "support": -1,
+      "exp_games": 12.5,
+      "upside": 2,
+      "note": "Fully cleared and taking full-speed camp reps, but stuck behind entrenched starter Hubbard on a bottom-tier offense, and two ACL tears on the same knee in two years keep the injury risk real even with no current designation.",
+      "sources": [
+        "https://www.panthers.com/news/jonathon-brooks-plays-into-the-second-quarter-in-his-preseason-debut-chuba-hubbard",
+        "https://www.si.com/onsi/fantasy/rankings/ranking-nfl-offenses-carolina-panthers-no-29",
+        "https://www.si.com/nfl/panthers/onsi/panthers-rb-jonathon-brooks-16-player-carolina-offense-chuba-hubbard"
+      ]
+    },
+    {
+      "player_id": "12508",
+      "name": "Jaxson Dart",
+      "pos": "QB",
+      "offense": -1,
+      "support": 0,
+      "exp_games": 14,
+      "upside": 2,
+      "note": "Took over as Giants QB1 mid-2025 on a bottom-half offense with a shaky line; Nabers is a true WR1 but is still working back from an October ACL/meniscus repair with no set return date, and Dart's aggressive rushing style already cost him two games to a concussion as a rookie. Full-time job, second-year jump, and rushing TD equity give real ceiling above the projection.",
+      "sources": [
+        "https://www.espn.com/nfl/story/_/id/46356208/giants-bench-qb-russell-wilson-start-jaxson-dart",
+        "https://sports.yahoo.com/articles/malik-nabers-injury-latest-giants-160029794.html"
+      ]
+    },
+    {
+      "player_id": "10236",
+      "name": "Dalton Kincaid",
+      "pos": "TE",
+      "offense": 2,
+      "support": 0,
+      "exp_games": 12,
+      "upside": 1,
+      "note": "Josh Allen elevates him but DJ Moore's arrival plus Shakir and Coleman make targets crowded, and he's missed 4-5 games in each of the last two seasons (played through a torn PCL in 2025, new knee scare at Aug 2026 camp) with the team openly discussing load management.",
+      "sources": [
+        "https://sports.yahoo.com/articles/bills-injury-scare-dalton-kincaid-145948221.html",
+        "https://sports.yahoo.com/articles/bills-expected-big-dj-moore-150818401.html"
+      ]
+    },
+    {
+      "player_id": "12534",
+      "name": "Kyle Monangai",
+      "pos": "RB",
+      "offense": 1,
+      "support": 1,
+      "exp_games": 12,
+      "upside": 2,
+      "note": "Top-10 Ben Johnson offense behind a top-5 line, but he's RB2 to Swift and is week-to-week with a hyperextended knee that puts the Sept 13 opener in question; his rookie-year breakout as CHI's leading rusher and Swift's own injury history keep real upside once healthy.",
+      "sources": [
+        "https://sports.yahoo.com/articles/bears-receive-concerning-kyle-monangai-165801838.html",
+        "https://www.windycitygridiron.com/chicago-bears-injuries/120819/kyle-monangai-injury-update-and-bears-announce-4-roster-moves",
+        "https://www.bleachernation.com/bears/2026/08/14/2026-bears-line-ranking/"
+      ]
+    },
+    {
+      "player_id": "1466",
+      "name": "Travis Kelce",
+      "pos": "TE",
+      "offense": -1,
+      "support": -1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Confirmed playing (re-signed, TE1 on 2026 depth chart) despite retirement chatter, but a bottom-half Chiefs offense (22nd PPG in 2025) with Mahomes still working back from a late-season knee injury caps the ceiling, and Kelce has slid to a secondary read (18% first-read target share) behind Rashee Rice; at 36 he's durable historically but has no growth path left.",
+      "sources": [
+        "https://www.nbcsports.com/fantasy/football/news/2026-kansas-city-chiefs-fantasy-preview-will-patrick-mahomes-be-100-percent",
+        "https://www.thetwodeep.com/nfl/kc/depth-chart"
+      ]
+    },
+    {
+      "player_id": "11586",
+      "name": "Blake Corum",
+      "pos": "RB",
+      "offense": 1,
+      "support": -1,
+      "exp_games": 16,
+      "upside": 2,
+      "note": "Firmly RB2 behind Kyren Williams in a good Stafford-led offense, but Kyren has a multi-year history of high-ankle sprains (missed time in 2022, 2023, 2024), so Corum's touches could spike fast if that recurs; TD work still concentrated with Kyren (13 TD vs Corum's 6 in 2025).",
+      "sources": [
+        "https://www.rotoballer.com/player-news/blake-corum-listed-as-backup-behind-kyren-williams-in-unofficial-depth-chart/1910399",
+        "https://www.turfshowtimes.com/2024/1/17/24041722/rams-kyren-williams-injuries-hand-2024-fantasy"
+      ]
+    },
+    {
+      "player_id": "4037",
+      "name": "Chris Godwin",
+      "pos": "WR",
+      "offense": 1,
+      "support": 0,
+      "exp_games": 11.5,
+      "upside": 0,
+      "note": "Evans' departure leaves Godwin as clear WR2 behind Egbuka with less target competition, but back-to-back years of major injuries (2024 ankle dislocation/surgery, 2025 fibula issue plus PUP stint) make durability the dominant risk at 30.",
+      "sources": [
+        "https://www.rotowire.com/football/nfl-depth-charts/tampa-bay-buccaneers-depth-chart-tb",
+        "https://roundtable.io/sports/nfl/bucs/players/buccaneers-release-first-official-depth-chart-ahead-of-preseason",
+        "https://www.cbssports.com/nfl/news/chris-godwin-injury-update-buccaneers-wr-returning-to-practice-amid-recovery-from-ankle-surgery-per-report"
+      ]
+    },
+    {
+      "player_id": "8142",
+      "name": "Alec Pierce",
+      "pos": "WR",
+      "offense": 2,
+      "support": 0,
+      "exp_games": 10,
+      "upside": 1,
+      "note": "Colts' 2025 offense was one of the league's best behind Jones and Taylor, but Pierce had left-ankle cleanup surgery in March after playing hurt in 2024-25 and is on Active/PUP with the team itself signaling he'll miss the start of 2026, while Downs and Warren eat into his target share even once he's back.",
+      "sources": [
+        "https://www.colts.com/news/cj-allen-alec-pierce-pup-list-injury-updates-status-2026-training-camp",
+        "https://sports.yahoo.com/articles/indianapolis-colts-confirm-suspicion-surrounding-213116990.html"
+      ]
+    },
+    {
+      "player_id": "421",
+      "name": "Matthew Stafford",
+      "pos": "QB",
+      "offense": 2,
+      "support": 1,
+      "exp_games": 14,
+      "upside": 0,
+      "note": "Coming off an MVP-level 2025 with Nacua and Adams both healthy and a competent if unspectacular line, but the aggravated back disc that wiped out his 2025 camp is a real recurring issue at 38, and he's already playing at his ceiling with no growth left to unlock.",
+      "sources": [
+        "https://www.espn.com/nfl/team/depth/_/name/lar/los-angeles-rams",
+        "https://en.wikipedia.org/wiki/Matthew_Stafford"
+      ]
+    },
+    {
+      "player_id": "7523",
+      "name": "Trevor Lawrence",
+      "pos": "QB",
+      "offense": 0,
+      "support": 1,
+      "exp_games": 14.5,
+      "upside": 1,
+      "note": "Played all 17 games in a career-best 2025 under Liam Coen, but the 2024 season-ending concussion/shoulder injury and camp-week OL health scares keep durability a real question; Brian Thomas Jr. and Travis Hunter give him a genuinely strong receiver duo even with offense quality unproven beyond passing-volume stats.",
+      "sources": [
+        "https://www.jaguars.com/news/camp-wrap-day-10-lawrence-offense-better-every-day",
+        "https://www.espn.com/nfl/story/_/id/42780116/jaguars-qb-trevor-lawrence-ir-likely-ending-season",
+        "https://www.espn.com/nfl/player/gamelog/_/id/4360310/trevor-lawrence4360310"
+      ]
+    },
+    {
+      "player_id": "8110",
+      "name": "Jake Ferguson",
+      "pos": "TE",
+      "offense": 1,
+      "support": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Dak Prescott is a plus QB but Lamb and Pickens soak up the target share and red-zone looks ahead of him, capping how much of the passing game reaches the TE; coming off a healthy 17-game, 8-TD 2025 but with a concussion and MCL sprain the year before, so durability is a real if modest question.",
+      "sources": [
+        "https://www.draftsharks.com/fantasy/injury-history/jake-ferguson/12708",
+        "https://sports.yahoo.com/articles/ceedee-lamb-believes-2026-george-164001986.html"
+      ]
+    }
+  ]
+}
