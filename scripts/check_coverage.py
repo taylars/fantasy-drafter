@@ -101,34 +101,42 @@ def check_team_offense(season: str = "2026") -> int:
 
 
 def check_agreement(league_id: str, draft_id: str) -> int:
-    """The board and the plan are one search, so they cannot rank differently.
+    """Check the board against its canonical average-plan score.
 
-    The board score is the absolute value of its plan, so the best player at
-    each position must score exactly that position's plan total. These were
-    separate calculations once and drifted twenty points apart on whether to
-    take a tight end.
+    The best plan is intentionally a tooltip-only upside reference now. The
+    recommendation is the starting choice's mean continuation minus the mean
+    of all modeled plans, so it must be checked against that calculation—not
+    against the best path.
     """
     conn = db.connect()
     db.init(conn, quiet=True)
     ranked, _, _ = value.board(conn, league_id, draft_id, limit=250)
-    scored = value.plans(conn, league_id, draft_id)
+    sit = value.situation(conn, league_id, draft_id)
+    forced = value.must_fill(sit.roster, sit.slots, len(sit.upcoming))
+    pickable = ([p for p in sit.available if p.position in forced]
+                if forced else [p for p in sit.available if p.position in value.PLAN_POSITIONS])
+    candidates = sorted(pickable, key=lambda player: player.adp)[:250]
+    gains = {player.player_id: value.gain(player, sit.roster, sit.slots, sit.base)
+             for player in candidates}
+    rest_of, average, _ = value.outlook(sit, candidates, gains)
     conn.close()
-    if not scored:
-        print("agreement: no picks left to plan, skipped")
+    if not ranked:
+        print("average-plan agreement: no picks left to plan, skipped")
         return 0
 
     bad = 0
-    for total, sequence, _ in scored:
-        top = max((r for r in ranked if r.player.position == sequence[0]),
+    for position in rest_of:
+        top = max((r for r in ranked if r.player.position == position),
                   key=lambda r: r.value, default=None)
         if top is None:
             continue
-        board_says, plan_says = top.value, total
-        ok = abs(board_says - plan_says) < 1e-6
+        board_says = top.value
+        average_says = top.gain + rest_of[position] - average
+        ok = abs(board_says - average_says) < 1e-6
         bad += not ok
-        print(f"  {'ok  ' if ok else 'DIFF'} {sequence[0]:4} board {board_says:8.2f}   "
-              f"plan {plan_says:8.2f}   ({top.player.name})")
-    print(f"board agrees with plan: {len(scored) - bad}/{len(scored)} positions")
+        print(f"  {'ok  ' if ok else 'DIFF'} {position:4} board {board_says:8.2f}   "
+              f"average {average_says:8.2f}   ({top.player.name})")
+    print(f"board agrees with average-plan score: {len(rest_of) - bad}/{len(rest_of)} positions")
     return bad
 
 

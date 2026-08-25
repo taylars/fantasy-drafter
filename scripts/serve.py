@@ -235,14 +235,11 @@ def value_payload(league_id: str, draft_id: str, refresh: bool) -> dict:
     finally:
         conn.close()
 
-    # The position-level absolute plan score remains available for the row
-    # tooltip. The board displays the same score, calculated by value.py from
-    # the player now plus the best continuation.
-    plan = {}
-    for row in ranked:
-        position = row.player.position
-        plan[position] = max(plan.get(position, float("-inf")), row.value)
-
+    # `row.value` is the canonical recommendation score: this starting
+    # choice's mean team value over its modeled continuations, less the mean
+    # of all modeled plans. It is already an edge, so do not derive another
+    # score from the best alternative. The best-plan edge is tooltip context
+    # only; it never affects the recommendation.
     return {
         "league_id": league_id,
         "draft_id": draft_id,
@@ -253,8 +250,9 @@ def value_payload(league_id: str, draft_id: str, refresh: bool) -> dict:
         "values": [
             {"player_id": row.player.player_id,
              "value": round(row.value, 1),
+             "edge": round(row.value, 1),
              "gain": round(row.gain, 1),
-             "plan": round(plan[row.player.position], 1),
+             "best_plan_edge": round(row.best_plan - row.overall_average, 1),
              "graded": row.player.graded}
             for row in ranked
         ],

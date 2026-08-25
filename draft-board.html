@@ -318,7 +318,7 @@
   }
   .pts::after{content:" pt";opacity:.6;}
   .pts:empty{display:none;}
-  /* The projected value of the best plan beginning with this player. Only
+  /* This pick's expected team-value edge over the average modeled plan. Only
      drawn once the live button has fetched one, so the board is unchanged
      until there's something true to put here. */
   .val{
@@ -573,7 +573,7 @@ let MINE = [];
 // The formula itself deliberately isn't here. It lives in value.py, and the
 // server runs it: the board already mirrors `scoreStats` from db.py and that
 // one duplication costs something every time scoring changes.
-let VALUES = new Map();  // player_id -> {value, gain, plan}
+let VALUES = new Map();  // player_id -> {value, edge, gain, best_plan_edge}
 let BEST = null;         // player_id of the best thing available right now
 
 // Two different things, kept apart on purpose. ARMED is what the button says
@@ -616,7 +616,11 @@ let AT_PICK = 0;
 function valueCell(playerId){
   const v = VALUES.get(playerId);
   if(!v) return '<span class="val"></span>';
-  return '<span class="val">'+v.value.toFixed(0)+'</span>';
+  return '<span class="val">'+formatEdge(v.edge)+'</span>';
+}
+
+function formatEdge(edge){
+  return (edge > 0 ? "+" : "") + edge.toFixed(0);
 }
 
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
@@ -981,12 +985,13 @@ function applyLive(data){
     const cell = row.querySelector(".val");
     if(cell){
       const v = VALUES.get(id);
-      cell.textContent = v ? v.value.toFixed(0) : "";
+      cell.textContent = v ? formatEdge(v.edge) : "";
       const pl = BY_ID.get(id);
-      if(v) cell.title = "best four-pick plan " + v.value.toFixed(0) +
+      if(v) cell.title = "team-value edge versus the average modeled plan " +
+                         formatEdge(v.edge) +
+                         " · best four-pick path versus that average " +
+                         formatEdge(v.best_plan_edge) +
                          " · this player's lineup gain " + v.gain.toFixed(0) +
-                         " · " + (pl ? pl.position : "") + " plan " +
-                         v.plan.toFixed(0) +
                          (v.graded ? "" : " · ungraded");
     }
     row.classList.toggle("gone", DRAFTED.has(id) && !mineIds.has(id));

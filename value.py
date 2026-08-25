@@ -75,6 +75,16 @@ SECURITY_WEIGHT = 0.04
 # it is 18.0 for every player who has one.
 DEFAULT_AVAILABILITY = {"QB": .88, "RB": .79, "WR": .85, "TE": .82, "K": .97, "DEF": 1.0}
 
+# A healthy starting quarterback is unusually durable. Grade notes can still
+# explain why a projection is lower, but historical injuries should not make a
+# current QB1 a projected 13-game player unless the player feed says he is
+# presently injured. Backups are deliberately excluded: their low expected
+# games describe role, not durability. A stale depth chart can occasionally
+# label a backup QB1, so the player must also project for a starter's workload.
+HEALTHY_QB_FLOOR_GAMES = 15.0
+CURRENT_INJURY_STATUSES = frozenset({"Questionable", "Doubtful", "Out", "IR",
+                                     "Injured Reserve", "PUP", "Suspended"})
+
 # Room above the projection. This is a correction to the mean, not a premium
 # for variance: the three things that earn the grade — a second-year jump the
 # provider smooths out, a path to work behind a fragile starter, a touchdown
@@ -143,7 +153,8 @@ def load_pool(conn: sqlite3.Connection, league_id: str, season: str | None = Non
 
     pool = []
     for row in conn.execute(
-        f"""SELECT p.player_id, p.full_name, p.position, p.team, pr.{adp_column} AS adp,
+        f"""SELECT p.player_id, p.full_name, p.position, p.team, p.injury_status,
+                   p.depth_chart_order, pr.{adp_column} AS adp,
                    g.offense, g.position_security, g.exp_games, g.upside
               FROM players p
               JOIN player_projections pr ON pr.player_id = p.player_id AND pr.season = ?
@@ -156,6 +167,16 @@ def load_pool(conn: sqlite3.Connection, league_id: str, season: str | None = Non
         if row["player_id"] not in points:
             continue
         graded = row["exp_games"] is not None
+        expected_games = (row["exp_games"] if graded
+                          else SEASON_GAMES * DEFAULT_AVAILABILITY.get(row["position"], 0.85))
+        healthy_starting_qb = (
+            row["position"] == "QB"
+            and row["depth_chart_order"] == 1
+            and expected_games >= 10.0
+            and (row["injury_status"] or "") not in CURRENT_INJURY_STATUSES
+        )
+        if healthy_starting_qb:
+            expected_games = max(expected_games, HEALTHY_QB_FLOOR_GAMES)
         pool.append(Player(
             player_id=row["player_id"],
             name=row["full_name"],
@@ -163,8 +184,7 @@ def load_pool(conn: sqlite3.Connection, league_id: str, season: str | None = Non
             team=row["team"],
             adp=row["adp"],
             points=points[row["player_id"]],
-            availability=(row["exp_games"] / SEASON_GAMES if graded
-                          else DEFAULT_AVAILABILITY.get(row["position"], 0.85)),
+            availability=expected_games / SEASON_GAMES,
             offense=row["offense"] or 0,
             position_security=row["position_security"] or 0,
             upside=row["upside"] or 0,
@@ -338,6 +358,44 @@ def wait(position: str, pool: list[Player], pick: int, roster: list[Player],
     return expected, (likely or (ranked[0][1] if ranked else None))
 
 
+def wait_outcomes(position: str, pool: list[Player], pick: int, roster: list[Player],
+                  slots: list[str], base: dict[str, float], depth: int = 40,
+                  minimum_contribution: float = 0.05) -> list[tuple[float, float, Player | None]]:
+    """The probable player outcomes for waiting on a position.
+
+    Players are ordered by quality (lineup gain). A player's probability of
+    being our choice is his availability times the chance every better player
+    is gone. We retain an outcome only when that probability times its gain is
+    material; the remainder means no worthwhile player is available.
+    """
+    ranked = sorted(((gain(p, roster, slots, base), p) for p in pool if p.position == position),
+                    key=lambda pair: -pair[0])[:depth]
+    still_gone, outcomes = 1.0, []
+    for value, player in ranked:
+        chance = survival(player.adp, pick)
+        mine = still_gone * chance
+        if mine * value >= minimum_contribution:
+            outcomes.append((mine, value, player))
+        still_gone *= 1 - chance
+
+    residual = max(0.0, 1.0 - sum(probability for probability, _, _ in outcomes))
+    if residual:
+        outcomes.append((residual, 0.0, None))
+    return outcomes
+
+
+def _sample_outcome(outcomes: list[tuple[float, float, Player | None]], seed: int
+                    ) -> tuple[float, Player | None]:
+    """Draw one deterministic, probability-weighted outcome for a plan path."""
+    unit = ((seed * 1103515245 + 12345) & 0x7fffffff) / 0x80000000
+    running = 0.0
+    for probability, value, player in outcomes:
+        running += probability
+        if unit <= running:
+            return value, player
+    return outcomes[-1][1], outcomes[-1][2]
+
+
 def our_picks(draft: sqlite3.Row, user_ids: set[str]) -> list[int]:
     """Every pick number we own, in order.
 
@@ -480,27 +538,67 @@ def _continuation(picks: list[int], roster: list[Player], available: list[Player
     return max(options, key=lambda option: option[0])
 
 
-def outlook(sit: Situation, candidates: list[Player], gains: dict[str, float],
-            ahead: int = PLAN_AHEAD) -> tuple[dict[str, float], float]:
-    """What the rest of the draft is worth after spending this pick on each position.
+def _continuation_stats(picks: list[int], roster: list[Player], available: list[Player],
+                        slots: list[str], base: dict[str, float],
+                        positions: tuple[str, ...] = PLAN_POSITIONS,
+                        sample_key: int = 1) -> tuple[float, float]:
+    """Return the mean and best value of every modeled continuation.
 
-    Returns the continuation value per position and the best whole plan going.
-    The board adds each player's direct gain to this position continuation,
-    yielding the absolute score of the plan that begins with that player.
+    Each position choice is one branch. Within it, the player is drawn from
+    the probability-weighted outcomes at that position. Every position path
+    gets its own deterministic draw, so the mean combines likely players over
+    all modeled plans without making the live board enumerate an intractable
+    player-by-player tree.
+    """
+    if not picks:
+        return 0.0, 0.0
+    mean_totals, best_totals = [], []
+    for index, position in enumerate(positions):
+        outcomes = wait_outcomes(position, available, picks[0], roster, slots, base)
+        if not outcomes:
+            continue
+        got, player = _sample_outcome(outcomes, sample_key * 7 + index)
+        if player is None:
+            mean_rest, best_rest = _continuation_stats(
+                picks[1:], roster, available, slots, base, positions,
+                sample_key * 7 + index)
+        else:
+            mean_rest, best_rest = _continuation_stats(
+                picks[1:], roster + [player],
+                [p for p in available if p.player_id != player.player_id],
+                slots, base, positions, sample_key * 7 + index)
+        mean_totals.append(got + mean_rest)
+        best_totals.append(got + best_rest)
+    if not mean_totals:
+        return 0.0, 0.0
+    return sum(mean_totals) / len(mean_totals), max(best_totals)
+
+
+def outlook(sit: Situation, candidates: list[Player], gains: dict[str, float],
+            ahead: int = PLAN_AHEAD) -> tuple[dict[str, float], float, dict[str, float]]:
+    """Mean continuations after spending this pick on each position.
+
+    Returns each position's mean continuation, the grand mean across all
+    modeled first-position plans, and the best-plan total for tooltip context.
+    The board adds a player's direct gain to its continuation, then subtracts
+    that grand mean. This is the one score used to rank and recommend picks.
     """
     picks = sit.upcoming[:ahead]
-    rest_of, best = {}, 0.0
-    for position in {p.position for p in candidates}:
+    rest_of, best_plan, starting_averages = {}, {}, []
+    for position in {p.position for p in candidates if p.position in PLAN_POSITIONS}:
         # The player the board would take, which is simply the best gain now
         # that upside is inside it rather than added on afterwards.
         got, player = max(((gains[p.player_id], p) for p in candidates
                            if p.position == position), key=lambda pair: pair[0])
-        rest_of[position], _ = _continuation(
+        rest_of[position], best_rest = _continuation_stats(
             picks[1:], sit.roster + [player],
             [p for p in sit.available if p.player_id != player.player_id],
             sit.slots, sit.base)
-        best = max(best, got + rest_of[position])
-    return rest_of, best
+        starting_averages.append(got + rest_of[position])
+        best_plan[position] = got + best_rest
+    overall_average = (sum(starting_averages) / len(starting_averages)
+                       if starting_averages else 0.0)
+    return rest_of, overall_average, best_plan
 
 
 @dataclass
@@ -509,38 +607,39 @@ class Ranked:
     value: float
     gain: float
     cost: float
+    overall_average: float
+    best_plan: float
 
 
 def board(conn: sqlite3.Connection, league_id: str, draft_id: str,
           limit: int = 200, ahead: int = PLAN_AHEAD) -> tuple[list[Ranked], list[Player], list[int]]:
     """Rank what's left by what it's worth to us at the pick we're on.
 
-    Each row's score is the absolute value of its plan: take that player now,
-    then follow the best continuation for his position at the next planned
-    picks.
+    Each row's score is its mean modeled team value over every continuation
+    after taking that player, compared with the mean of all modeled plans.
 
-        score(i) = gain(i) + continuation(position after taking i)
+        score(i) = gain(i) + mean_continuation(position after taking i)
+                   - mean(all plans)
 
-    The board and `plans` are the same search read two ways, which they have to
-    be — ranking one pick on `gain - wait` and the draft on a plan had them
-    disagreeing by twenty points about whether to take a tight end at 49. The
-    one-pick version flatters a thin position, because it credits scarcity
-    without ever charging for the deep positions still to fill.
+    `plans` remains a separate, best-case path explorer. It is useful to
+    explain upside, but it does not participate in the recommendation score.
     """
     sit = situation(conn, league_id, draft_id)
 
     forced = must_fill(sit.roster, sit.slots, len(sit.upcoming))
-    pickable = [p for p in sit.available if p.position in forced] if forced else sit.available
+    pickable = ([p for p in sit.available if p.position in forced]
+                if forced else [p for p in sit.available if p.position in PLAN_POSITIONS])
     candidates = sorted(pickable, key=lambda p: p.adp)[:limit]
 
     gains = {p.player_id: gain(p, sit.roster, sit.slots, sit.base) for p in candidates}
-    rest_of, best = outlook(sit, candidates, gains, ahead)
+    rest_of, overall_average, best_plan = outlook(sit, candidates, gains, ahead)
 
     ranked = []
     for player in candidates:
         got = gains[player.player_id]
-        score = got + rest_of[player.position]
-        ranked.append(Ranked(player, score, got, best - score))
+        score = got + rest_of[player.position] - overall_average
+        ranked.append(Ranked(player, score, got, -score, overall_average,
+                             best_plan[player.position]))
     ranked.sort(key=lambda r: -r.value)
     return ranked, sit.roster, sit.upcoming
 
