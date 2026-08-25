@@ -9,8 +9,8 @@
       "offense": 0,
       "exp_games": 13,
       "upside": 1,
-      "position_security": 0,
-      "note": "Jaguars' 2026 depth chart lists him as backup WR behind Brian Thomas Jr with CB as his primary starting role, a deliberate load-management plan after November knee (LCL) surgery, capping his offensive snaps regardless of talent.",
+      "position_security": -2,
+      "note": "Current depth-chart status is unsettled or below the lead role, creating real risk the role moves. Documented recent or current injury concerns support a modest availability discount.",
       "sources": [
         "https://www.cbssports.com/nfl/news/travis-hunter-listed-as-starting-wide-receiver-second-string-cornerback-on-jaguars-week-1-depth-chart/",
         "https://www.cbssports.com/nfl/news/travis-hunter-injury-update-knee-jaguars-2026-nfl-season/"
@@ -23,8 +23,8 @@
       "offense": 0,
       "exp_games": 15,
       "upside": 1,
-      "position_security": 0,
-      "note": "Traded to Philadelphia in Sept 2025; firmly the backup on a strong offense and elite line, but touches are scarce (58 carries in 16 games) behind a durable Barkley, so upside is capped unless Barkley misses time.",
+      "position_security": -1,
+      "note": "A real committee or credible challenger makes the current workload vulnerable. No current injury timeline warrants more than the standard availability discount.",
       "sources": [
         "https://www.profootballnetwork.com/eagles-rb-depth-chart-after-tank-bigsby-trade/",
         "https://www.si.com/nfl/eagles/onsi/eagles-rb-tank-bigsby-crucial-role-behind-saquon-barkley-for-no-25-player-in-2026-01kw9j0zzg3f"
@@ -37,8 +37,8 @@
       "offense": -1,
       "exp_games": 12,
       "upside": 1,
-      "position_security": 0,
-      "note": "Behind bell-cow Pollard in a rebuilding Titans offense; ankle IR stint opened 2025 and joins a run of concussion/hamstring/ankle absences in 2024, though new OC Daboll could expand his passing-game role if Pollard's workload slips.",
+      "position_security": -1,
+      "note": "A real committee or credible challenger makes the current workload vulnerable. Meaningful recent injury/availability risk supports this reduced games expectation.",
       "sources": [
         "https://www.nfl.com/news/titans-rb-tyjae-spears-ankle-injured-reserve-miss-first-four-games-2025-season",
         "https://www.tennesseetitans.com/news/titans-2026-training-camp-preview-a-look-at-the-running-backs"
@@ -52,7 +52,7 @@
       "exp_games": 14,
       "upside": 0,
       "position_security": 0,
-      "note": "QB1 in a top-10 offense throwing to a stacked WR room (JSN, Kupp, Shaheed), but a late-2025 oblique injury and journeyman durability history cap games, and at 29 in a settled role there's little room above the projection.",
+      "note": "The projected role is ordinary or not fully established; available evidence does not support a stronger security call. Documented recent or current injury concerns support a modest availability discount.",
       "sources": [
         "https://sports.yahoo.com/articles/first-seahawks-unofficial-depth-chart-182706845.html",
         "https://www.si.com/nfl/seahawks/onsi/seahawks-offense-could-reach-new-level-rashid-shaheed-breaks-out-2026"
@@ -66,7 +66,7 @@
       "exp_games": 14,
       "upside": 1,
       "position_security": 0,
-      "note": "Saints offense was bottom-tier in Kellen Moore's first year and remains a rebuild; Olave is a legitimate WR1 but has a blood-clot/concussion history and top rookie target Jordyn Tyson is out ~2 months with a hamstring injury, leaving a thin WR2 group; Shough himself has a notable injury history (multiple major college injuries) even though he stayed healthy in his 9-game 2025 stint as starter.",
+      "note": "The projected role is ordinary or not fully established; available evidence does not support a stronger security call. Documented recent or current injury concerns support a modest availability discount.",
       "sources": [
         "https://www.nfl.com/news/saints-rookie-wr-jordyn-tyson-hamstring-expected-to-miss-2-months",
         "https://www.espn.com/nfl/story/_/id/47541318/saints-committed-tyler-shough-starting-qb-2026"
@@ -79,8 +79,8 @@
       "offense": 0,
       "exp_games": 0,
       "upside": 0,
-      "position_security": 0,
-      "note": "Tore his ACL in mid-August 2026 joint practice and was placed on season-ending IR, wiping out what would have been a strong WR2-behind-Collins/Stroud opportunity.",
+      "position_security": -2,
+      "note": "Current depth-chart status is unsettled or below the lead role, creating real risk the role moves. A season-ending current injury makes him unavailable for 2026.",
       "sources": [
         "https://www.cbssports.com/nfl/news/jayden-higgins-injury-texans-torn-acl/",
         "https://www.nfl.com/news/texans-wr-jayden-higgins-torn-acl-out-2026-season"
@@ -93,8 +93,8 @@
       "offense": 2,
       "exp_games": 13,
       "upside": 1,
-      "position_security": 0,
-      "note": "Signed with Detroit as clear RB2 behind Gibbs on an elite offense and O-line, but touch share is capped by Gibbs' workhorse role; current camp MCL sprain plus a 2024 fractured fibula keep his games projection down, with modest upside only if Gibbs misses time.",
+      "position_security": -1,
+      "note": "A real committee or credible challenger makes the current workload vulnerable. Documented recent or current injury concerns support a modest availability discount.",
       "sources": [
         "https://www.si.com/onsi/fantasy/injuries/isiah-pacheco-injury-update-timeline-for-lions-rb-could-boost-fantasy-draft-position"
       ]
@@ -104,10 +104,10 @@
       "name": "Cyrus Allen",
       "pos": "WR",
       "offense": 0,
-      "exp_games": 12,
+      "exp_games": 15,
       "upside": 2,
-      "position_security": 0,
-      "note": "Fifth-round rookie beating out Remigio and Royals for the WR4 job behind Rice/Worthy/Kelce in a Mahomes-led offense, so target share is capped short-term; a shin injury interrupted camp and rookie WR4 role usage makes his games/snaps this year uncertain, but strong camp buzz and crowded-but-injury-prone group ahead of him give real room to grow into more.",
+      "position_security": -1,
+      "note": "A real committee or credible challenger makes the current workload vulnerable. No current injury timeline warrants more than the standard availability discount.",
       "sources": [
         "https://www.espn.com/nfl/story/_/id/49500558/2026-kansas-city-chiefs-training-camp-cyrus-allen-patrick-mahomes",
         "https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/wr-cyrus-allen-back-at-practice-for-chiefs"
@@ -120,8 +120,8 @@
       "offense": 0,
       "exp_games": 8.5,
       "upside": 1,
-      "position_security": 0,
-      "note": "Only just returned to full-pads practice in August 2026 after ACL/MCL/PCL reconstruction from Dec 2024, so a Week 1 return and workload are both uncertain even though Higgins' IR stint clears a path to targets behind Stroud/Collins.",
+      "position_security": -2,
+      "note": "Current depth-chart status is unsettled or below the lead role, creating real risk the role moves. A current significant injury or absence is expected to limit availability substantially.",
       "sources": [
         "https://spectrumlocalnews.com/tx/south-texas-el-paso/sports/2026/08/07/tank-dell-back-in-texans-drills-after-a-gruesome-knee-injury"
       ]
@@ -133,8 +133,8 @@
       "offense": -1,
       "exp_games": 14,
       "upside": 1,
-      "position_security": 0,
-      "note": "Geno Smith is a fine but unspectacular starter and the Jets offense was bottom-half in 2025 with turnover at OC/QB; Cooper enters camp as WR4 behind Garrett Wilson, Adonai Mitchell and Isaiah Williams, capping his target share despite solid spring reps.",
+      "position_security": -1,
+      "note": "A real committee or credible challenger makes the current workload vulnerable. Documented recent or current injury concerns support a modest availability discount.",
       "sources": [
         "https://www.footballguys.com/article/2026-omar-cooper-jr-new-york-jets-instant-reactions",
         "https://www.newyorkjets.com/news/jets-camp-position-preview-2026-quarterback-geno-smith"
@@ -147,8 +147,8 @@
       "offense": -1,
       "exp_games": 15,
       "upside": 2,
-      "position_security": 0,
-      "note": "Firmly RB2 behind Judkins on a middling-to-weak Cleveland offense, but Judkins is coming off a fractured fibula/dislocated ankle and is already dealing with a nagging issue in camp, giving Sampson real touch upside as the young pass-catching change-of-pace back if that recurs.",
+      "position_security": -1,
+      "note": "A real committee or credible challenger makes the current workload vulnerable. No current injury timeline warrants more than the standard availability discount.",
       "sources": [
         "https://sports.yahoo.com/articles/browns-rb-quinshon-judkins-dealing-195158784.html",
         "https://www.ourlads.com/nfldepthcharts/player/54273/"
@@ -159,10 +159,10 @@
       "name": "Fernando Mendoza",
       "pos": "QB",
       "offense": -1,
-      "exp_games": 2,
+      "exp_games": 15,
       "upside": 1,
-      "position_security": 0,
-      "note": "No.1 overall rookie but Raiders opened camp with Cousins as starter and Mendoza confirmed QB2 on the first depth chart, so he's a backup with no clear 2026 starting path barring injury.",
+      "position_security": -2,
+      "note": "Current depth-chart status is unsettled or below the lead role, creating real risk the role moves. No current injury timeline warrants more than the standard availability discount.",
       "sources": [
         "https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/fernando-mendoza-is-listed-as-qb2-in-first-raiders-depth-chart"
       ]
@@ -174,8 +174,8 @@
       "offense": 1,
       "exp_games": 10,
       "upside": 2,
-      "position_security": 0,
-      "note": "Buried behind Jacobs on a decent GB offense, but recurring hamstring/ACL-related injuries have cost him time in each of his first two years (IR again in 2025); Jacobs' shaky contract status and off-field issues give Lloyd a real path to a bigger role if healthy.",
+      "position_security": -2,
+      "note": "Current depth-chart status is unsettled or below the lead role, creating real risk the role moves. Meaningful recent injury/availability risk supports this reduced games expectation.",
       "sources": [
         "https://sports.yahoo.com/articles/packers-running-back-room-suddenly-130000113.html",
         "https://www.profootballnetwork.com/packers-rb-green-bays-backup-amid-injuries/"
@@ -188,8 +188,8 @@
       "offense": 1,
       "exp_games": 15,
       "upside": 2,
-      "position_security": 0,
-      "note": "Third-round rookie who has climbed to clear RB2 in Shanahan's efficient offense, but stuck behind CMC's every-down role until McCaffrey's well-documented injury history opens a window.",
+      "position_security": -1,
+      "note": "A real committee or credible challenger makes the current workload vulnerable. No current injury timeline warrants more than the standard availability discount.",
       "sources": [
         "https://sports.yahoo.com/articles/nfl-insider-backs-prediction-49ers-004526500.html",
         "https://bleacherreport.com/articles/25481651-christian-mccaffrey-injury-update-latest-49ers-stars-practice-status-ahead-2026-nfl-season"
@@ -203,7 +203,7 @@
       "exp_games": 15,
       "upside": 2,
       "position_security": 0,
-      "note": "Waddle and Hill are both gone and Tua was released, so Washington is now the clear WR1 target for unproven starter Malik Willis in a rebuilding passing game with only soft competition (Tolbert, Atwell, rookies) behind him.",
+      "note": "The projected role is ordinary or not fully established; available evidence does not support a stronger security call. No current injury timeline warrants more than the standard availability discount.",
       "sources": [
         "https://www.thephinsider.com/miami-dolphins-depth-chart/121506/miami-dolphins-depth-chart-2026-preseason-release-week-1-malik-willis-caleb-douglas-devon-achane",
         "https://heavy.com/sports/nfl/miami-dolphins/quinn-ewers-news-dolphins-qb-malik-willis/"
@@ -216,8 +216,8 @@
       "offense": 2,
       "exp_games": 15,
       "upside": 1,
-      "position_security": 0,
-      "note": "Reigning Super Bowl champ offense with Darnold playing well, but heavy target competition from JSN, Kupp, Shaheed and a rising TE2 (Elijah Arroyo) caps his ceiling despite holding the TE1 depth-chart spot.",
+      "position_security": -1,
+      "note": "A real committee or credible challenger makes the current workload vulnerable. No current injury timeline warrants more than the standard availability discount.",
       "sources": [
         "https://sports.yahoo.com/article/seahawks-te-depth-chart-aj-204949326.html",
         "https://www.nfl.com/news/seahawks-jaxon-smith-njigba-hopes-to-pick-up-where-he-left-off-early-in-2026"
@@ -230,8 +230,8 @@
       "offense": 0,
       "exp_games": 15,
       "upside": 2,
-      "position_security": 0,
-      "note": "Signed as WAS's clear TE1 in a good offense when Jayden Daniels is healthy, but he's the third read behind McLaurin and Deebo Samuel and Daniels missed 10 games in 2025 to injury, capping the ceiling.",
+      "position_security": 1,
+      "note": "Clear current starter; reserves are not presently pushing for the primary role. No current injury timeline warrants more than the standard availability discount.",
       "sources": [
         "https://www.hogshaven.com/washington-commanders-analysis/419345/commanders-roster-rankings-chig-okonkwo-tennessee-titans-nfl-free-agency",
         "https://www.cbssports.com/nfl/news/jayden-daniels-injury-news-shut-down-2025-season-commanders/"
@@ -244,8 +244,8 @@
       "offense": -1,
       "exp_games": 15,
       "upside": 0,
-      "position_security": 0,
-      "note": "Saints offense is mid-tier and unproven under second-year QB Tyler Shough; Chris Olave is a 100-catch target hog and new TE depth (Noah Fant, rookie Oscar Delp) caps further growth for a 29-year-old already at his ceiling after a career-best 77-catch season.",
+      "position_security": -1,
+      "note": "A real committee or credible challenger makes the current workload vulnerable. No current injury timeline warrants more than the standard availability discount.",
       "sources": [
         "https://www.nbcsports.com/fantasy/football/news/2026-new-orleans-saints-fantasy-preview-tyler-shough-and-chris-olave-lead-the-offense",
         "https://www.thefantasyfootballers.com/news/633905/juwan-johnson-remains-top-tight-end/"
@@ -258,8 +258,8 @@
       "offense": 0,
       "exp_games": 15,
       "upside": 1,
-      "position_security": 0,
-      "note": "Rookie 3rd-rounder buried at WR4/slot behind London, Dotson and Zaccheaus with a QB situation clouded by Penix's ACL recovery; a return-man role and camp buzz give modest upside but no clear path to targets yet.",
+      "position_security": -2,
+      "note": "Current depth-chart status is unsettled or below the lead role, creating real risk the role moves. No current injury timeline warrants more than the standard availability discount.",
       "sources": [
         "https://www.thefalcoholic.com/atlanta-falcons-depth-chart/95087/falcons-depth-chart-2026-updated",
         "https://www.espn.com/nfl/player/_/id/4870612/zachariah-branch"
@@ -272,8 +272,8 @@
       "offense": -1,
       "exp_games": 15,
       "upside": 0,
-      "position_security": 0,
-      "note": "Clear WR1 in a bottom-tier offense throwing to a QB room led by Watson coming off Achilles surgery with rookie Sanders behind him, and a crowded young WR/TE room (Concepcion, Fannin, Boston) caps the ceiling despite volume.",
+      "position_security": 1,
+      "note": "Clear current starter; reserves are not presently pushing for the primary role. No current injury timeline warrants more than the standard availability discount.",
       "sources": [
         "https://www.clevelandbrowns.com/news/deshaun-watson-named-browns-starting-quarterback",
         "https://www.rotowire.com/football/nfl-depth-charts/cleveland-browns-depth-chart-cle",
@@ -287,8 +287,8 @@
       "offense": 0,
       "exp_games": 15,
       "upside": 1,
-      "position_security": 0,
-      "note": "Clear starting TE catching from a healthy Stroud, and Jayden Higgins' season-ending ACL tear thins the WR room further, funneling more looks his way after a career-high 106-target 2025; offense itself is unproven with a retooled line and receiver corps.",
+      "position_security": 1,
+      "note": "Clear current starter; reserves are not presently pushing for the primary role. No current injury timeline warrants more than the standard availability discount.",
       "sources": [
         "https://sports.yahoo.com/articles/texans-tight-ends-dalton-schultz-140000094.html",
         "https://clutchpoints.com/nfl/houston-texans/texans-news-jayden-higgins-injury-update-not-what-cj-stroud-wants-ahead-crucial-season"
@@ -301,8 +301,8 @@
       "offense": -1,
       "exp_games": 16,
       "upside": 1,
-      "position_security": 0,
-      "note": "Raiders traded Geno Smith and now run Cousins/rookie Mendoza behind a bottom-tier offense, and Tucker is the clear WR2 behind newly-paid Nailor with Bech, Thornton, Bowers and Jeanty all pulling targets.",
+      "position_security": 1,
+      "note": "Clear current starter; reserves are not presently pushing for the primary role. Recent availability supports a high expected-games mark.",
       "sources": [
         "https://www.reviewjournal.com/sports/raiders/wide-receiver-production-could-be-group-effort-for-the-raiders-3857799/",
         "https://www.espn.com/nfl/story/_/id/49379704/did-las-vegas-raiders-get-better-2026-nfl-season-fernando-mendoza-brock-bowers"
@@ -315,8 +315,8 @@
       "offense": -1,
       "exp_games": 15,
       "upside": 1,
-      "position_security": 0,
-      "note": "Confirmed 2026 starter after a $67.5M deal, but throws to what PFF calls the worst receiving corps in football post-Hill/Waddle/Waller with a shaky right guard; Achane keeps the offense from bottoming out and Willis's rushing ability gives modest upside despite just 209 career dropbacks.",
+      "position_security": 2,
+      "note": "Entrenched as the leading option with no credible current challenger. No current injury timeline warrants more than the standard availability discount.",
       "sources": [
         "https://www.pff.com/news/nfl-miami-dolphins-2026-preview",
         "https://en.wikipedia.org/wiki/Malik_Willis"
@@ -330,7 +330,7 @@
       "exp_games": 12,
       "upside": 2,
       "position_security": 0,
-      "note": "Bottom-tier Jets passing offense with Justin Fields, and Allen is stuck in a three-way committee behind newly re-signed Breece Hall and ascending Isaiah Davis; still recovering from a season-ending Week 4 knee injury in 2025, but his path to a bigger early-down/TD role opens up fast if the injury-prone Hall misses time again.",
+      "note": "The projected role is ordinary or not fully established; available evidence does not support a stronger security call. Meaningful recent injury/availability risk supports this reduced games expectation.",
       "sources": [
         "https://www.si.com/college/wisconsin/football/badgers-braelon-allen-role-new-york-jets-offense-breece-hall-aaron-glenn-albert-breer",
         "https://heavy.com/sports/nfl/new-york-jets/braelon-allen-leapfrogged-2026-depth-chart/"
@@ -343,8 +343,8 @@
       "offense": 0,
       "exp_games": 15,
       "upside": 1,
-      "position_security": 0,
-      "note": "Buried as RB3 behind newly-signed Kenneth Walker III and Emari Demercado in a Mahomes-led but recently uneven offense, so touches are scarce absent an injury ahead of him.",
+      "position_security": -2,
+      "note": "Current depth-chart status is unsettled or below the lead role, creating real risk the role moves. No current injury timeline warrants more than the standard availability discount.",
       "sources": [
         "https://arrowheadaddict.com/emmett-johnson-pick-shakes-up-chiefs-rb-depth-chart-immediately-01kq32x522nt",
         "https://www.cbssports.com/fantasy/football/news/chiefs-emmett-johnson-listed-as-rb3-on-unofficial-depth-chart/"
