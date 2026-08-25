@@ -353,7 +353,7 @@ against the baseline his position can actually be replaced at, and against what
 waiting until our next pick would get us instead:
 
 ```
-value = gain(player) - wait(position) + upside(round)
+value = gain(player) - wait(position)
 ```
 
 That last comparison is value-based drafting with a next-available baseline,

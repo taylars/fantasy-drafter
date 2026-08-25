@@ -11,10 +11,11 @@ replaced at, and against what waiting until our next pick would get us instead.
 
 docs/value-formula.md works through why, with the numbers. The short version:
 
-  value = gain(player) - cost(position) + upside(round)
+  value = gain(player) - cost(position)
 
 where `gain` is what he adds to the best legal starting lineup across a whole
-17-week season, and `cost` is what spending this pick on his position does to
+17-week season — his projection first corrected for the context the provider
+cannot see — and `cost` is what spending this pick on his position does to
 the rest of the draft — the best plan we have, less what is left after taking
 him. So the top of the board sits at zero and everything below it is regret,
 in points, against the best line available.
@@ -74,12 +75,18 @@ SECURITY_WEIGHT = 0.04
 # it is 18.0 for every player who has one.
 DEFAULT_AVAILABILITY = {"QB": .88, "RB": .79, "WR": .85, "TE": .82, "K": .97, "DEF": 1.0}
 
-# Upside is the right tail, and what it is worth depends on when we're picking.
-# An early pick is bought for its floor — we need those points every week. A
-# late pick is a lottery ticket against a bench slot, where the downside is a
-# player we drop in October, so the tail is the only part worth paying for.
-UPSIDE_STEP = 0.035
-UPSIDE_FULL_ROUND = 12
+# Room above the projection. This is a correction to the mean, not a premium
+# for variance: the three things that earn the grade — a second-year jump the
+# provider smooths out, a path to work behind a fragile starter, a touchdown
+# role a yardage model understates — are all reasons the projected number is
+# too low, and a mixture over a role that might open has a higher mean too.
+#
+# So it is flat. It used to scale with the round, on the theory that a late
+# pick is a lottery ticket and only the tail is worth buying; but a projection
+# that is 7% light is 7% light in the first round as well. The weight is the
+# old full-round value, which leaves late picks priced as they were and is
+# what changes early ones.
+UPSIDE_WEIGHT = 0.035
 
 # ADP is a mean and players go in a range around it. Sleeper publishes no
 # spread, so this is assumed, and it is the least evidenced number in the file:
@@ -112,9 +119,16 @@ class Player:
         Deliberately *not* scaled by availability. The games he misses are
         priced once, in `lineup`, where they fall through to whoever is next at
         his position — scaling here as well would charge for them twice.
+
+        `upside` belongs here rather than as a bonus on the board because it
+        says the same kind of thing the other two do: this projection is
+        wrong, by about this much. Putting it here also gets the guard the
+        bonus needed by hand — a backup quarterback's breakout is worth
+        nothing to us — for free, since `lineup` never plays him.
         """
         return self.points * (1 + OFFENSE_WEIGHT * self.offense
-                              + SECURITY_WEIGHT * self.position_security)
+                              + SECURITY_WEIGHT * self.position_security
+                              + UPSIDE_WEIGHT * self.upside)
 
 
 def load_pool(conn: sqlite3.Connection, league_id: str, season: str | None = None) -> list[Player]:
@@ -324,22 +338,6 @@ def wait(position: str, pool: list[Player], pick: int, roster: list[Player],
     return expected, (likely or (ranked[0][1] if ranked else None))
 
 
-def upside_bonus(player: Player, round_no: int, got: float) -> float:
-    """What the right tail is worth at this point in the draft.
-
-    Scaled by what he'd actually add, not by what he'd score. Upside on a
-    player with no route into the lineup is worth nothing — without this a
-    backup quarterback collects a bonus for a breakout he would never get the
-    chance to have, which is how a simulated draft ended up taking five of them.
-
-    Nothing is subtracted for risk: the downside is already priced, because a
-    fragile player's `availability` hands his missed games to the next man in
-    `lineup`. Charging for it again here would be counting it twice.
-    """
-    weight = UPSIDE_STEP * min(round_no, UPSIDE_FULL_ROUND) / UPSIDE_FULL_ROUND
-    return player.upside * weight * got
-
-
 def our_picks(draft: sqlite3.Row, user_ids: set[str]) -> list[int]:
     """Every pick number we own, in order.
 
@@ -494,14 +492,10 @@ def outlook(sit: Situation, candidates: list[Player], gains: dict[str, float],
     picks = sit.upcoming[:ahead]
     rest_of, best = {}, 0.0
     for position in {p.position for p in candidates}:
-        # Picked the way the board ranks — on gain *and* upside — because the
-        # plan has to assume we take the player we would actually take. Only
-        # the gain goes into the total; the bonus is the board's adjustment,
-        # not points the roster collects.
+        # The player the board would take, which is simply the best gain now
+        # that upside is inside it rather than added on afterwards.
         got, player = max(((gains[p.player_id], p) for p in candidates
-                           if p.position == position),
-                          key=lambda pair: pair[0] + upside_bonus(pair[1], sit.round_no,
-                                                                  pair[0]))
+                           if p.position == position), key=lambda pair: pair[0])
         rest_of[position], _ = _continuation(
             picks[1:], sit.roster + [player],
             [p for p in sit.available if p.player_id != player.player_id],
@@ -516,7 +510,6 @@ class Ranked:
     value: float
     gain: float
     cost: float
-    bonus: float
 
 
 def board(conn: sqlite3.Connection, league_id: str, draft_id: str,
@@ -527,7 +520,7 @@ def board(conn: sqlite3.Connection, league_id: str, draft_id: str,
     board, and negative by however much taking that player instead costs the
     rest of the draft.
 
-        value(i) = gain(i) - cost(position) + upside(i)
+        value(i) = gain(i) - cost(position)
         cost(pos) = best plan going - what's left after spending this pick on pos
 
     The board and `plans` are the same search read two ways, which they have to
@@ -548,9 +541,8 @@ def board(conn: sqlite3.Connection, league_id: str, draft_id: str,
     ranked = []
     for player in candidates:
         got = gains[player.player_id]
-        bonus = upside_bonus(player, sit.round_no, got)
         cost = best - rest_of[player.position]
-        ranked.append(Ranked(player, got - cost + bonus, got, cost, bonus))
+        ranked.append(Ranked(player, got - cost, got, cost))
     ranked.sort(key=lambda r: -r.value)
     return ranked, sit.roster, sit.upcoming
 
@@ -574,8 +566,7 @@ def plans(conn: sqlite3.Connection, league_id: str, draft_id: str, ahead: int = 
                    for p in sit.available if p.position == position]
         if not options:
             continue
-        got, player = max(options, key=lambda pair: pair[0] + upside_bonus(
-            pair[1], sit.round_no, pair[0]))
+        got, player = max(options, key=lambda pair: pair[0])
         rest, taken = _continuation(
             picks[1:], sit.roster + [player],
             [p for p in sit.available if p.player_id != player.player_id],
@@ -644,10 +635,10 @@ def main() -> None:
                   f"{'/'.join(sequence):16}  {who}")
         return
 
-    print(f"\n  {'value':>7} {'gain':>7} {'cost':>7} {'up':>5}  {'pos':4} {'adp':>6}  player")
+    print(f"\n  {'value':>7} {'gain':>7} {'cost':>7}  {'pos':4} {'adp':>6}  player")
     for row in ranked[:args.top]:
         flag = " " if row.player.graded else "?"
-        print(f"  {row.value:7.1f} {row.gain:7.1f} {row.cost:7.1f} {row.bonus:5.1f}  "
+        print(f"  {row.value:7.1f} {row.gain:7.1f} {row.cost:7.1f}  "
               f"{row.player.position:4} {row.player.adp:6.1f}  {row.player.name}{flag}")
     conn.close()
 

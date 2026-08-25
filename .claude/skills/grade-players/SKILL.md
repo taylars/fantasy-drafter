@@ -13,8 +13,9 @@ you are here to establish.
 
 The output is consumed by a formula, not read by a person. Read
 `docs/value-formula.md` before starting if you have not — knowing that
-`exp_games` scales a player's points linearly, and that `offense` moves them a
-few percent, is what keeps you from spending equal effort on both.
+`exp_games` scales a player's points linearly, and that `offense`,
+`position_security` and `upside` each move them a few percent, is what keeps
+you from spending equal effort on all four.
 
 ## The job
 
@@ -82,8 +83,8 @@ scheme, red-zone volume. Those are `offense`.
 
 This overlaps with `upside` by design and the two are not redundant. A
 three-way committee that could consolidate is `−1` here *and* `+1` or `+2`
-there — the role is insecure and there is a path to more of it. Both tails are
-real, and the formula prices them separately.
+there — the role is insecure *and* there is a path to more of it. Both are
+real, they pull in opposite directions, and the formula prices them separately.
 
 ### exp_games (0..17)
 
@@ -115,8 +116,11 @@ two. If he is currently hurt, say the expected return in the note.
 
 ### upside (0..+3)
 
-Room *above* the projection — the right tail a mean case averages away. Three
-things put it there, and they stack:
+How much the projection *understates* him. Like `offense` and
+`position_security` this multiplies his points by a few percent, so grade it as
+a claim about his mean — "this number is low, by about this much" — and not as
+a lottery ticket. A player whose role might expand has a higher mean, not
+merely a wider range. Three things put it there, and they stack:
 
 - **Young and improving.** The second- and third-year jump is real and
   providers smooth it out. A 30-year-old in a settled role has none of this.

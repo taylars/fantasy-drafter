@@ -104,10 +104,9 @@ def check_agreement(league_id: str, draft_id: str) -> int:
     """The board and the plan are one search, so they cannot rank differently.
 
     `value` is regret against the best plan going, so the best player at each
-    position must score exactly that position's plan delta — once his upside
-    bonus, which is his alone and not the position's, is taken back off. These
-    were separate calculations once and drifted twenty points apart on whether
-    to take a tight end.
+    position must score exactly that position's plan delta. These were separate
+    calculations once and drifted twenty points apart on whether to take a
+    tight end.
     """
     conn = db.connect()
     db.init(conn, quiet=True)
@@ -125,7 +124,7 @@ def check_agreement(league_id: str, draft_id: str) -> int:
                   key=lambda r: r.value, default=None)
         if top is None:
             continue
-        board_says, plan_says = top.value - top.bonus, total - best
+        board_says, plan_says = top.value, total - best
         ok = abs(board_says - plan_says) < 1e-6
         bad += not ok
         print(f"  {'ok  ' if ok else 'DIFF'} {sequence[0]:4} board {board_says:+8.2f}   "

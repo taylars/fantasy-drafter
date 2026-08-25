@@ -31,8 +31,15 @@ in a sentence.
 own scoring. The grades correct it:
 
 ```
-p̂ = pts × (1 + a·offense + b·position_security)
+p̂ = pts × (1 + a·offense + b·position_security + c·upside)
 ```
+
+`upside` sits here, with the other two, because it makes the same kind of
+claim: the projection is wrong by about this much. Every reason that earns the
+grade is a reason the number is *low* — a second-year jump the provider smooths
+out, a path to work behind a fragile starter, a touchdown role a yardage model
+understates. A mixture over a role that might open has a higher mean, not just
+a longer tail. It was a round-scaled bonus on the board once; see below.
 
 `exp_games` deliberately does *not* appear here. It is priced once, in step 2,
 where the games a player misses fall through to whoever is next at his
@@ -115,7 +122,7 @@ points** — it was nearly indifferent, so the floor buys real insurance cheaply
 gain(i)    = lineup(roster + i) − lineup(roster)
 wait(pos)  = Σⱼ gain(j) · P(j survives) · Π_{k better}(1 − P(k survives))
 cost(pos)  = best plan going − what's left after spending this pick on pos
-value(i)   = gain(i) − cost(pos(i)) + upside(round)
+value(i)   = gain(i) − cost(pos(i))
 ```
 
 Survival is a smooth function of (our next pick − ADP). `wait` is still the
@@ -209,10 +216,23 @@ building it and running drafts through it.
   broke — anyone better than the wire must be worth something in an open FLEX.
   Worth running any time the coverage model is touched.
 
-- **Upside scales by gain, not by points.** A backup quarterback has no route
-  into the lineup, so his breakout is worth nothing to us. Paying him a bonus
-  on his projection instead of on what he adds is how a simulated draft ended
-  up taking five quarterbacks.
+- **Upside is a flat correction to the projection, not a premium for
+  variance.** It used to be a bonus on the board, scaled by gain and by the
+  round: an early pick is bought for its floor, a late one is a lottery ticket,
+  so only late rounds paid for the tail. The grades never meant that. Read the
+  notes — "clears the path to a lead role", "named WR1", "year-2 leap" — and
+  they are claims that the projection is stale, which is true in round 1 as
+  much as round 12. The `+2` running backs make it visible: better ADP than the
+  `+1`s (110 vs 134) and the *lowest* projections (118.6 vs 140.3), meaning the
+  market has priced a role the provider has not.
+
+  Scaling by gain was the old form's way of stopping a backup quarterback from
+  collecting a bonus for a breakout he'd never get to have — that is how a
+  simulated draft took five of them. Folding it into `p̂` gets the same guard
+  for free, and better: `lineup` never plays him, so his corrected points add
+  nothing. The weight is the old full-round value, so late picks are priced as
+  they were and it is early ones that change. Nothing moved in the top ten;
+  the biggest movers are `+2`s rising 13–28 places.
 
 - **There is no risk term.** The doc above proposed one; it would double-count.
   Downside is already priced through `exp_games`, which hands a fragile
@@ -222,8 +242,8 @@ building it and running drafts through it.
 
 - **The board and the plan are one search.** The board is the plan read
   per-player: `value(i) = gain(i) + continuation(pos) − best plan`, so the best
-  player at each position scores exactly that position's plan delta, less his
-  own upside bonus. `scripts.check_coverage` asserts that equality — it is the
+  player at each position scores exactly that position's plan delta.
+  `scripts.check_coverage` asserts that equality — it is the
   cheapest guard against the two drifting again, which they did once and
   expensively. The cost is real: the board went from 0.03s to 1.6s, because it
   now runs a four-deep search rather than one pass. That is affordable at a
@@ -289,7 +309,7 @@ CREATE TABLE player_grades (
     offense    INTEGER,   -- -2..+2, the offense he plays in
     position_security INTEGER, -- -2..+2, how firmly the role is his
     exp_games  REAL,      -- expected games of 17 — replaces the dead gp
-    upside     INTEGER,   --  0..+3, room above the projection
+    upside     INTEGER,   --  0..+3, how much the projection understates him
     note       TEXT,      -- one line of why, in plain english
     sources    TEXT,      -- json array of urls it was read from
     graded_at  TEXT,
