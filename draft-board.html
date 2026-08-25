@@ -317,6 +317,18 @@
   }
   .live-when{font-family:var(--mono);font-size:10.5px;letter-spacing:0;
     text-transform:none;font-weight:500;color:var(--ink-soft);}
+
+  .add-draft{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:34px;height:34px;align-self:flex-end;
+    font-family:var(--display);font-size:20px;font-weight:700;line-height:1;
+    color:var(--ink-soft);background:var(--sticker);border:2px solid var(--ink);
+    cursor:pointer;box-shadow:2px 2px 0 var(--ink);
+  }
+  .add-draft:hover{background:#FFFBEC;color:var(--ink);}
+  .add-draft:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink);}
+  .add-draft:focus-visible{outline:3px solid var(--qb);outline-offset:2px;}
+  .add-draft[disabled]{opacity:.5;cursor:default;}
   /* Drawn on every row rather than only on favorites: the hollow star is how
      the column says it can be tapped, and it keeps the rows in line down the
      length of the list either way. Faint until it means something. */
@@ -409,6 +421,8 @@
       <span class="field-lbl">Draft</span>
       <select id="draft-pick"></select>
     </label>
+    <button type="button" class="add-draft" id="add-draft"
+            title="Paste a mock draft url to add it to this league's list">+</button>
     <button type="button" class="live" id="live" aria-pressed="false"
             title="Poll the draft every 10 seconds and re-price the board">
       <span class="dot" aria-hidden="true"></span>
@@ -469,6 +483,7 @@ const SLEEPER_PLAYER = "https://sleeper.com/nfl/players/";
 // player_tags row the loaders write, so a tag made here and a tag loaded from
 // watchlist.json are the same thing.
 const TAGS_API = "api/tags";
+const DRAFTS_API = "api/drafts";
 
 // How long a press has to last to count as a hold, and how far a finger may
 // drift before it's a scroll instead. HOLD_MS is also the length of the .row
@@ -505,10 +520,17 @@ let MINE = [];
 // one duplication costs something every time scoring changes.
 let VALUES = new Map();  // player_id -> {value, gain, wait}
 let BEST = null;         // player_id of the best thing available right now
-let LIVE = null;         // the poll timer, or null when the light is off
+
+// Two different things, kept apart on purpose. ARMED is what the button says
+// and what survives a reload; LIVE is whether a timer is actually running. They
+// come apart when the tab is hidden — the light stays on, the polling doesn't,
+// and coming back to the tab starts it again without anything to click.
+let ARMED = false;
+let LIVE = null;
 
 const VALUE_API = "api/value";
 const POLL_MS = 10000;
+const LIVE_KEY = "draft-board:live";
 
 function valueCell(playerId){
   const v = VALUES.get(playerId);
@@ -537,6 +559,16 @@ async function openDatabase(){
   const res = await fetch(DB_URL);
   if(!res.ok) throw new Error("couldn't read "+DB_URL+" ("+res.status+")");
   return new SQL.Database(new Uint8Array(await res.arrayBuffer()));
+}
+
+// Mock drafts can't be listed from Sleeper's API (see scripts/load_drafts),
+// so the id has to come from the url a mock hands out: /draft/nfl/<id>, plain
+// or under /beta/.
+const DRAFT_URL_RE = /sleeper\.com\/(?:beta\/)?draft\/nfl\/(\d+)/;
+
+function draftIdFromUrl(text){
+  const m = DRAFT_URL_RE.exec((text || "").trim());
+  return m ? m[1] : null;
 }
 
 function loadLeagues(){
@@ -872,17 +904,35 @@ function applyLive(data){
   return changed;
 }
 
+// Whether the light was on is a preference, not draft state, so it outlives a
+// reload. Refreshing mid-draft is something you do — to pick up a new mock, or
+// because a phone dropped the tab — and having to remember to switch polling
+// back on afterwards is exactly the kind of thing you forget while on the clock.
+function liveWanted(){
+  try{ return localStorage.getItem(LIVE_KEY) === "1"; }
+  catch(err){ return false; }   // private browsing, or storage turned off
+}
+
+function rememberLive(on){
+  try{ localStorage.setItem(LIVE_KEY, on ? "1" : "0"); }catch(err){}
+}
+
+// What the button does: says what we want, then makes it so.
 function setLive(on){
+  ARMED = on;
+  rememberLive(on);
+  syncLive();
+}
+
+// Makes the timer match ARMED. Called again whenever something that should
+// change the answer happens — the tab hiding, a different draft being picked.
+function syncLive(){
   const btn = document.getElementById("live");
-  btn.classList.toggle("on", on);
-  btn.classList.remove("err");
-  btn.setAttribute("aria-pressed", on ? "true" : "false");
+  btn.classList.toggle("on", ARMED);
+  btn.setAttribute("aria-pressed", ARMED ? "true" : "false");
 
   if(LIVE){ clearInterval(LIVE); LIVE = null; }
-  if(!on){
-    document.getElementById("live-when").textContent = "";
-    return;
-  }
+  if(!ARMED || document.hidden || !DRAFT) return;
 
   const tick = async () => {
     try{
@@ -898,6 +948,22 @@ function setLive(on){
   };
   tick();
   LIVE = setInterval(tick, POLL_MS);
+}
+
+// The board is worth more with prices on it than without, so it fetches them
+// once on load whatever the light is doing. This is the cheap half of the
+// live loop: it reads the cache and re-runs the formula, but doesn't ask
+// Sleeper for anything, so it costs nothing to do on every page load.
+async function primeValues(){
+  const btn = document.getElementById("live");
+  try{
+    await pollOnce(false);
+    btn.classList.remove("err");
+  }catch(err){
+    // Nothing to shout about — the board still works, it just has no numbers.
+    // The live button is right there if you want it to try again.
+    btn.classList.add("err");
+  }
 }
 
 function roundLabel(rounds){
@@ -1073,6 +1139,56 @@ async function saveTag(playerId, kind){
   throw new Error(message);
 }
 
+// Fetches the draft from Sleeper, caches it server-side, then re-reads the
+// whole db file — sql.js only sees the copy it fetched at load time, and a
+// draft added just now isn't in it.
+async function addDraft(draftId){
+  let res;
+  try {
+    res = await fetch(DRAFTS_API, {
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ draft_id:draftId, league_id:LEAGUE.league_id })
+    });
+  } catch(e){
+    throw new Error("couldn't reach the server — is bin/start still running?");
+  }
+  if(!res.ok){
+    let message = "couldn't add that draft ("+res.status+")";
+    try {
+      const body = await res.json();
+      if(body && body.error) message = body.error;
+    } catch(e){ /* an error page rather than json; the status says enough */ }
+    throw new Error(message);
+  }
+
+  DB.close();
+  DB = await openDatabase();
+  showLeague(LEAGUE.league_id, loadLeagues(), draftId);
+}
+
+async function onAddDraft(){
+  const text = prompt("Paste the mock draft url:\nhttps://sleeper.com/draft/nfl/<id>");
+  if(text === null) return;
+
+  const draftId = draftIdFromUrl(text);
+  if(!draftId){
+    toast("that doesn't look like a sleeper draft url", true);
+    return;
+  }
+
+  const btn = document.getElementById("add-draft");
+  btn.disabled = true;
+  try {
+    await addDraft(draftId);
+    toast("draft added");
+  } catch(err){
+    toast(err.message, true);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 const SAID = { favorite:"favorite", watch:"watching", "":"cleared" };
 
 // Drawn first and saved after: a tag is a snap judgement made while the clock
@@ -1196,11 +1312,13 @@ function wireBoard(){
   board.addEventListener("keydown", onKeyDown);
 
   const live = document.getElementById("live");
-  live.addEventListener("click", () => setLive(!LIVE));
-  // Polling a draft nobody is watching is just noise on the server.
-  document.addEventListener("visibilitychange", () => {
-    if(document.hidden && LIVE) setLive(false);
-  });
+  live.addEventListener("click", () => setLive(!ARMED));
+
+  document.getElementById("add-draft").addEventListener("click", onAddDraft);
+  // Polling a draft nobody is watching is noise on the server, but a hidden tab
+  // is not a decision to stop — syncLive pauses the timer and leaves ARMED
+  // alone, so coming back to the tab picks the draft up again on its own.
+  document.addEventListener("visibilitychange", syncLive);
 }
 
 /* ---------- selection ---------- */
@@ -1208,9 +1326,11 @@ function wireBoard(){
 // The breaks belong to the draft, not the league, so switching drafts rebuilds
 // the list rather than just restyling it.
 function showDraft(draftId,drafts){
-  // Prices belong to one draft's state, so switching drafts drops them and
-  // stops the poll rather than leaving the last draft's numbers on screen.
-  setLive(false);
+  // Prices belong to one draft's state, so switching drafts drops the old
+  // numbers rather than leaving them on screen against the wrong board. The
+  // light is a preference and survives the switch — syncLive just re-points
+  // the polling at whatever is now selected.
+  if(LIVE){ clearInterval(LIVE); LIVE = null; }
   VALUES = new Map();
   BEST = null;
   DRAFT = drafts.find(d => d.draft_id === draftId) || drafts[0] || null;
@@ -1222,6 +1342,12 @@ function showDraft(draftId,drafts){
   renderMeta();
   renderRoster();
   syncUrl();
+
+  // Price it. When the light is on this hands straight over to the poll, which
+  // asks Sleeper as well; when it's off the board still gets its numbers.
+  if(DRAFT){
+    if(ARMED) syncLive(); else primeValues();
+  }
 }
 
 function showLeague(leagueId,leagues,wantedDraft){
@@ -1254,6 +1380,10 @@ function showError(message){
 async function main(){
   DB = await openDatabase();
   wireBoard();
+
+  // Read before the first board is drawn, so showDraft already knows whether
+  // it is handing over to the poll or just fetching one set of prices.
+  ARMED = liveWanted();
 
   const leagues = loadLeagues();
   if(!leagues.length) throw new Error("no leagues in the database — run <code>bin/start</code> to build the cache");

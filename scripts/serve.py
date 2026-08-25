@@ -46,6 +46,7 @@ DB_FILE = ROOT / "data" / "fantasy.db"
 
 TAGS_API = "/api/tags"
 VALUE_API = "/api/value"
+DRAFTS_API = "/api/drafts"
 KINDS = ("favorite", "watch")
 
 # How many players the value endpoint prices. The board shows every player with
@@ -102,6 +103,52 @@ def write_tag(payload: dict) -> dict:
 
     return {"league_id": league_id, "player_id": player_id, "kind": kind,
             "tagged_at": None if kind is None else tagged_at}
+
+
+def register_draft(payload: dict) -> dict:
+    """Fetch a mock draft by id and add it to one league's picker.
+
+    Mock drafts can't be enumerated (see scripts/load_drafts), so this is how
+    one joins the cache: paste its id in from the board, fetch it once, and
+    load_drafts keeps it fresh from then on like any other draft.
+    """
+    draft_id = payload.get("draft_id")
+    league_id = payload.get("league_id")
+    if not isinstance(draft_id, str) or not draft_id.isdigit():
+        raise ValueError("draft_id must be the numeric id from the draft url")
+    if not isinstance(league_id, str):
+        raise ValueError("league_id is required")
+
+    conn = db.connect(DB_FILE)
+    try:
+        with SleeperClient() as sleeper:
+            draft = sleeper.get_draft(draft_id)
+            if not draft:
+                raise LookupError(f"no such draft: {draft_id}")
+            load_draft(conn, sleeper, draft_id, draft)
+
+        # A mock started cold, not from a league, carries no league_id and no
+        # metadata.league_id either — nothing in it points back to us. Tie it
+        # to the league it was pasted in from so it shows up in that picker.
+        metadata = draft.get("metadata") or {}
+        if draft.get("league_id") is None and not metadata.get("league_id"):
+            conn.execute(
+                "UPDATE drafts SET source_league_id = ? "
+                "WHERE draft_id = ? AND source_league_id IS NULL",
+                (league_id, draft_id),
+            )
+        conn.commit()
+
+        row = conn.execute(
+            "SELECT draft_id, is_mock, mock_type, type, status, rounds, teams,"
+            "       start_time, reversal_round, draft_order,"
+            "       (SELECT count(*) FROM draft_picks p WHERE p.draft_id = drafts.draft_id) AS picks"
+            "  FROM drafts WHERE draft_id = ?", (draft_id,),
+        ).fetchone()
+    finally:
+        conn.close()
+
+    return dict(row)
 
 
 def refresh_picks(draft_id: str) -> None:
@@ -202,7 +249,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.reply(502, {"error": f"{type(exc).__name__}: {exc}"})
 
     def do_POST(self) -> None:
-        if self.path.split("?")[0] != TAGS_API:
+        path = self.path.split("?")[0]
+        if path not in (TAGS_API, DRAFTS_API):
             self.send_error(404, "no such endpoint")
             return
         # Insisting on a json body is what keeps another page from posting
@@ -225,13 +273,22 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             payload = json.loads(self.rfile.read(length) or b"{}")
             if not isinstance(payload, dict):
                 raise ValueError("expected a json object")
-            self.reply(200, write_tag(payload))
+            if path == TAGS_API:
+                self.reply(200, write_tag(payload))
+            else:
+                self.reply(200, register_draft(payload))
         except json.JSONDecodeError:
             self.reply(400, {"error": "body isn't json"})
         except ValueError as exc:
             self.reply(400, {"error": str(exc)})
+        except LookupError as exc:
+            self.reply(404, {"error": str(exc)})
         except sqlite3.Error as exc:
-            self.reply(500, {"error": f"couldn't write the tag: {exc}"})
+            self.reply(500, {"error": f"couldn't write to the cache: {exc}"})
+        except Exception as exc:
+            # Sleeper is a third party mid-request here too; don't lose a
+            # pasted url to a bare traceback if it times out or 5xxs.
+            self.reply(502, {"error": f"{type(exc).__name__}: {exc}"})
 
     def reply(self, status: int, payload: dict) -> None:
         body = json.dumps(payload).encode()
