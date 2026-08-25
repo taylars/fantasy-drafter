@@ -31,7 +31,7 @@ in a sentence.
 own scoring. The grades correct it:
 
 ```
-p̂ = pts × (1 + a·offense + b·support)
+p̂ = pts × (1 + a·offense + b·position_security)
 ```
 
 `exp_games` deliberately does *not* appear here. It is priced once, in step 2,
@@ -254,7 +254,7 @@ barely matter, but a human would spend them on handcuffs and lottery tickets.
 | Input | Status |
 |---|---|
 | `pts`, ADP, roster + scoring rules, our own future picks | **have it** |
-| `offense`, `support`, `upside` grades | **must gather** — no endpoint has them |
+| `offense`, `position_security`, `upside` grades | **must gather** — no endpoint has them |
 | expected games (availability) | **must gather** — see below |
 | ADP spread (σ) | **must gather** — a real gap |
 
@@ -287,7 +287,7 @@ CREATE TABLE player_grades (
     player_id  TEXT NOT NULL REFERENCES players(player_id) ON DELETE CASCADE,
     season     TEXT NOT NULL,
     offense    INTEGER,   -- -2..+2, the offense he plays in
-    support    INTEGER,   -- -2..+2, the teammates his production depends on
+    position_security INTEGER, -- -2..+2, how firmly the role is his
     exp_games  REAL,      -- expected games of 17 — replaces the dead gp
     upside     INTEGER,   --  0..+3, room above the projection
     note       TEXT,      -- one line of why, in plain english
@@ -296,6 +296,16 @@ CREATE TABLE player_grades (
     PRIMARY KEY (player_id, season)
 );
 ```
+
+Each column answers exactly one question, which is a correction rather than a
+design. `support` used to ask two — how good the situation is, and how secure
+the role is — so a back on a good line was credited for it in both `offense`
+and `support`, and a back in a committee was charged for something his
+projection had already priced. Graded in practice it was worse than
+double-counting: the same Denver backfield came out at `-1` for Dobbins and
+`+1` for Harvey, and 23 of 32 teams had teammates disagreeing on `offense`,
+which is a team property and cannot legitimately vary within one. Splitting the
+question fixed the definition; the grades themselves needed re-doing.
 
 Grades are ordinal because that's what research can produce defensibly; turning
 −2..+2 into a multiplier is the formula's job, not the researcher's. Only the

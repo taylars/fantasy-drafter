@@ -46,8 +46,8 @@ A useful score is dynamic — it changes with every pick made, ours and everyone
 else's. Six inputs, roughly in order of how much they move the answer:
 
 1. **Adjusted projection.** `projected_points`, scaled for the context above.
-   The questions become multipliers on the projection (offense, supporting
-   cast, durability), each a modest factor — call it ±15% — rather than a new
+   The questions become multipliers on the projection (offense, role
+   security, durability), each a modest factor — call it ±15% — rather than a new
    projection of our own. We are correcting a number, not replacing it.
 
 2. **Lineup gain, not raw points.** Score the player by what he adds to the

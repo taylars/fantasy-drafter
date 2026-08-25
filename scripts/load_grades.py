@@ -35,8 +35,9 @@ GRADES_DIR = pathlib.Path("data/grades")
 
 # Mirrors the CHECK constraints in migrations/007, so a bad grade is reported
 # against its player and file rather than as a sqlite error.
-RANGES = {"offense": (-2, 2), "support": (-2, 2), "upside": (0, 3), "exp_games": (0, 17)}
-REQUIRED = ("offense", "support", "exp_games", "upside")
+RANGES = {"offense": (-2, 2), "position_security": (-2, 2),
+          "upside": (0, 3), "exp_games": (0, 17)}
+REQUIRED = ("offense", "position_security", "exp_games", "upside")
 
 
 def resolve(entry: dict, index: dict, conn: sqlite3.Connection) -> tuple[str | None, str | None]:
@@ -107,7 +108,7 @@ def load_file(path: pathlib.Path, conn: sqlite3.Connection, index: dict,
             "player_id": player_id,
             "season": season,
             "offense": entry.get("offense"),
-            "support": entry.get("support"),
+            "position_security": entry.get("position_security"),
             "exp_games": entry.get("exp_games"),
             "upside": entry.get("upside"),
             "note": entry.get("note"),

@@ -59,8 +59,14 @@ DEPTH = {"RB": 3, "WR": 3, "QB": 1, "TE": 1, "K": 1, "DEF": 1}
 
 # How far a -2..+2 context grade moves a projection. Deliberately small: we are
 # correcting a provider's number, not replacing it with our own.
+#
+# `position_security` replaced a `support` grade that asked two questions at
+# once — how good the situation is, and how secure the role is — and so
+# double-counted the first against `offense`. It now asks only the second. The
+# weight is carried over unchanged rather than re-derived, which makes it the
+# most obviously tunable number here.
 OFFENSE_WEIGHT = 0.05
-SUPPORT_WEIGHT = 0.04
+SECURITY_WEIGHT = 0.04
 
 # How much of a player's season an ungraded starter is assumed to be available
 # for. Only used as a fallback — a graded player uses his own exp_games, which
@@ -95,7 +101,7 @@ class Player:
     points: float                       # projected, under this league's scoring
     availability: float                 # share of the season he'll be there for
     offense: int = 0
-    support: int = 0
+    position_security: int = 0
     upside: int = 0
     graded: bool = False
 
@@ -107,7 +113,8 @@ class Player:
         priced once, in `lineup`, where they fall through to whoever is next at
         his position — scaling here as well would charge for them twice.
         """
-        return self.points * (1 + OFFENSE_WEIGHT * self.offense + SUPPORT_WEIGHT * self.support)
+        return self.points * (1 + OFFENSE_WEIGHT * self.offense
+                              + SECURITY_WEIGHT * self.position_security)
 
 
 def load_pool(conn: sqlite3.Connection, league_id: str, season: str | None = None) -> list[Player]:
@@ -123,7 +130,7 @@ def load_pool(conn: sqlite3.Connection, league_id: str, season: str | None = Non
     pool = []
     for row in conn.execute(
         f"""SELECT p.player_id, p.full_name, p.position, p.team, pr.{adp_column} AS adp,
-                   g.offense, g.support, g.exp_games, g.upside
+                   g.offense, g.position_security, g.exp_games, g.upside
               FROM players p
               JOIN player_projections pr ON pr.player_id = p.player_id AND pr.season = ?
               LEFT JOIN player_grades g ON g.player_id = p.player_id AND g.season = ?
@@ -145,7 +152,7 @@ def load_pool(conn: sqlite3.Connection, league_id: str, season: str | None = Non
             availability=(row["exp_games"] / SEASON_GAMES if graded
                           else DEFAULT_AVAILABILITY.get(row["position"], 0.85)),
             offense=row["offense"] or 0,
-            support=row["support"] or 0,
+            position_security=row["position_security"] or 0,
             upside=row["upside"] or 0,
             graded=graded,
         ))
