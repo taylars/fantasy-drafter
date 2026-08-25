@@ -1,13 +1,13 @@
-"""Load the hand-written draft board into the cache.
+"""Load the hand-written watchlist into the cache.
 
-    python3 -m scripts.load_board                    # board.json
-    python3 -m scripts.load_board my-other-board.json
-    python3 -m scripts.load_board --league <id>      # override the target league
+    python3 -m scripts.load_watchlist                    # watchlist.json
+    python3 -m scripts.load_watchlist my-other-list.json
+    python3 -m scripts.load_watchlist --league <id>      # override the target league
 
-board.json holds the turns and the players tagged at each one — the only
-opinions in this repo, and the one thing the Sleeper loaders can't produce.
-This resolves those names to Sleeper player_ids and writes them to
-board_turns / player_tags for the league named in the file.
+watchlist.json is a flat list of players worth marking out on the board, per
+league. It carries no strategy — that lives in `strategies`, one row per round,
+written by hand — and no ordering, since the board sorts everyone by ADP. All
+it says is which players to flag and how loudly.
 
 Players are matched on name plus position, since Sleeper drops suffixes ("Brian
 Robinson", not "Brian Robinson Jr."). A name that matches nothing, or matches
@@ -25,7 +25,7 @@ import sys
 
 import db
 
-BOARD_PATH = pathlib.Path("board.json")
+WATCHLIST_PATH = pathlib.Path("watchlist.json")
 
 # Sleeper stores "Brian Robinson", never "Brian Robinson Jr.", and punctuates
 # inconsistently. Normalizing both sides makes the match exact rather than fuzzy.
@@ -51,7 +51,7 @@ def player_index(conn: sqlite3.Connection) -> dict[tuple[str, str], list[sqlite3
 
 
 def resolve(entry: dict, index: dict, conn: sqlite3.Connection) -> tuple[str | None, str | None]:
-    """Find the player_id for one board entry, or explain why we can't.
+    """Find the player_id for one watchlist entry, or explain why we can't.
 
     Returns (player_id, problem) — exactly one of the two is set.
     """
@@ -72,27 +72,27 @@ def resolve(entry: dict, index: dict, conn: sqlite3.Connection) -> tuple[str | N
         return None, f"ambiguous — {len(matches)} players ({teams})"
 
     match = matches[0]
-    # The team isn't used to match, but disagreeing with it means the board is
+    # The team isn't used to match, but disagreeing with it means the list is
     # stale or we've landed on the wrong player. Worth saying out loud.
     if entry.get("team") and match["team"] and entry["team"] != match["team"]:
-        print(f"    note: {entry['name']} is on {match['team']}, board says {entry['team']}")
+        print(f"    note: {entry['name']} is on {match['team']}, watchlist says {entry['team']}")
     return match["player_id"], None
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("board", nargs="?", default=BOARD_PATH, type=pathlib.Path,
-                        help=f"board file to load (default: {BOARD_PATH})")
+    parser.add_argument("watchlist", nargs="?", default=WATCHLIST_PATH, type=pathlib.Path,
+                        help=f"watchlist file to load (default: {WATCHLIST_PATH})")
     parser.add_argument("--league", default=None, help="league_id to tag against")
     args = parser.parse_args()
 
-    if not args.board.exists():
-        sys.exit(f"no board at {args.board}")
+    if not args.watchlist.exists():
+        sys.exit(f"no watchlist at {args.watchlist}")
 
-    board = json.loads(args.board.read_text())
-    league_id = args.league or board.get("league_id")
+    watchlist = json.loads(args.watchlist.read_text())
+    league_id = args.league or watchlist.get("league_id")
     if not league_id:
-        sys.exit("no league_id — pass --league or set one in the board file")
+        sys.exit("no league_id — pass --league or set one in the watchlist file")
 
     conn = db.connect()
     db.init(conn)
@@ -104,60 +104,38 @@ def main() -> None:
     if not conn.execute("SELECT 1 FROM players LIMIT 1").fetchone():
         sys.exit("no players in the cache — run load_players first")
 
-    # The board is a whole opinion, not a set of independent rows: a player
+    # The watchlist is a whole opinion, not a set of independent rows: a player
     # dropped from the file should leave the table. Clearing this league's tags
     # first keeps the database matching the file exactly.
     conn.execute("DELETE FROM player_tags WHERE league_id = ?", (league_id,))
-    conn.execute("DELETE FROM board_turns WHERE league_id = ?", (league_id,))
 
     index = player_index(conn)
     tagged_at = db.now()
     counts = {"favorite": 0, "watch": 0}
     skipped = []
 
-    for turn_no, turn in enumerate(board["turns"], start=1):
+    for entry in watchlist["players"]:
+        player_id, problem = resolve(entry, index, conn)
+        if problem:
+            skipped.append((entry["name"], problem))
+            continue
+        kind = entry.get("kind", "watch")
         db.upsert(
             conn,
-            "board_turns",
+            "player_tags",
             {
                 "league_id": league_id,
-                "turn_no": turn_no,
-                "picks": turn.get("picks"),
-                "round": turn.get("round"),
-                "plan": turn.get("plan"),
-                "note": turn.get("note"),
+                "player_id": player_id,
+                "kind": kind,
+                "tagged_at": tagged_at,
             },
-            keys=("league_id", "turn_no"),
+            keys=("league_id", "player_id"),
         )
-
-        for sort_order, entry in enumerate(turn["players"]):
-            player_id, problem = resolve(entry, index, conn)
-            if problem:
-                skipped.append((entry["name"], problem))
-                continue
-            kind = entry.get("kind", "watch")
-            db.upsert(
-                conn,
-                "player_tags",
-                {
-                    "league_id": league_id,
-                    "player_id": player_id,
-                    "kind": kind,
-                    "turn_no": turn_no,
-                    "sort_order": sort_order,
-                    "note": entry.get("note"),
-                    "tie": entry.get("tie"),
-                    "flag": entry.get("flag"),
-                    "tagged_at": tagged_at,
-                },
-                keys=("league_id", "player_id"),
-            )
-            counts[kind] = counts.get(kind, 0) + 1
+        counts[kind] = counts.get(kind, 0) + 1
 
     conn.commit()
 
-    print(f"  {league['name']}: {len(board['turns'])} turn(s), "
-          f"{counts['favorite']} favorite(s), {counts['watch']} watched")
+    print(f"  {league['name']}: {counts['favorite']} favorite(s), {counts['watch']} watched")
     for name, problem in skipped:
         print(f"    skipped {name}: {problem}")
     conn.close()

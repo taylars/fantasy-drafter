@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Draft Board — 1.01, 12-Team Half PPR</title>
+<title>Draft Board</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -21,6 +21,7 @@
     --te:#B4690E;
     --k:#6D4AA8;
     --def:#6B6256;
+    --gold:#C99400;
     --display:"Barlow Condensed",Impact,sans-serif;
     --body:"Archivo",system-ui,sans-serif;
     --mono:"IBM Plex Mono",ui-monospace,monospace;
@@ -39,7 +40,7 @@
     line-height:1.45;
     -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:1080px;margin:0 auto;padding:22px 16px 80px;}
+  .wrap{max-width:860px;margin:0 auto;padding:22px 16px 80px;}
 
   /* ---------- masthead ---------- */
   .mast{
@@ -145,92 +146,78 @@
   }
   .slot .lbl{opacity:.55;margin-right:5px;}
 
-  /* ---------- turn block ---------- */
-  .turn{margin-bottom:38px;}
-  .turn-head{
-    display:flex;align-items:flex-start;gap:12px;margin-bottom:4px;
-  }
+  /* ---------- the break at one of our picks ---------- */
+  .brk{margin:30px 0 14px;}
+  .brk:first-child{margin-top:0;}
+  .brk-head{display:flex;align-items:flex-start;gap:12px;}
   .picknum{
     font-family:var(--display);font-weight:700;
-    font-size:clamp(30px,7vw,44px);line-height:.85;
+    font-size:clamp(28px,6vw,40px);line-height:.85;
     background:var(--tape);padding:6px 9px 4px;
     border:2px solid var(--ink);
     box-shadow:3px 3px 0 var(--ink);
     white-space:nowrap;flex-shrink:0;
   }
-  .turn-meta{padding-top:3px;}
-  .turn-round{
+  .brk-meta{padding-top:3px;min-width:0;}
+  .brk-round{
     font-family:var(--mono);font-size:11px;letter-spacing:.14em;
     text-transform:uppercase;color:var(--ink-soft);
   }
-  .turn-plan{
+  .brk-plan{
     font-family:var(--display);font-weight:600;
-    font-size:clamp(19px,4.4vw,25px);line-height:1.1;
+    font-size:clamp(18px,4.2vw,24px);line-height:1.1;
     text-transform:uppercase;margin-top:2px;
   }
-  .turn-note{
+  .picknum.multi{font-size:clamp(22px,4.6vw,32px);}
+  .brk-note{
     font-size:13.5px;color:var(--ink-soft);
-    margin:10px 0 14px;max-width:62ch;
+    margin:9px 0 0;max-width:62ch;
   }
-
-  /* ---------- section rules inside a turn ---------- */
-  .rule{
-    display:flex;align-items:center;gap:10px;
-    margin:0 0 9px;
-  }
-  .rule-lbl{
+  /* A turn whose rounds disagree prints both plans, each said whose it is. */
+  .brk-split{margin-top:12px;}
+  .brk-split .brk-when{
     font-family:var(--mono);font-size:10.5px;font-weight:600;
-    letter-spacing:.16em;text-transform:uppercase;
-    white-space:nowrap;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
   }
-  .rule.take .rule-lbl{
-    background:var(--tape);color:var(--ink);
-    border:2px solid var(--ink);
-    box-shadow:2px 2px 0 var(--ink);
-    padding:3px 8px;
+  .brk-split .brk-plan{font-size:clamp(16px,3.6vw,20px);}
+  .brk-rule{
+    height:0;border-top:2px solid var(--ink);
+    margin:12px 0 10px;
   }
-  .rule.rest .rule-lbl{color:var(--ink-soft);}
-  .rule .line{flex:1;height:0;border-top:2px solid var(--ink);}
-  .rule.rest .line{border-top:1px dashed var(--board-dark);}
-  .rest-block{margin-top:20px;}
 
-  /* ---------- sticker cards ---------- */
-  .cards{
-    display:grid;gap:8px;
-    grid-template-columns:repeat(auto-fill,minmax(258px,1fr));
-  }
-  .cards.picks{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;}
-  .card{
-    display:flex;align-items:stretch;gap:0;
+  /* ---------- the list ---------- */
+  .list{display:flex;flex-direction:column;gap:4px;}
+  /* The row is the link — the whole thing, so there's no dead strip to miss
+     with a thumb and no second target competing with it. */
+  .row{
+    display:flex;align-items:center;gap:10px;
     background:var(--sticker);
     border:2px solid var(--ink);
-    box-shadow:3px 3px 0 var(--ink);
+    box-shadow:2px 2px 0 var(--ink);
     border-radius:2px;
-    transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease,filter .18s ease;
-    overflow:hidden;
+    color:inherit;text-decoration:none;
+    transition:opacity .18s ease,filter .18s ease,box-shadow .18s ease;
   }
-  .card.gone{
-    transform:rotate(-1.1deg) scale(.982);
-    box-shadow:none;opacity:.42;filter:grayscale(1);
+  /* Struck through is the draft's own doing: somebody else has him. */
+  .row.gone{box-shadow:none;opacity:.4;filter:grayscale(1);}
+  .row.mine{box-shadow:2px 2px 0 var(--tape),2px 2px 0 2px var(--ink);}
+  /* Being tagged at all is what the highlight says; the star picks the
+     favorites back out of it. */
+  .row.fav,.row.watch{background:#FFFBEC;}
+
+  .row:hover{box-shadow:4px 4px 0 var(--ink);}
+  .row.mine:hover{box-shadow:4px 4px 0 var(--tape),4px 4px 0 2px var(--ink);}
+  .row.gone:hover{box-shadow:2px 2px 0 var(--board-dark);}
+  /* ADP leads the row, because that's what the list is sorted on — reading
+     straight down the left edge gives you the ladder. */
+  .adp{
+    font-family:var(--mono);font-size:13px;font-weight:600;
+    align-self:stretch;display:flex;align-items:center;justify-content:flex-end;
+    flex:0 0 52px;padding:7px 8px;
+    border-right:1.5px solid var(--board-dark);
+    color:var(--ink-soft);
   }
-  .card.mine{
-    box-shadow:3px 3px 0 var(--tape),3px 3px 0 2px var(--ink);
-  }
-  .card.rec{
-    background:#FFFBEC;
-    box-shadow:5px 5px 0 var(--ink);
-  }
-  .card.rec.mine{
-    box-shadow:5px 5px 0 var(--tape),5px 5px 0 2px var(--ink);
-  }
-  .card.rec.gone{box-shadow:none;}
-  .tap{
-    flex:1;display:flex;align-items:center;gap:9px;
-    background:none;border:0;padding:9px 4px 9px 0;
-    font-family:inherit;text-align:left;cursor:pointer;color:inherit;
-    min-width:0;
-  }
-  .card.rec .tap{padding:10px 4px 10px 0;align-items:flex-start;}
+  .row.fav .adp,.row.watch .adp{color:var(--ink);}
   .pos{
     font-family:var(--display);font-weight:700;font-size:13px;
     letter-spacing:.06em;color:#fff;
@@ -240,57 +227,32 @@
   .pos.QB{background:var(--qb);} .pos.RB{background:var(--rb);}
   .pos.WR{background:var(--wr);} .pos.TE{background:var(--te);}
   .pos.K{background:var(--k);}   .pos.DEF{background:var(--def);}
-  .who{min-width:0;flex:1;}
+  .who{min-width:0;flex:1;padding:6px 0;}
   .nm{
     font-weight:600;font-size:14px;line-height:1.2;
     display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
   }
-  .card.rec .nm{font-size:15.5px;white-space:normal;}
-  .card.gone .nm{text-decoration:line-through;}
+  .row.gone .nm{text-decoration:line-through;}
   .tm{
     font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);
     letter-spacing:.05em;
   }
-  .why{
-    display:block;font-size:12.5px;line-height:1.35;
-    color:var(--ink);margin-top:4px;
+  .hurt{color:var(--qb);}
+  .pts{
+    font-family:var(--mono);font-size:11px;font-weight:500;
+    color:var(--ink-soft);flex-shrink:0;align-self:center;
+    text-align:right;min-width:44px;
   }
-  .card.gone .why{color:var(--ink-soft);}
-  .tie{
-    font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;
-    text-transform:uppercase;color:var(--ink);
-    background:var(--tape);padding:1px 5px;border:1px solid var(--ink);
-    display:inline-block;margin-top:5px;
+  .pts::after{content:" pt";opacity:.6;}
+  .pts:empty{display:none;}
+  /* Empty on everyone else, so the columns to its left stay in line down the
+     length of the list. */
+  .star{
+    flex:0 0 34px;align-self:stretch;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--gold);font-size:17px;line-height:1;
   }
-  .adp{
-    font-family:var(--mono);font-size:12px;font-weight:600;
-    color:var(--ink-soft);padding-right:8px;align-self:center;flex-shrink:0;
-    text-align:right;
-  }
-  /* Projected points sit under ADP: the same column, quieter, so the eye still
-     reads down the ADP line first. */
-  .adp .pts{
-    display:block;font-size:9.5px;font-weight:500;opacity:.65;
-    letter-spacing:.02em;margin-top:1px;
-  }
-  .adp .pts::after{content:" pt";opacity:.7;}
-  .card.rec .adp{align-self:flex-start;padding-top:2px;}
-  .flag{
-    font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;
-    text-transform:uppercase;color:var(--qb);display:block;margin-top:1px;
-  }
-  .claim{
-    font-family:var(--display);font-weight:600;font-size:12px;
-    letter-spacing:.09em;text-transform:uppercase;
-    background:var(--ink);color:var(--board);
-    border:0;border-left:2px solid var(--ink);
-    padding:0 11px;cursor:pointer;flex-shrink:0;
-  }
-  .claim:hover{background:var(--rb);}
-  .card.mine .claim{background:var(--tape);color:var(--ink);}
-  .tap:focus-visible,.claim:focus-visible{
-    outline:3px solid var(--qb);outline-offset:2px;
-  }
+  .row:focus-visible{outline:3px solid var(--qb);outline-offset:-3px;}
 
   /* ---------- load / error state ---------- */
   .status{
@@ -310,16 +272,18 @@
 
   .legend{
     font-family:var(--mono);font-size:11px;color:var(--ink-soft);
-    border-top:2px solid var(--ink);padding-top:12px;margin-top:6px;
+    border-top:2px solid var(--ink);padding-top:12px;margin-top:26px;
     display:flex;flex-wrap:wrap;gap:16px;
   }
   @media (prefers-reduced-motion:reduce){
-    .card{transition:none;} .card.gone{transform:none;}
+    .row{transition:none;}
   }
   @media (max-width:520px){
     .field{flex:1 1 100%;}
     .picknum{font-size:26px;padding:5px 7px 3px;}
-    .cards,.cards.picks{grid-template-columns:1fr;}
+    .adp{flex-basis:46px;padding:7px 6px;}
+    .pts{display:none;}
+    .star{flex-basis:28px;}
   }
 </style>
 </head>
@@ -329,7 +293,7 @@
   <header class="mast">
     <p class="eyebrow" id="eyebrow">&nbsp;</p>
     <h1 id="headline">Draft <em>board</em></h1>
-    <p class="sub">Tap a name when he's gone. Hit DRAFT for the ones you take.</p>
+    <p class="sub">Everyone already drafted is struck out. Tap a name to open him on Sleeper.</p>
   </header>
 
   <div class="picker" id="picker" hidden>
@@ -355,26 +319,38 @@
   </main>
 
   <div class="legend">
-    <span>ADP = 12-team half-PPR average draft position, Aug 18–23</span>
-    <span>Yellow card = the pick to make</span>
-    <span>Struck = off the board</span>
-    <span>Yellow shadow = yours</span>
+    <span id="adp-legend"></span>
+    <span>Break = one of your picks</span>
+    <span>Yellow = on your watchlist</span>
+    <span>★ = favorite</span>
+    <span>Struck = drafted by someone else</span>
+    <span>Gold edge = drafted by you</span>
     <span id="source"></span>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sql.js@1.13.0/dist/sql-wasm.js"></script>
 <script>
-// Everything on this page comes out of the SQLite cache — the leagues and
-// drafts in the pickers, the turns and tagged players from board_turns /
-// player_tags, the names and teams from players, the roster slots from the
-// league itself. Nothing is hardcoded here, so re-running the loaders changes
-// the board without touching this file.
+// Everything on this page comes out of the SQLite cache: the leagues and drafts
+// in the pickers, every player with an ADP from players / player_projections,
+// the plan at each pick from strategies, the roster slots from the league
+// itself. Nothing is hardcoded here, so re-running the loaders — or writing a
+// row into `strategies` — changes the board without touching this file.
 //
 // sql.js reads the database file in the browser, which means the page has to be
 // served over http rather than opened from disk: `bin/start`.
 const DB_URL = "data/fantasy.db";
 const SQLJS = "https://cdn.jsdelivr.net/npm/sql.js@1.13.0/dist/";
+
+// Sleeper reports "not drafted" as an ADP of 999 rather than as a null, so the
+// sentinel has to be filtered out by value or the list ends in a thousand
+// players who all tie for last.
+const ADP_UNDRAFTED = 999;
+
+// Sleeper's own player page, which is the thing worth reading when a name on
+// the list needs a second look. Team defenses key on the abbreviation and work
+// on the same shape (.../ATL).
+const SLEEPER_PLAYER = "https://sleeper.com/nfl/players/";
 
 const FLEXOK = ["RB","WR","TE"];
 const SCORING = { half_ppr:"Half PPR", ppr:"PPR", std:"Standard", "2qb":"2QB" };
@@ -383,13 +359,16 @@ let DB = null;           // the open sql.js database
 let LEAGUE = null;       // the league row on show
 let DRAFT = null;        // the draft row on show, or null
 let SLOTS = [];
-let TURNS = [];
+let PLAYERS = [];        // every player with an ADP, best first
+let STRATEGY = new Map();// round -> {plan, note}
+let TURNS = [];          // our own trips to the board, in order
 let ME = [];             // user_ids we track, for spotting our own picks
 
-// `base` is what the selected draft already says: the picks that have actually
-// happened. Manual taps stack on top of it, and "clear board" drops back to it
-// rather than to an empty board.
-const state = { gone:new Set(), mine:[], base:{ gone:[], mine:[] } };
+// Who's off the board is the selected draft's answer, not ours — read out of
+// draft_picks and nowhere else. Re-run the loaders during a draft and the
+// board catches up; there is nothing to tap and nothing to keep in sync.
+let DRAFTED = new Set();
+let MINE = [];
 
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
@@ -413,20 +392,19 @@ async function openDatabase(){
   return new SQL.Database(new Uint8Array(await res.arrayBuffer()));
 }
 
-// Every league in the cache, boards first — a league without turns still
-// belongs in the list, it just has nothing to show yet.
 function loadLeagues(){
   return rows(
-    "SELECT l.league_id, l.name, l.season, l.total_rosters, l.scoring_type, l.roster_positions,"+
-    "       (SELECT count(*) FROM board_turns t WHERE t.league_id = l.league_id) AS turns"+
-    "  FROM leagues l ORDER BY turns = 0, l.season DESC, l.name");
+    "SELECT league_id, name, season, total_rosters, scoring_type, roster_positions,"+
+    "       scoring_settings"+
+    "  FROM leagues ORDER BY season DESC, name");
 }
 
 // A league's own draft, plus any mock seeded from it — a mock stores its origin
 // under source_league_id, since its league_id is null.
 function loadDrafts(leagueId){
   return rows(
-    "SELECT d.draft_id, d.is_mock, d.mock_type, d.type, d.status, d.rounds, d.teams, d.start_time,"+
+    "SELECT d.draft_id, d.is_mock, d.mock_type, d.type, d.status, d.rounds, d.teams,"+
+    "       d.start_time, d.reversal_round, d.draft_order,"+
     "       (SELECT count(*) FROM draft_picks p WHERE p.draft_id = d.draft_id) AS picks"+
     "  FROM drafts d WHERE d.league_id = ? OR d.source_league_id = ?"+
     " ORDER BY d.is_mock, d.start_time, d.draft_id", [leagueId, leagueId]);
@@ -452,36 +430,37 @@ function scoreStats(stats, scoring){
   return Math.round(total*10)/10;
 }
 
-function loadTurns(leagueId){
-  const turns = rows(
-    "SELECT turn_no, picks, round, plan, note FROM board_turns"+
-    " WHERE league_id = ? ORDER BY turn_no", [leagueId]);
-
-  const league = rows(
-    "SELECT season, scoring_type, scoring_settings FROM leagues WHERE league_id = ?",
-    [leagueId])[0] || {};
+// The whole list: everyone Sleeper publishes an ADP for, in ADP order. No
+// opinion is applied here — player_tags only decides how loudly a row is drawn.
+function loadPlayers(league){
   const scoring = league.scoring_settings ? JSON.parse(league.scoring_settings) : {};
-
   // The ADP column is chosen, not parameterized — sqlite won't bind an
   // identifier — so it comes from the fixed map above rather than user input.
-  const tags = rows(
-    "SELECT g.turn_no, g.kind, g.note, g.tie, g.flag,"+
-    "       p.player_id, p.full_name, p.position, p.team,"+
-    "       pr."+adpColumn(league.scoring_type)+" AS adp, pr.stats AS proj"+
-    "  FROM player_tags g JOIN players p ON p.player_id = g.player_id"+
-    "  LEFT JOIN player_projections pr"+
-    "    ON pr.player_id = g.player_id AND pr.season = ?"+
-    " WHERE g.league_id = ? ORDER BY g.turn_no, g.sort_order",
-    [league.season, leagueId]);
+  const col = adpColumn(league.scoring_type);
 
-  tags.forEach(tag => {
-    tag.points = tag.proj ? scoreStats(JSON.parse(tag.proj), scoring) : null;
-    delete tag.proj;
+  const players = rows(
+    "SELECT p.player_id, p.full_name, p.position, p.team, p.injury_status,"+
+    "       pr."+col+" AS adp, pr.stats AS proj, g.kind"+
+    "  FROM player_projections pr"+
+    "  JOIN players p ON p.player_id = pr.player_id"+
+    "  LEFT JOIN player_tags g"+
+    "    ON g.player_id = pr.player_id AND g.league_id = ?"+
+    " WHERE pr.season = ? AND pr."+col+" IS NOT NULL AND pr."+col+" < ?"+
+    " ORDER BY pr."+col+", p.full_name",
+    [league.league_id, league.season, ADP_UNDRAFTED]);
+
+  players.forEach(pl => {
+    pl.points = pl.proj ? scoreStats(JSON.parse(pl.proj), scoring) : null;
+    delete pl.proj;
   });
+  return players;
+}
 
-  const byTurn = new Map(turns.map(t => [t.turn_no, []]));
-  tags.forEach(tag => { const bucket = byTurn.get(tag.turn_no); if(bucket) bucket.push(tag); });
-  return turns.map(t => ({ ...t, players:byTurn.get(t.turn_no) }));
+function loadStrategies(leagueId){
+  const map = new Map();
+  rows("SELECT round, plan, note FROM strategies WHERE league_id = ? ORDER BY round",
+       [leagueId]).forEach(s => map.set(s.round, s));
+  return map;
 }
 
 // What the draft already knows: who's off the board, and which of those are
@@ -499,13 +478,83 @@ function loadPicks(draftId){
   };
 }
 
+/* ---------- our picks ---------- */
+
+// Inverse of client.sleeper.on_the_clock: which overall pick a slot owns in a
+// given round. A snake's even rounds run backwards; a linear draft doesn't
+// turn at all, and an auction has no pick order to speak of, so both keep the
+// slot they started with.
+function pickNumber(round, slot, teams, type, reversalRound){
+  let forward = type !== "snake" || round % 2 === 1;
+  if(type === "snake" && reversalRound && round >= reversalRound) forward = !forward;
+  return (round - 1) * teams + (forward ? slot : teams - slot + 1);
+}
+
+// Every pick we own in this draft, derived rather than written down: the draft
+// says which slot is ours, and the slot plus the format says the rest. A draft
+// whose order hasn't been set yet has no answer, and gets no breaks.
+function myPicks(){
+  if(!DRAFT || !DRAFT.teams || !DRAFT.rounds || !DRAFT.draft_order) return [];
+  let order;
+  try { order = JSON.parse(DRAFT.draft_order); } catch(e){ return []; }
+  if(!order) return [];
+
+  const mine = ME.map(id => order[id]).find(s => s != null);
+  if(mine == null) return [];
+
+  const picks = [];
+  for(let round = 1; round <= DRAFT.rounds; round++){
+    picks.push({
+      round: round,
+      slot: mine,
+      pick_no: pickNumber(round, mine, DRAFT.teams, DRAFT.type, DRAFT.reversal_round)
+    });
+  }
+  return picks;
+}
+
+// Consecutive pick numbers are one trip to the board, not two: a snake turns
+// at the end of the round and hands back the next pick straight away. Grouping
+// them means pick 24 and pick 25 read as the single decision they are.
+function asTurns(picks){
+  const turns = [];
+  picks.forEach(pick => {
+    const last = turns[turns.length - 1];
+    if(last && pick.pick_no === last[last.length - 1].pick_no + 1) last.push(pick);
+    else turns.push([pick]);
+  });
+  return turns;
+}
+
+// The plans across one turn, with neighbouring rounds that say the same thing
+// collapsed into one. Two rounds sharing a plan is the normal case for a snake
+// turn, and printing it twice is just noise.
+function turnPlans(turn){
+  const out = [];
+  turn.forEach(pick => {
+    const row = STRATEGY.get(pick.round);
+    const plan = (row && row.plan) || null;
+    const note = (row && row.note) || null;
+    const last = out[out.length - 1];
+    if(last && last.plan === plan && last.note === note) last.rounds.push(pick.round);
+    else out.push({ rounds:[pick.round], plan:plan, note:note });
+  });
+  return out.filter(entry => entry.plan || entry.note);
+}
+
+// "2.12" — the round and the seat within it, which is how a pick gets talked
+// about out loud.
+function slotLabel(pick){
+  const teams = DRAFT && DRAFT.teams;
+  if(!teams) return "";
+  const place = pick.pick_no - (pick.round - 1) * teams;
+  return pick.round + "." + String(place).padStart(2,"0");
+}
+
 /* ---------- pickers ---------- */
 
 function leagueLabel(l){
-  const bits = [l.name];
-  if(l.season) bits.push(l.season);
-  if(!l.turns) bits.push("no board");
-  return bits.join(" · ");
+  return [l.name, l.season].filter(Boolean).join(" · ");
 }
 
 function draftLabel(d,all){
@@ -551,133 +600,108 @@ function syncUrl(){
 
 /* ---------- rendering ---------- */
 
-function makeCard(pl){
-  const card = document.createElement("div");
-  const fav = pl.kind === "favorite";
-  card.className = "card" + (fav ? " rec" : "");
-  card.dataset.key = pl.player_id;
+function rowHtml(pl){
+  const kind = pl.kind || "";
+  const hurt = pl.injury_status
+    ? ' · <span class="hurt">'+esc(pl.injury_status)+'</span>' : '';
+  // The empty span is deliberate: it holds the column open on every other row.
+  const star = kind === "favorite"
+    ? '<span class="star" role="img" aria-label="favorite">★</span>'
+    : '<span class="star" aria-hidden="true"></span>';
 
-  const tap = document.createElement("button");
-  tap.className = "tap";
-  tap.setAttribute("aria-pressed","false");
-  tap.setAttribute("aria-label","Mark "+pl.full_name+" as off the board");
-  tap.innerHTML =
-    '<span class="pos '+pl.position+'">'+pl.position+'</span>'+
+  // Ours reads as ours rather than as gone, which is why the two are drawn
+  // differently: a pick we made fills a roster slot, everyone else's just
+  // takes a name off the list.
+  const isMine = MINE.some(m => m.k === pl.player_id);
+  const isGone = DRAFTED.has(pl.player_id) && !isMine;
+
+  const cls = ["row", kind && kind.replace("favorite","fav"),
+               isGone && "gone", isMine && "mine"].filter(Boolean).join(" ");
+  // A strikethrough says nothing out loud, so the state goes in the name.
+  const label = [pl.full_name, pl.position + " " + (pl.team || "free agent"),
+                 "ADP " + pl.adp.toFixed(1),
+                 isMine ? "drafted by you" : isGone ? "drafted" : null]
+                .filter(Boolean).join(", ");
+
+  return '<a class="'+cls+'" href="'+SLEEPER_PLAYER+encodeURIComponent(pl.player_id)+'"'+
+    ' target="_blank" rel="noopener noreferrer"'+
+    ' aria-label="'+esc(label)+'. Open on Sleeper.">'+
+    '<span class="adp">'+pl.adp.toFixed(1)+'</span>'+
+    '<span class="pos '+esc(pl.position)+'">'+esc(pl.position)+'</span>'+
     '<span class="who"><span class="nm">'+esc(pl.full_name)+'</span>'+
-    '<span class="tm">'+esc(pl.team || "FA")+
-      (pl.flag?' · <span class="flag" style="display:inline">'+esc(pl.flag)+'</span>':'')+'</span>'+
-    (pl.note?'<span class="why">'+esc(pl.note)+'</span>':'')+
-    (pl.tie?'<span class="tie">'+esc(pl.tie)+'</span>':'')+
-    '</span>'+
-    '<span class="adp">'+(pl.adp == null ? "—" : pl.adp.toFixed(1))+
-      (pl.points == null ? "" : '<span class="pts">'+pl.points.toFixed(0)+'</span>')+'</span>';
-  tap.addEventListener("click",()=>toggleGone(pl.player_id));
-
-  const claim = document.createElement("button");
-  claim.className = "claim";
-  claim.textContent = "Draft";
-  claim.setAttribute("aria-label","Add "+pl.full_name+" to my roster");
-  claim.addEventListener("click",()=>claimPlayer(pl));
-
-  card.appendChild(tap);
-  card.appendChild(claim);
-  return card;
+      '<span class="tm">'+esc(pl.team || "FA")+hurt+'</span></span>'+
+    '<span class="pts">'+(pl.points == null ? "" : pl.points.toFixed(0))+'</span>'+
+    star+
+  '</a>';
 }
 
-function makeRule(cls,label){
-  const r = document.createElement("div");
-  r.className = "rule " + cls;
-  r.innerHTML = '<span class="rule-lbl">'+label+'</span><span class="line"></span>';
-  return r;
+function roundLabel(rounds){
+  return (rounds.length > 1 ? "Rounds " : "Round ") + rounds.join(" / ");
+}
+
+function breakHtml(turn){
+  const plans = turnPlans(turn);
+  // One plan for the whole turn sits in the head, where a single pick's does.
+  // Two plans can't, so they drop below it and each names its own round.
+  const inHead = plans.length === 1 ? plans[0] : null;
+
+  return '<div class="brk">'+
+    '<div class="brk-head">'+
+      '<div class="picknum'+(turn.length > 1 ? " multi" : "")+'">'+
+        turn.map(p => p.pick_no).join(" · ")+'</div>'+
+      '<div class="brk-meta">'+
+        '<div class="brk-round">'+esc(roundLabel(turn.map(p => p.round)))+
+          ' · '+esc(turn.map(slotLabel).join(" · "))+'</div>'+
+        (inHead && inHead.plan ? '<div class="brk-plan">'+esc(inHead.plan)+'</div>' : '')+
+      '</div>'+
+    '</div>'+
+    (inHead
+      ? (inHead.note ? '<p class="brk-note">'+esc(inHead.note)+'</p>' : '')
+      : plans.map(entry =>
+          '<div class="brk-split">'+
+            '<div class="brk-when">'+esc(roundLabel(entry.rounds))+'</div>'+
+            (entry.plan ? '<div class="brk-plan">'+esc(entry.plan)+'</div>' : '')+
+            (entry.note ? '<p class="brk-note">'+esc(entry.note)+'</p>' : '')+
+          '</div>').join(""))+
+    '<div class="brk-rule"></div>'+
+  '</div>';
 }
 
 function buildBoard(){
   const board = document.getElementById("board");
-  board.innerHTML = "";
 
-  if(!TURNS.length){
+  if(!PLAYERS.length){
     board.innerHTML =
-      '<p class="status"><b>No board for '+esc(LEAGUE.name)+' yet.</b><br>'+
-      'Add its turns to <code>board.json</code> under this league\'s id '+
-      '(<code>'+esc(LEAGUE.league_id)+'</code>) and run '+
-      '<code>python3 -m scripts.load_board</code>.</p>';
+      '<p class="status"><b>No ADP for '+esc(LEAGUE.name)+' yet.</b><br>'+
+      'The list is every player Sleeper publishes an average draft position for, '+
+      'in <code>'+esc(adpColumn(LEAGUE.scoring_type))+'</code>. Load them with '+
+      '<code>python3 -m scripts.load_projections</code>.</p>';
     return;
   }
 
-  TURNS.forEach(turn=>{
-    const sec = document.createElement("section");
-    sec.className = "turn";
-    const head = document.createElement("div");
-    head.className = "turn-head";
-    head.innerHTML =
-      '<div class="picknum">'+esc(turn.picks)+'</div>'+
-      '<div class="turn-meta"><div class="turn-round">'+esc(turn.round)+'</div>'+
-      '<div class="turn-plan">'+esc(turn.plan)+'</div></div>';
-    sec.appendChild(head);
-
-    const note = document.createElement("p");
-    note.className = "turn-note";
-    note.textContent = turn.note;
-    sec.appendChild(note);
-
-    const favs = turn.players.filter(p=>p.kind==="favorite");
-    const rest = turn.players.filter(p=>p.kind!=="favorite");
-
-    if(favs.length){
-      const n = favs.length;
-      sec.appendChild(makeRule("take", n===1 ? "Take this" : "Take these — "+n));
-      const g = document.createElement("div");
-      g.className = "cards picks";
-      favs.forEach(pl=>g.appendChild(makeCard(pl)));
-      sec.appendChild(g);
+  // One pass down the list, dropping a break in front of the first player who
+  // is already going later than a turn of ours. ADP is measured in pick
+  // numbers, so the two compare directly — no index arithmetic that would
+  // drift as the board is struck through. A turn is anchored on its first
+  // pick, since that's the one we're on the clock for.
+  const html = [];
+  let next = 0;
+  PLAYERS.forEach(pl => {
+    while(next < TURNS.length && TURNS[next][0].pick_no <= pl.adp){
+      html.push(breakHtml(TURNS[next]));
+      next++;
     }
-
-    if(rest.length){
-      const block = document.createElement("div");
-      block.className = "rest-block";
-      block.appendChild(makeRule("rest","If they're gone — everyone else in range"));
-      const g = document.createElement("div");
-      g.className = "cards";
-      rest.forEach(pl=>g.appendChild(makeCard(pl)));
-      block.appendChild(g);
-      sec.appendChild(block);
-    }
-
-    board.appendChild(sec);
+    html.push(rowHtml(pl));
   });
-}
+  // Turns that fall past the deepest ADP we have still belong on the board.
+  while(next < TURNS.length){ html.push(breakHtml(TURNS[next])); next++; }
 
-function toggleGone(k){
-  if(state.gone.has(k)){
-    state.gone.delete(k);
-    state.mine = state.mine.filter(m=>m.k!==k);
-  } else {
-    state.gone.add(k);
-  }
-  render();
-}
-
-function claimPlayer(pl){
-  const k = pl.player_id;
-  const already = state.mine.find(m=>m.k===k);
-  if(already){
-    state.mine = state.mine.filter(m=>m.k!==k);
-    state.gone.delete(k);
-  } else {
-    state.gone.add(k);
-    state.mine.push({k:k,n:pl.full_name,p:pl.position});
-  }
-  render();
-}
-
-function resetToDraft(){
-  state.gone = new Set(state.base.gone);
-  state.mine = state.base.mine.map(m=>({...m}));
+  board.innerHTML = '<div class="list">' + html.join("") + '</div>';
 }
 
 function assignSlots(){
   const filled = SLOTS.map(s=>({label:s,player:null}));
-  const pool = state.mine.slice();
+  const pool = MINE.slice();
   // exact position first
   pool.forEach(m=>{
     const s = filled.find(f=>f.label===m.p && !f.player);
@@ -693,18 +717,9 @@ function assignSlots(){
   return filled;
 }
 
-function render(){
-  document.querySelectorAll(".card").forEach(c=>{
-    const k = c.dataset.key;
-    const isGone = state.gone.has(k);
-    const isMine = state.mine.some(m=>m.k===k);
-    c.classList.toggle("gone",isGone && !isMine);
-    c.classList.toggle("mine",isMine);
-    const tap = c.querySelector(".tap");
-    tap.setAttribute("aria-pressed",String(isGone));
-    c.querySelector(".claim").textContent = isMine ? "Mine" : "Draft";
-  });
-
+// Only the roster strip is drawn separately — the rows already came out of
+// buildBoard in their final state, since nothing on the page can change it.
+function renderRoster(){
   const wrap = document.getElementById("slots");
   wrap.innerHTML = "";
   assignSlots().forEach(f=>{
@@ -715,26 +730,12 @@ function render(){
   });
 }
 
-// Which slot this board is written from — pick 1 of 12 is the 1.01. It comes
-// out of the first turn rather than being asserted, so a board written from
-// another slot says so, and a league with no board doesn't claim one at all.
-function slotLabel(){
-  if(!TURNS.length || !DRAFT || !DRAFT.teams) return null;
-  const first = String(TURNS[0].picks).match(/\d+/);
-  if(!first) return null;
-  const pick = parseInt(first[0],10);
-  const teams = DRAFT.teams;
-  const round = Math.ceil(pick / teams);
-  const place = pick - (round - 1) * teams;
-  // A snake's even rounds run backwards, so the same slot lands at the far end.
-  const slot = round % 2 === 0 ? teams - place + 1 : place;
-  return round + "." + String(slot).padStart(2,"0");
-}
-
 function renderMeta(){
-  const slot = slotLabel();
-  document.getElementById("headline").innerHTML = slot
-    ? 'Board from the <em>'+slot+'</em>'
+  // Which seat we're drafting from, straight off our first pick — a league
+  // whose draft order isn't set yet doesn't claim one at all.
+  const first = TURNS.length ? slotLabel(TURNS[0][0]) : null;
+  document.getElementById("headline").innerHTML = first
+    ? 'Board from the <em>'+first+'</em>'
     : 'Draft <em>board</em>';
 
   const parts = [
@@ -746,6 +747,12 @@ function renderMeta(){
   document.getElementById("eyebrow").textContent = parts.join(" · ");
   document.title = "Draft Board — "+LEAGUE.name;
 
+  const format = SCORING[LEAGUE.scoring_type] || LEAGUE.scoring_type;
+  document.getElementById("adp-legend").textContent =
+    "ADP = " + [LEAGUE.total_rosters ? LEAGUE.total_rosters+"-team" : null, format,
+                "average draft position"].filter(Boolean).join(" ") +
+    " · " + PLAYERS.length + " players";
+
   const tagged = rows("SELECT max(tagged_at) AS at FROM player_tags WHERE league_id = ?",
                       [LEAGUE.league_id])[0];
   document.getElementById("source").textContent =
@@ -754,25 +761,30 @@ function renderMeta(){
 
 /* ---------- selection ---------- */
 
+// The breaks belong to the draft, not the league, so switching drafts rebuilds
+// the list rather than just restyling it.
 function showDraft(draftId,drafts){
   DRAFT = drafts.find(d => d.draft_id === draftId) || drafts[0] || null;
-  state.base = DRAFT ? loadPicks(DRAFT.draft_id) : { gone:[], mine:[] };
-  resetToDraft();
+  TURNS = asTurns(myPicks());
+  const picks = DRAFT ? loadPicks(DRAFT.draft_id) : { gone:[], mine:[] };
+  DRAFTED = new Set(picks.gone);
+  MINE = picks.mine;
+  buildBoard();
   renderMeta();
-  render();
+  renderRoster();
   syncUrl();
 }
 
 function showLeague(leagueId,leagues,wantedDraft){
   LEAGUE = leagues.find(l => l.league_id === leagueId) || leagues[0];
-  TURNS = loadTurns(LEAGUE.league_id);
+  PLAYERS = loadPlayers(LEAGUE);
+  STRATEGY = loadStrategies(LEAGUE.league_id);
   SLOTS = JSON.parse(LEAGUE.roster_positions || "[]");
 
   const drafts = loadDrafts(LEAGUE.league_id);
   DRAFT = drafts.find(d => d.draft_id === wantedDraft) || drafts[0] || null;
   fillDraftPicker(drafts);
 
-  buildBoard();
   showDraft(DRAFT ? DRAFT.draft_id : "", drafts);
 
   document.getElementById("draft-pick").onchange = e => showDraft(e.target.value, drafts);
@@ -803,8 +815,6 @@ async function main(){
   const leaguePick = document.getElementById("league-pick");
   fillSelect(leaguePick, leagues.map(l => ({ value:l.league_id, label:leagueLabel(l) })),
              wantedLeague || leagues[0].league_id);
-  // A league with two boards is still worth showing the picker for; a cache with
-  // one league and one draft has nothing to pick, so both selects go flat.
   document.getElementById("picker").hidden = false;
   leaguePick.onchange = e => showLeague(e.target.value, leagues, null);
 

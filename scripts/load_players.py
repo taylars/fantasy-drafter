@@ -1,6 +1,6 @@
 """Load the NFL player file into the cache.
 
-    python3 -m scripts.load_players            # draftable players only
+    python3 -m scripts.load_players            # the fantasy positions only
     python3 -m scripts.load_players --all      # every player Sleeper knows
 
 The API response is ~16 MB, so the client caches it on disk for 24h and this
@@ -34,7 +34,7 @@ def as_int(value) -> int | None:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--all", action="store_true", help="keep free agents and non-fantasy positions")
+    parser.add_argument("--all", action="store_true", help="keep non-fantasy positions too (OL, DL, ...)")
     parser.add_argument("--refresh", action="store_true", help="ignore the 24h disk cache")
     args = parser.parse_args()
 
@@ -74,7 +74,7 @@ def main() -> None:
         )
 
     conn.commit()
-    kept = "all" if args.all else "draftable"
+    kept = "all" if args.all else "fantasy-position"
     print(f"  {len(players)} {kept} player(s) stored (of {total} from Sleeper)")
     conn.close()
 

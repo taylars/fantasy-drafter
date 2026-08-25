@@ -247,16 +247,19 @@ class SleeperClient:
 
 
 def fantasy_relevant(players: dict, positions: tuple[str, ...] = ("QB", "RB", "WR", "TE", "K", "DEF")) -> dict:
-    """Trim the ~11k-entry player file down to draftable players.
+    """Trim the ~12k-entry player file down to the fantasy positions.
 
-    Drops free agents (no team) and anyone whose fantasy positions don't overlap
-    the ones we care about. Injured players stay — they still get drafted.
+    Position is the only filter. Being off a roster is deliberately not one:
+    the projections endpoint publishes ADP for players Sleeper currently lists
+    as free agents, and `player_projections` keys off this table — so dropping
+    them here would silently drop their ADP too. Injured players stay for the
+    same reason; they still get drafted.
     """
     wanted = set(positions)
     return {
         player_id: player
         for player_id, player in players.items()
-        if player.get("team") and wanted & set(player.get("fantasy_positions") or [])
+        if wanted & set(player.get("fantasy_positions") or [])
     }
 
 

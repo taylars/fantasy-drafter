@@ -83,8 +83,8 @@ def main() -> None:
         stats = record.get("stats")
         if not player_id or not isinstance(stats, dict):
             continue
-        # A projection for someone outside the draftable set has nowhere to
-        # hang: the table keys off players, which load_players trims.
+        # A projection for a position we don't track has nowhere to hang:
+        # the table keys off players, which load_players trims by position.
         if player_id not in known:
             skipped += 1
             continue
@@ -111,7 +111,7 @@ def main() -> None:
 
     conn.commit()
     print(f"  {stored} projection row(s) for {season}, {projected} with a stat line "
-          f"({skipped} skipped as undraftable)")
+          f"({skipped} skipped, no player row)")
     conn.close()
 
 
