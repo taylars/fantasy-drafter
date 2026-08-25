@@ -128,11 +128,39 @@
     margin:0 -16px 26px;
     padding:10px 16px 12px;
   }
-  .roster-head{margin-bottom:8px;}
+  .roster-head{
+    display:flex;align-items:center;flex-wrap:wrap;
+    gap:6px 12px;margin-bottom:8px;
+  }
   .roster-title{
     font-family:var(--mono);font-size:11px;letter-spacing:.16em;
     text-transform:uppercase;color:var(--ink-soft);
   }
+  /* What we hold, counted by position — the shape of the roster, where the
+     slots below say who is in it. A position the league starts is listed even
+     at zero, since an empty one is the thing you need to know about. */
+  .pos-counts{display:flex;flex-wrap:wrap;gap:5px;}
+  .pos-count{
+    display:inline-flex;align-items:stretch;line-height:1;
+    border:1.5px solid var(--ink);border-radius:2px;overflow:hidden;
+  }
+  .pos-count .pc-pos{
+    font-family:var(--display);font-weight:700;font-size:11px;
+    letter-spacing:.06em;color:#fff;padding:4px 5px 3px;
+  }
+  .pos-count .pc-n{
+    font-family:var(--mono);font-size:10.5px;font-weight:600;
+    background:var(--sticker);padding:4px 6px 3px;
+  }
+  .pos-count.QB .pc-pos{background:var(--qb);}
+  .pos-count.RB .pc-pos{background:var(--rb);}
+  .pos-count.WR .pc-pos{background:var(--wr);}
+  .pos-count.TE .pc-pos{background:var(--te);}
+  .pos-count.K  .pc-pos{background:var(--k);}
+  .pos-count.DEF .pc-pos{background:var(--def);}
+  .pos-count.none{border-color:var(--board-dark);}
+  .pos-count.none .pc-pos{background:var(--board-dark);color:var(--ink-soft);}
+  .pos-count.none .pc-n{background:transparent;color:var(--ink-soft);}
   .slots{display:flex;flex-wrap:wrap;gap:5px;}
   .slot{
     font-family:var(--mono);font-size:10.5px;font-weight:500;
@@ -148,16 +176,31 @@
 
   /* ---------- the break at one of our picks ---------- */
   .brk{margin:30px 0 14px;}
-  .brk:first-child{margin-top:0;}
+  .sect:first-child .brk{margin-top:0;}
   .brk-head{display:flex;align-items:flex-start;gap:12px;}
+  /* The pick number is the handle for its round: pressing it folds away every
+     player between this turn and the next one, and the fold is remembered. */
   .picknum{
-    font-family:var(--display);font-weight:700;
+    font-family:var(--display);font-weight:700;color:var(--ink);
     font-size:clamp(28px,6vw,40px);line-height:.85;
     background:var(--tape);padding:6px 9px 4px;
-    border:2px solid var(--ink);
+    border:2px solid var(--ink);border-radius:0;
     box-shadow:3px 3px 0 var(--ink);
     white-space:nowrap;flex-shrink:0;
+    -webkit-appearance:none;appearance:none;
+    cursor:pointer;text-align:center;
+    transition:box-shadow .12s ease,transform .12s ease;
   }
+  .picknum:hover{box-shadow:5px 5px 0 var(--ink);}
+  .picknum:active{box-shadow:1px 1px 0 var(--ink);transform:translate(2px,2px);}
+  .picknum:focus-visible{outline:3px solid var(--ink);outline-offset:3px;}
+  .sect.collapsed .picknum{
+    background:var(--board-dark);box-shadow:3px 3px 0 var(--ink-soft);
+  }
+  .sect.collapsed .picknum:hover{box-shadow:5px 5px 0 var(--ink-soft);}
+  /* A shut turn has nothing under its rule, so it doesn't need the room. */
+  .sect.collapsed .brk{margin-bottom:0;}
+  .sect.collapsed .brk-rule{margin:10px 0 0;}
   .brk-meta{padding-top:3px;min-width:0;}
   .brk-round{
     font-family:var(--mono);font-size:11px;letter-spacing:.14em;
@@ -184,6 +227,15 @@
     height:0;border-top:2px solid var(--ink);
     margin:12px 0 10px;
   }
+  /* How many players the fold is hiding — only worth saying while it's shut. */
+  .brk-count{
+    font-family:var(--mono);font-size:10.5px;font-weight:600;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+  }
+  .sect:not(.collapsed) .brk-count{display:none;}
+  .sect{display:flex;flex-direction:column;gap:4px;}
+  .sect-rows{display:flex;flex-direction:column;gap:4px;}
+  .sect.collapsed .sect-rows{display:none;}
 
   /* ---------- the list ---------- */
   .list{display:flex;flex-direction:column;gap:4px;}
@@ -434,6 +486,7 @@
   <div class="roster">
     <div class="roster-head">
       <span class="roster-title">My roster</span>
+      <div class="pos-counts" id="pos-counts"></div>
     </div>
     <div class="slots" id="slots"></div>
   </div>
@@ -445,6 +498,7 @@
   <div class="legend">
     <span id="adp-legend"></span>
     <span>Break = one of your picks</span>
+    <span>Tap a pick number to fold that stretch away</span>
     <span>Yellow = on your watchlist</span>
     <span>★ = favorite</span>
     <span>Hold a row to watch / clear · W and F do the same from the keyboard</span>
@@ -492,6 +546,8 @@ const HOLD_MS = 500;
 const HOLD_SLOP = 10;
 
 const FLEXOK = ["RB","WR","TE"];
+// The positions worth counting on the roster strip, in the order they're said.
+const POS_ORDER = ["QB","RB","WR","TE","K","DEF"];
 const SCORING = { half_ppr:"Half PPR", ppr:"PPR", std:"Standard", "2qb":"2QB" };
 
 let DB = null;           // the open sql.js database
@@ -502,6 +558,7 @@ let PLAYERS = [];        // every player with an ADP, best first
 let BY_ID = new Map();   // player_id -> the row above, for tagging one in place
 let STRATEGY = new Map();// round -> {plan, note}
 let TURNS = [];          // our own trips to the board, in order
+let COLLAPSED = new Set(); // turns whose stretch of the board is folded shut
 let ME = [];             // user_ids we track, for spotting our own picks
 
 // Who's off the board is the selected draft's answer, not ours — read out of
@@ -1024,11 +1081,55 @@ async function primeValues(){
   }
 }
 
+/* ---------- folding a turn's stretch of the board ---------- */
+
+// Which stretches are shut is a view preference, not draft state, so it lives
+// in the browser rather than the database — and per draft, since the pick
+// numbers a fold is named after belong to one board.
+const COLLAPSE_KEY = "draft-board:collapsed";
+
+function turnKey(turn){ return turn.map(p => p.pick_no).join("-"); }
+
+function collapseScope(){
+  return (LEAGUE ? LEAGUE.league_id : "") + ":" + (DRAFT ? DRAFT.draft_id : "");
+}
+
+function readCollapsed(){
+  try{ return JSON.parse(localStorage.getItem(COLLAPSE_KEY) || "{}") || {}; }
+  catch(e){ return {}; }
+}
+
+function loadCollapsed(){
+  const shut = readCollapsed()[collapseScope()];
+  COLLAPSED = new Set(Array.isArray(shut) ? shut : []);
+}
+
+function saveCollapsed(){
+  try{
+    const all = readCollapsed();
+    if(COLLAPSED.size) all[collapseScope()] = Array.from(COLLAPSED);
+    else delete all[collapseScope()];
+    localStorage.setItem(COLLAPSE_KEY, JSON.stringify(all));
+  }catch(e){ /* private mode, or a full store — the fold just won't outlive the tab */ }
+}
+
+// Toggled in place: rebuilding the list to hide some rows would throw away the
+// scroll position, which is the one thing you're holding on to mid-draft.
+function toggleSection(sect){
+  const key = sect.dataset.turn;
+  if(!key) return;
+  const shut = sect.classList.toggle("collapsed");
+  if(shut) COLLAPSED.add(key); else COLLAPSED.delete(key);
+  const num = sect.querySelector(".picknum");
+  if(num) num.setAttribute("aria-expanded", shut ? "false" : "true");
+  saveCollapsed();
+}
+
 function roundLabel(rounds){
   return (rounds.length > 1 ? "Rounds " : "Round ") + rounds.join(" / ");
 }
 
-function breakHtml(turn){
+function breakHtml(turn, hidden){
   const plans = turnPlans(turn);
   // One plan for the whole turn sits in the head, where a single pick's does.
   // Two plans can't, so they drop below it and each names its own round.
@@ -1036,11 +1137,14 @@ function breakHtml(turn){
 
   return '<div class="brk">'+
     '<div class="brk-head">'+
-      '<div class="picknum'+(turn.length > 1 ? " multi" : "")+'">'+
-        turn.map(p => p.pick_no).join(" · ")+'</div>'+
+      '<button type="button" class="picknum'+(turn.length > 1 ? " multi" : "")+'"'+
+        ' aria-expanded="'+(COLLAPSED.has(turnKey(turn)) ? "false" : "true")+'"'+
+        ' title="Fold away the players who go between this pick and the next">'+
+        turn.map(p => p.pick_no).join(" · ")+'</button>'+
       '<div class="brk-meta">'+
         '<div class="brk-round">'+esc(roundLabel(turn.map(p => p.round)))+
-          ' · '+esc(turn.map(slotLabel).join(" · "))+'</div>'+
+          ' · '+esc(turn.map(slotLabel).join(" · "))+
+          '<span class="brk-count"> · '+hidden+' hidden</span></div>'+
         (inHead && inHead.plan ? '<div class="brk-plan">'+esc(inHead.plan)+'</div>' : '')+
       '</div>'+
     '</div>'+
@@ -1073,19 +1177,37 @@ function buildBoard(){
   // numbers, so the two compare directly — no index arithmetic that would
   // drift as the board is struck through. A turn is anchored on its first
   // pick, since that's the one we're on the clock for.
-  const html = [];
+  //
+  // Each break owns the players that follow it, so the two go in a section
+  // together and the whole stretch can be folded behind the pick number.
+  const sections = [];
+  let cur = { turn:null, rows:[] };
   let next = 0;
   PLAYERS.forEach(pl => {
     while(next < TURNS.length && TURNS[next][0].pick_no <= pl.adp){
-      html.push(breakHtml(TURNS[next]));
+      sections.push(cur);
+      cur = { turn:TURNS[next], rows:[] };
       next++;
     }
-    html.push(rowHtml(pl));
+    cur.rows.push(rowHtml(pl));
   });
+  sections.push(cur);
   // Turns that fall past the deepest ADP we have still belong on the board.
-  while(next < TURNS.length){ html.push(breakHtml(TURNS[next])); next++; }
+  while(next < TURNS.length){ sections.push({ turn:TURNS[next], rows:[] }); next++; }
 
-  board.innerHTML = '<div class="list">' + html.join("") + '</div>';
+  board.innerHTML = '<div class="list">' + sections.map(sectionHtml).join("") + '</div>';
+}
+
+// The players ahead of our first pick have no break of their own, so they get
+// a section without a head — and stay open, since there's no number to press.
+function sectionHtml(sec){
+  const rows = '<div class="sect-rows">' + sec.rows.join("") + '</div>';
+  if(!sec.turn) return sec.rows.length ? '<section class="sect">'+rows+'</section>' : "";
+  const key = turnKey(sec.turn);
+  return '<section class="sect'+(COLLAPSED.has(key) ? " collapsed" : "")+'"'+
+           ' data-turn="'+esc(key)+'">'+
+    breakHtml(sec.turn, sec.rows.length)+rows+
+  '</section>';
 }
 
 function assignSlots(){
@@ -1117,6 +1239,33 @@ function renderRoster(){
     el.innerHTML = '<span class="lbl">'+f.label+'</span>'+(f.player ? esc(f.player.n) : "—");
     wrap.appendChild(el);
   });
+  renderPositionCounts();
+}
+
+// Every position the league starts, whether or not we hold one — a zero is the
+// count worth seeing — plus anything we've drafted that the slots don't name.
+function positionCounts(){
+  const counts = new Map();
+  MINE.forEach(m => { if(m.p) counts.set(m.p, (counts.get(m.p) || 0) + 1); });
+
+  const wanted = new Set(SLOTS.filter(sl => POS_ORDER.includes(sl)));
+  // A flex is a slot for three positions, and a league that starts one but
+  // names no TE still wants to be told it hasn't drafted a tight end.
+  if(SLOTS.includes("FLEX")) FLEXOK.forEach(pos => wanted.add(pos));
+  counts.forEach((_, pos) => wanted.add(pos));
+
+  const known = POS_ORDER.filter(pos => wanted.has(pos));
+  const rest = Array.from(wanted).filter(pos => !POS_ORDER.includes(pos)).sort();
+  return known.concat(rest).map(pos => ({ pos:pos, n:counts.get(pos) || 0 }));
+}
+
+function renderPositionCounts(){
+  const wrap = document.getElementById("pos-counts");
+  wrap.innerHTML = positionCounts().map(c =>
+    '<span class="pos-count '+esc(c.pos)+(c.n ? "" : " none")+'">'+
+      '<span class="pc-pos">'+esc(c.pos)+'</span>'+
+      '<span class="pc-n">'+c.n+'</span>'+
+    '</span>').join("");
 }
 
 function renderMeta(){
@@ -1327,6 +1476,9 @@ function onPointerMove(e){
 // The click that follows a hold would open Sleeper on top of the tag we just
 // made, so it's swallowed — once.
 function onClick(e){
+  const num = e.target.closest(".picknum");
+  if(num){ toggleSection(num.closest(".sect")); return; }
+
   const star = e.target.closest(".star");
   if(star){
     e.preventDefault();
@@ -1396,6 +1548,7 @@ function showDraft(draftId,drafts){
   showWhen();
   DRAFT = drafts.find(d => d.draft_id === draftId) || drafts[0] || null;
   TURNS = asTurns(myPicks());
+  loadCollapsed();
   const picks = DRAFT ? loadPicks(DRAFT.draft_id) : { gone:[], mine:[] };
   DRAFTED = new Set(picks.gone);
   MINE = picks.mine;
