@@ -72,6 +72,34 @@ def check_coverage(league_id: str, trials: int, seed: int) -> int:
     return failures + worse
 
 
+def check_team_offense(season: str = "2026") -> int:
+    """`offense` is a team tier, so teammates cannot disagree about it.
+
+    It grades the offense a player plays in — scoring drives, red-zone trips,
+    pace — which is a property of the team and not of the player. Graded
+    per-player it drifted badly: 23 of 32 teams once had teammates on different
+    numbers, New England carrying +2, +1 and 0 at the same time. This is
+    mechanical rather than a judgement, so it is worth asserting.
+    """
+    conn = db.connect()
+    db.init(conn, quiet=True)
+    rows = conn.execute(
+        """SELECT p.team, g.offense FROM player_grades g
+             JOIN players p ON p.player_id = g.player_id
+            WHERE g.season = ? AND p.team IS NOT NULL AND g.offense IS NOT NULL""",
+        (season,)).fetchall()
+    conn.close()
+
+    grades: dict[str, set[int]] = {}
+    for row in rows:
+        grades.setdefault(row["team"], set()).add(row["offense"])
+    split = {team: sorted(seen) for team, seen in grades.items() if len(seen) > 1}
+    for team, seen in sorted(split.items()):
+        print(f"  SPLIT {team}: teammates graded {seen}")
+    print(f"one offense grade per team: {len(grades) - len(split)}/{len(grades)} teams clean")
+    return len(split)
+
+
 def check_agreement(league_id: str, draft_id: str) -> int:
     """The board and the plan are one search, so they cannot rank differently.
 
@@ -122,6 +150,7 @@ def main() -> None:
         league_id, draft_id = league_id or found_league, draft_id or found_draft
 
     bad = check_coverage(league_id, args.trials, args.seed)
+    bad += check_team_offense()
     bad += check_agreement(league_id, draft_id)
     raise SystemExit(1 if bad else 0)
 
