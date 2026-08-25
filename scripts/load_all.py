@@ -13,7 +13,7 @@ import argparse
 import sys
 
 import db
-from scripts import init_db, load_drafts, load_leagues, load_players, load_users
+from scripts import init_db, load_board, load_drafts, load_leagues, load_players, load_users
 
 
 def main() -> None:
@@ -32,6 +32,10 @@ def main() -> None:
     ]
     if not args.skip_players:
         steps.append(("load_players", load_players.main, []))
+    # Last: it resolves the board's player names against the players table, so
+    # it needs both the leagues and the player file already loaded.
+    if load_board.BOARD_PATH.exists():
+        steps.append(("load_board", load_board.main, []))
 
     for name, run, argv in steps:
         print(f"\n== {name}")
@@ -41,7 +45,9 @@ def main() -> None:
 
     conn = db.connect()
     print("\n== summary")
-    for table in ("users", "leagues", "user_leagues", "rosters", "drafts", "draft_picks", "players"):
+    tables = ("users", "leagues", "user_leagues", "rosters", "drafts", "draft_picks",
+              "players", "board_turns", "player_tags")
+    for table in tables:
         count = conn.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
         print(f"  {table:<14} {count:>6}")
     conn.close()

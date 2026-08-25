@@ -1,8 +1,9 @@
 """SQLite cache for Sleeper data.
 
 Everything in here is a cache. The database can be deleted and rebuilt from
-scratch by re-running the loaders in scripts/ — nothing lives here that Sleeper
-can't tell us again, except the list of usernames we care about.
+scratch by re-running the loaders in scripts/ — nothing lives here that can't be
+reproduced, either from Sleeper or from the two files we keep by hand: the
+seeded usernames, and board.json.
 
 All writes go through `upsert`, keyed on Sleeper's own ids, so every loader is
 idempotent: running one twice leaves the same rows behind.
@@ -20,7 +21,7 @@ DB_PATH = pathlib.Path("data/fantasy.db")
 # Bump when the schema changes. Because this is a pure cache, `init` responds by
 # dropping everything and rebuilding — the seeded usernames are carried across,
 # since they're the one thing Sleeper can't tell us again.
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 
 SCHEMA = """
 -- The usernames we want to pull data for. Seeded by hand; everything else in
@@ -134,6 +135,46 @@ CREATE TABLE IF NOT EXISTS players (
 
 CREATE INDEX IF NOT EXISTS idx_players_pos ON players(position, search_rank);
 CREATE INDEX IF NOT EXISTS idx_players_name ON players(full_name);
+
+-- The turns of one league's draft board: the picks we own, and the plan for
+-- each. Ordering is turn_no, not pick number, so a turn can hold two picks
+-- ("24 · 25") the way a snake draft's wrap-around actually plays.
+CREATE TABLE IF NOT EXISTS board_turns (
+    league_id TEXT NOT NULL REFERENCES leagues(league_id) ON DELETE CASCADE,
+    turn_no   INTEGER NOT NULL,        -- 1-based, in board order
+    picks     TEXT,                    -- pick numbers as shown, e.g. "24 · 25"
+    round     TEXT,
+    plan      TEXT,                    -- the headline for the turn
+    note      TEXT,                    -- the reasoning behind it
+    PRIMARY KEY (league_id, turn_no)
+);
+
+-- Players we're tracking, per league. `favorite` is one we want to take at a
+-- given turn; `watch` is everyone else worth knowing about in that range.
+-- A player holds at most one tag per league, so favoriting a watched player
+-- promotes the existing row rather than adding a second one.
+--
+-- Unlike the rest of this database these rows are ours, not Sleeper's, but
+-- they're still a cache: scripts/load_board.py rebuilds them from board.json.
+CREATE TABLE IF NOT EXISTS player_tags (
+    league_id  TEXT NOT NULL REFERENCES leagues(league_id) ON DELETE CASCADE,
+    player_id  TEXT NOT NULL REFERENCES players(player_id) ON DELETE CASCADE,
+    kind       TEXT NOT NULL CHECK (kind IN ('favorite', 'watch')),
+    turn_no    INTEGER,                -- the turn to consider him at
+    sort_order INTEGER,                -- position within that turn
+    -- The board's own ADP snapshot. Sleeper publishes no ADP, so it comes in
+    -- with the board rather than from the players table.
+    adp        REAL,
+    note       TEXT,                   -- why he's tagged; favorites carry one
+    tie        TEXT,                   -- "take whichever is there" and friends
+    flag       TEXT,                   -- short warning: "adp rising", "your pick"
+    tagged_at  TEXT,
+    PRIMARY KEY (league_id, player_id),
+    FOREIGN KEY (league_id, turn_no) REFERENCES board_turns(league_id, turn_no) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_tags_turn ON player_tags(league_id, turn_no, sort_order);
+CREATE INDEX IF NOT EXISTS idx_tags_kind ON player_tags(league_id, kind);
 """
 
 
