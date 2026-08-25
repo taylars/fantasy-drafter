@@ -64,10 +64,12 @@ DEPTH = {"RB": 3, "WR": 3, "QB": 1, "TE": 1, "K": 1, "DEF": 1}
 # `position_security` replaced a `support` grade that asked two questions at
 # once — how good the situation is, and how secure the role is — and so
 # double-counted the first against `offense`. It now asks only the second. The
-# weight is carried over unchanged rather than re-derived, which makes it the
-# most obviously tunable number here.
-OFFENSE_WEIGHT = 0.05
-SECURITY_WEIGHT = 0.04
+# A maximum +2/+2 context stack moves the provider projection by 9%. Larger
+# weights let contextual judgment overwhelm meaningful projection gaps — for
+# example, they once lifted Jadarian Price above Bucky Irving and David
+# Montgomery despite Price's substantially lower provider projection.
+OFFENSE_WEIGHT = 0.025
+SECURITY_WEIGHT = 0.02
 
 # How much of a player's season an ungraded starter is assumed to be available
 # for. Only used as a fallback — a graded player uses his own exp_games, which
@@ -93,10 +95,10 @@ CURRENT_INJURY_STATUSES = frozenset({"Questionable", "Doubtful", "Out", "IR",
 #
 # So it is flat. It used to scale with the round, on the theory that a late
 # pick is a lottery ticket and only the tail is worth buying; but a projection
-# that is 7% light is 7% light in the first round as well. The weight is the
-# old full-round value, which leaves late picks priced as they were and is
-# what changes early ones.
-UPSIDE_WEIGHT = 0.035
+# that is 3.5% light is 3.5% light in the first round as well. Together with
+# offense and security, the most favorable +2/+2/+2 grade can correct a
+# projection upward by 12.5%, enough to matter without replacing it.
+UPSIDE_WEIGHT = 0.0175
 
 # A bench player has option value even when the mean projection does not crack
 # today's best lineup.  Upside is the reason to spend a late pick on that

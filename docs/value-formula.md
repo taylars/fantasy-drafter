@@ -250,9 +250,11 @@ building it and running drafts through it.
   collecting a bonus for a breakout he'd never get to have — that is how a
   simulated draft took five of them. Folding it into `p̂` gets the same guard
   for free, and better: `lineup` never plays him, so his corrected points add
-  nothing. The weight is the old full-round value, so late picks are priced as
-  they were and it is early ones that change. Nothing moved in the top ten;
-  the biggest movers are `+2`s rising 13–28 places.
+  nothing. The three context weights are deliberately bounded: even the most
+  favorable `+2/+2/+2` stack corrects the provider projection by 12.5%.
+  Earlier weights allowed a 25% correction and could reverse substantial raw
+  projection gaps, making contextual judgment replace the projection rather
+  than refine it.
 
 - **There is no risk term.** The doc above proposed one; it would double-count.
   Downside is already priced through `exp_games`, which hands a fragile
