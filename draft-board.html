@@ -265,7 +265,15 @@
   .adp{
     font-family:var(--mono);font-size:12px;font-weight:600;
     color:var(--ink-soft);padding-right:8px;align-self:center;flex-shrink:0;
+    text-align:right;
   }
+  /* Projected points sit under ADP: the same column, quieter, so the eye still
+     reads down the ADP line first. */
+  .adp .pts{
+    display:block;font-size:9.5px;font-weight:500;opacity:.65;
+    letter-spacing:.02em;margin-top:1px;
+  }
+  .adp .pts::after{content:" pt";opacity:.7;}
   .card.rec .adp{align-self:flex-start;padding-top:2px;}
   .flag{
     font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;
@@ -424,16 +432,52 @@ function loadDrafts(leagueId){
     " ORDER BY d.is_mock, d.start_time, d.draft_id", [leagueId, leagueId]);
 }
 
+// Sleeper publishes ADP once per scoring format; a league reads its own.
+// Mirrors db.ADP_COLUMNS.
+const ADP_COLUMNS = {std:"adp_std", half_ppr:"adp_half_ppr", ppr:"adp_ppr", "2qb":"adp_2qb"};
+
+function adpColumn(scoringType){
+  return ADP_COLUMNS[scoringType] || "adp_half_ppr";
+}
+
+// Price a projected stat line under this league's scoring. Mirrors
+// db.score_stats — the stored pts_* are generic and misrank anyone whose
+// league scores a stat differently, so they aren't used here.
+function scoreStats(stats, scoring){
+  let total = 0;
+  for(const key in stats){
+    const mult = scoring[key];
+    if(typeof mult === "number" && typeof stats[key] === "number") total += stats[key]*mult;
+  }
+  return Math.round(total*10)/10;
+}
+
 function loadTurns(leagueId){
   const turns = rows(
     "SELECT turn_no, picks, round, plan, note FROM board_turns"+
     " WHERE league_id = ? ORDER BY turn_no", [leagueId]);
 
+  const league = rows(
+    "SELECT season, scoring_type, scoring_settings FROM leagues WHERE league_id = ?",
+    [leagueId])[0] || {};
+  const scoring = league.scoring_settings ? JSON.parse(league.scoring_settings) : {};
+
+  // The ADP column is chosen, not parameterized — sqlite won't bind an
+  // identifier — so it comes from the fixed map above rather than user input.
   const tags = rows(
-    "SELECT g.turn_no, g.kind, g.adp, g.note, g.tie, g.flag,"+
-    "       p.player_id, p.full_name, p.position, p.team"+
+    "SELECT g.turn_no, g.kind, g.note, g.tie, g.flag,"+
+    "       p.player_id, p.full_name, p.position, p.team,"+
+    "       pr."+adpColumn(league.scoring_type)+" AS adp, pr.stats AS proj"+
     "  FROM player_tags g JOIN players p ON p.player_id = g.player_id"+
-    " WHERE g.league_id = ? ORDER BY g.turn_no, g.sort_order", [leagueId]);
+    "  LEFT JOIN player_projections pr"+
+    "    ON pr.player_id = g.player_id AND pr.season = ?"+
+    " WHERE g.league_id = ? ORDER BY g.turn_no, g.sort_order",
+    [league.season, leagueId]);
+
+  tags.forEach(tag => {
+    tag.points = tag.proj ? scoreStats(JSON.parse(tag.proj), scoring) : null;
+    delete tag.proj;
+  });
 
   const byTurn = new Map(turns.map(t => [t.turn_no, []]));
   tags.forEach(tag => { const bucket = byTurn.get(tag.turn_no); if(bucket) bucket.push(tag); });
@@ -525,7 +569,8 @@ function makeCard(pl){
     (pl.note?'<span class="why">'+esc(pl.note)+'</span>':'')+
     (pl.tie?'<span class="tie">'+esc(pl.tie)+'</span>':'')+
     '</span>'+
-    '<span class="adp">'+(pl.adp == null ? "—" : pl.adp.toFixed(1))+'</span>';
+    '<span class="adp">'+(pl.adp == null ? "—" : pl.adp.toFixed(1))+
+      (pl.points == null ? "" : '<span class="pts">'+pl.points.toFixed(0)+'</span>')+'</span>';
   tap.addEventListener("click",()=>toggleGone(pl.player_id));
 
   const claim = document.createElement("button");

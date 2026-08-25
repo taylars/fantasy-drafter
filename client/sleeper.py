@@ -14,8 +14,10 @@ Gotchas worth knowing before you build on this:
   - A commissioner can undo a pick, so diff on the set of `pick_no` values
     rather than on len(picks) if you want to survive that.
   - Keeper leagues show picks with `is_keeper: true` before the draft starts.
-  - Sleeper exposes no projections or ADP. `search_rank` on the player object
-    is a crude relevance proxy; real rankings have to come from your own file.
+  - Projections and ADP live on api.sleeper.app/projections/..., which is NOT
+    in the public docs and can change without notice. get_projections wraps it.
+    `search_rank` on the player object is only a relevance proxy — prefer the
+    real ADP from that endpoint.
 """
 
 from __future__ import annotations
@@ -169,6 +171,55 @@ class SleeperClient:
         cache_path.parent.mkdir(parents=True, exist_ok=True)
         cache_path.write_text(json.dumps(players))
         return players
+
+    def get_projections(
+        self,
+        season: str | int,
+        week: int | None = None,
+        sport: str = "nfl",
+        season_type: str = "regular",
+        positions: tuple[str, ...] = ("QB", "RB", "WR", "TE", "K", "DEF"),
+        order_by: str = "adp_half_ppr",
+    ) -> list:
+        """Season or weekly projections, including the ADP set.
+
+        Undocumented: this hangs off api.sleeper.app/projections rather than the
+        /v1 base every other method here uses, and Sleeper makes no promises
+        about it. Treat a shape change as expected rather than exceptional — the
+        loader reads keys defensively for that reason.
+
+        Omit `week` for season totals. Each record carries a `stats` dict holding
+        both the projected line (pass_yd, rec, rush_td...) and every adp_* format;
+        keys match those in a league's scoring_settings, so db.score_stats can
+        price the line directly. Not every record has projections — deep bench
+        players come back with ADP alone.
+        """
+        path = f"/projections/{sport}/{season}"
+        if week is not None:
+            path = f"{path}/{week}"
+
+        # Positions repeat as position[]=QB&position[]=RB; requests renders a
+        # list under that key exactly that way.
+        params = {"season_type": season_type, "position[]": list(positions), "order_by": order_by}
+
+        url = f"https://api.sleeper.app{path}"
+        last_error: Exception | None = None
+        for attempt in range(self.retries):
+            if attempt:
+                time.sleep(2**attempt)
+            try:
+                response = self.session.get(url, params=params, timeout=self.timeout)
+                if response.status_code == 404:
+                    return []
+                if response.status_code in RETRY_STATUSES:
+                    last_error = requests.HTTPError(f"HTTP {response.status_code}")
+                    continue
+                response.raise_for_status()
+                return response.json() or []
+            except (requests.RequestException, json.JSONDecodeError) as exc:
+                last_error = exc
+
+        raise SleeperError(f"GET {url} failed: {last_error}") from last_error
 
     def get_trending_players(
         self,

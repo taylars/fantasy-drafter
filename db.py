@@ -7,6 +7,10 @@ seeded usernames, and board.json.
 
 All writes go through `upsert`, keyed on Sleeper's own ids, so every loader is
 idempotent: running one twice leaves the same rows behind.
+
+Schema changes go in migrations/NNN_name.sql and are applied in order by
+`init`. The database is still a cache, but it no longer has to be thrown away
+to change shape.
 """
 
 from __future__ import annotations
@@ -18,164 +22,7 @@ import sqlite3
 
 DB_PATH = pathlib.Path("data/fantasy.db")
 
-# Bump when the schema changes. Because this is a pure cache, `init` responds by
-# dropping everything and rebuilding — the seeded usernames are carried across,
-# since they're the one thing Sleeper can't tell us again.
-SCHEMA_VERSION = 4
-
-SCHEMA = """
--- The usernames we want to pull data for. Seeded by hand; everything else in
--- the database hangs off this table.
-CREATE TABLE IF NOT EXISTS users (
-    username     TEXT PRIMARY KEY,
-    user_id      TEXT UNIQUE,          -- null until load_users resolves it
-    display_name TEXT,
-    avatar       TEXT,
-    fetched_at   TEXT
-);
-
-CREATE TABLE IF NOT EXISTS leagues (
-    league_id        TEXT PRIMARY KEY,
-    name             TEXT,
-    season           TEXT,
-    sport            TEXT,
-    status           TEXT,
-    total_rosters    INTEGER,
-    scoring_type     TEXT,             -- ppr / half_ppr / std
-    draft_id         TEXT,
-    previous_league_id TEXT,
-    roster_positions TEXT,             -- json array
-    scoring_settings TEXT,             -- json object
-    settings         TEXT,             -- json object
-    fetched_at       TEXT
-);
-
--- Which of our users is in which league. A league can outlive a user's
--- interest in it, so this is a link table rather than a column on leagues.
-CREATE TABLE IF NOT EXISTS user_leagues (
-    username  TEXT NOT NULL REFERENCES users(username) ON DELETE CASCADE,
-    league_id TEXT NOT NULL REFERENCES leagues(league_id) ON DELETE CASCADE,
-    PRIMARY KEY (username, league_id)
-);
-
-CREATE TABLE IF NOT EXISTS rosters (
-    league_id  TEXT NOT NULL REFERENCES leagues(league_id) ON DELETE CASCADE,
-    roster_id  INTEGER NOT NULL,
-    owner_id   TEXT,
-    players    TEXT,                   -- json array of player_id
-    starters   TEXT,                   -- json array of player_id
-    settings   TEXT,                   -- json object (wins, losses, fpts...)
-    fetched_at TEXT,
-    PRIMARY KEY (league_id, roster_id)
-);
-
-CREATE TABLE IF NOT EXISTS drafts (
-    draft_id          TEXT PRIMARY KEY,
-    -- Null for mock drafts. Deliberately not a foreign key: a draft can
-    -- reference a league we don't track.
-    league_id         TEXT,
-    is_mock           INTEGER,
-    -- A "league_mock" is seeded from a real league's settings and records it
-    -- under metadata.league_id, even though league_id above is null and the
-    -- league's own /drafts endpoint won't return it.
-    mock_type         TEXT,
-    source_league_id  TEXT,
-    creators          TEXT,             -- json array of user_id
-    season            TEXT,
-    sport             TEXT,
-    type              TEXT,            -- snake / linear / auction
-    status            TEXT,            -- pre_draft / drafting / paused / complete
-    start_time        INTEGER,         -- epoch ms
-    last_picked       INTEGER,         -- epoch ms
-    teams             INTEGER,
-    rounds            INTEGER,
-    pick_timer        INTEGER,
-    reversal_round    INTEGER,
-    scoring_type      TEXT,
-    draft_order       TEXT,            -- json {user_id: slot}, null pre-order
-    slot_to_roster_id TEXT,            -- json {slot: roster_id}, null pre-order
-    settings          TEXT,            -- json object
-    fetched_at        TEXT
-);
-
-CREATE TABLE IF NOT EXISTS draft_picks (
-    draft_id    TEXT NOT NULL REFERENCES drafts(draft_id) ON DELETE CASCADE,
-    pick_no     INTEGER NOT NULL,
-    round       INTEGER,
-    draft_slot  INTEGER,
-    roster_id   INTEGER,
-    player_id   TEXT,
-    picked_by   TEXT,                  -- "" on autopicks; fall back to roster_id
-    is_keeper   INTEGER,
-    metadata    TEXT,                  -- json: name, position, team, amount...
-    fetched_at  TEXT,
-    PRIMARY KEY (draft_id, pick_no)
-);
-
-CREATE INDEX IF NOT EXISTS idx_picks_player ON draft_picks(draft_id, player_id);
-CREATE INDEX IF NOT EXISTS idx_drafts_league ON drafts(league_id);
-
-CREATE TABLE IF NOT EXISTS players (
-    player_id         TEXT PRIMARY KEY,
-    full_name         TEXT,
-    first_name        TEXT,
-    last_name         TEXT,
-    position          TEXT,
-    fantasy_positions TEXT,            -- json array; a player can be RB/WR
-    team              TEXT,
-    status            TEXT,
-    injury_status     TEXT,
-    age               INTEGER,
-    years_exp         INTEGER,
-    number            INTEGER,
-    search_rank       INTEGER,         -- crude ADP proxy, low = more relevant
-    depth_chart_order INTEGER,
-    fetched_at        TEXT
-);
-
-CREATE INDEX IF NOT EXISTS idx_players_pos ON players(position, search_rank);
-CREATE INDEX IF NOT EXISTS idx_players_name ON players(full_name);
-
--- The turns of one league's draft board: the picks we own, and the plan for
--- each. Ordering is turn_no, not pick number, so a turn can hold two picks
--- ("24 · 25") the way a snake draft's wrap-around actually plays.
-CREATE TABLE IF NOT EXISTS board_turns (
-    league_id TEXT NOT NULL REFERENCES leagues(league_id) ON DELETE CASCADE,
-    turn_no   INTEGER NOT NULL,        -- 1-based, in board order
-    picks     TEXT,                    -- pick numbers as shown, e.g. "24 · 25"
-    round     TEXT,
-    plan      TEXT,                    -- the headline for the turn
-    note      TEXT,                    -- the reasoning behind it
-    PRIMARY KEY (league_id, turn_no)
-);
-
--- Players we're tracking, per league. `favorite` is one we want to take at a
--- given turn; `watch` is everyone else worth knowing about in that range.
--- A player holds at most one tag per league, so favoriting a watched player
--- promotes the existing row rather than adding a second one.
---
--- Unlike the rest of this database these rows are ours, not Sleeper's, but
--- they're still a cache: scripts/load_board.py rebuilds them from board.json.
-CREATE TABLE IF NOT EXISTS player_tags (
-    league_id  TEXT NOT NULL REFERENCES leagues(league_id) ON DELETE CASCADE,
-    player_id  TEXT NOT NULL REFERENCES players(player_id) ON DELETE CASCADE,
-    kind       TEXT NOT NULL CHECK (kind IN ('favorite', 'watch')),
-    turn_no    INTEGER,                -- the turn to consider him at
-    sort_order INTEGER,                -- position within that turn
-    -- The board's own ADP snapshot. Sleeper publishes no ADP, so it comes in
-    -- with the board rather than from the players table.
-    adp        REAL,
-    note       TEXT,                   -- why he's tagged; favorites carry one
-    tie        TEXT,                   -- "take whichever is there" and friends
-    flag       TEXT,                   -- short warning: "adp rising", "your pick"
-    tagged_at  TEXT,
-    PRIMARY KEY (league_id, player_id),
-    FOREIGN KEY (league_id, turn_no) REFERENCES board_turns(league_id, turn_no) ON DELETE CASCADE
-);
-
-CREATE INDEX IF NOT EXISTS idx_tags_turn ON player_tags(league_id, turn_no, sort_order);
-CREATE INDEX IF NOT EXISTS idx_tags_kind ON player_tags(league_id, kind);
-"""
+MIGRATIONS_DIR = pathlib.Path(__file__).parent / "migrations"
 
 
 def connect(path: pathlib.Path = DB_PATH) -> sqlite3.Connection:
@@ -187,34 +34,50 @@ def connect(path: pathlib.Path = DB_PATH) -> sqlite3.Connection:
     return conn
 
 
-def init(conn: sqlite3.Connection) -> None:
-    """Create any missing tables, rebuilding if the schema version moved on.
+def migrations() -> list[tuple[int, pathlib.Path]]:
+    """Every migration on disk as (version, path), lowest version first.
 
-    Safe to run against an existing database, and safe to run repeatedly.
+    A migration is named NNN_description.sql; the leading number is the
+    user_version the database is at once it has been applied.
+    """
+    found = []
+    for path in sorted(MIGRATIONS_DIR.glob("*.sql")):
+        try:
+            version = int(path.name.split("_", 1)[0])
+        except ValueError:
+            continue
+        found.append((version, path))
+    return found
+
+
+def init(conn: sqlite3.Connection, quiet: bool = False) -> None:
+    """Apply any migration the database hasn't seen yet.
+
+    Safe to run repeatedly and safe against an existing database: `user_version`
+    records how far it has got, and only higher-numbered migrations run. Nothing
+    is dropped, so cached data survives a schema change.
+
+    Each migration commits on its own — sqlite's executescript ends any open
+    transaction — so a failure part-way leaves the migrations before it applied
+    and user_version pointing at the last one that succeeded.
     """
     version = conn.execute("PRAGMA user_version").fetchone()[0]
-    tables = [
-        r[0]
-        for r in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table'")
-    ]
+    pending = [(v, path) for v, path in migrations() if v > version]
+    if not pending:
+        return
 
-    if tables and version != SCHEMA_VERSION:
-        # Everything except the seeded usernames is re-fetchable, so the cheapest
-        # correct migration is to throw it away and reload.
-        seeded = usernames(conn)
-        conn.execute("PRAGMA foreign_keys = OFF")
-        for table in tables:
-            conn.execute(f"DROP TABLE IF EXISTS {table}")
-        conn.execute("PRAGMA foreign_keys = ON")
-        conn.executescript(SCHEMA)
-        for name in seeded:
-            upsert(conn, "users", {"username": name}, keys=("username",))
-        print(f"schema v{version} -> v{SCHEMA_VERSION}: cache rebuilt, re-run the loaders")
-    else:
-        conn.executescript(SCHEMA)
+    for target, path in pending:
+        try:
+            conn.executescript(path.read_text())
+        except sqlite3.Error as exc:
+            raise RuntimeError(f"migration {path.name} failed: {exc}") from exc
+        conn.execute(f"PRAGMA user_version = {target}")
+        conn.commit()
+        if not quiet:
+            print(f"  applied {path.name}")
 
-    conn.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")
-    conn.commit()
+    if not quiet:
+        print(f"schema v{version} -> v{pending[-1][0]}")
 
 
 def now() -> str:
@@ -254,3 +117,76 @@ def tracked_users(conn: sqlite3.Connection) -> list[sqlite3.Row]:
     return list(
         conn.execute("SELECT username, user_id FROM users WHERE user_id IS NOT NULL ORDER BY username")
     )
+
+
+# --------------------------------------------------------------- projections
+
+# Sleeper publishes ADP once per scoring format. A league reads the one that
+# matches its own scoring_type; anything unrecognised falls back to half PPR,
+# which is the middle of the three and the least wrong default.
+ADP_COLUMNS = {
+    "std": "adp_std",
+    "half_ppr": "adp_half_ppr",
+    "ppr": "adp_ppr",
+    "2qb": "adp_2qb",
+    "dynasty": "adp_dynasty",
+}
+
+
+def adp_column(scoring_type: str | None) -> str:
+    """The player_projections column holding ADP for a league's format."""
+    return ADP_COLUMNS.get(scoring_type or "", "adp_half_ppr")
+
+
+def score_stats(stats: dict, scoring_settings: dict) -> float:
+    """Turn a projected stat line into points under one league's scoring.
+
+    Only keys the league actually scores contribute, so a stat line carrying
+    IDP or return-game keys the league ignores costs nothing. This is why the
+    stat line is stored whole rather than as a precomputed total: the same
+    projection scores differently in two leagues, and Sleeper's own pts_* are
+    generic (their half PPR preset docks an interception 1 point, where a
+    league may say 2).
+    """
+    return round(
+        sum(
+            value * scoring_settings[key]
+            for key, value in stats.items()
+            if key in scoring_settings and isinstance(value, (int, float))
+        ),
+        2,
+    )
+
+
+def league_scoring(conn: sqlite3.Connection, league_id: str) -> dict:
+    """One league's scoring_settings, decoded."""
+    row = conn.execute(
+        "SELECT scoring_settings FROM leagues WHERE league_id = ?", (league_id,)
+    ).fetchone()
+    if row is None or row["scoring_settings"] is None:
+        return {}
+    return json.loads(row["scoring_settings"])
+
+
+def projected_points(conn: sqlite3.Connection, league_id: str, season: str | None = None) -> dict[str, float]:
+    """Projected season points for every player, under this league's scoring.
+
+    Returns {player_id: points}. Players without a projected stat line are
+    absent rather than zero — a missing projection and a projection of nothing
+    are different things, and the caller should be able to tell them apart.
+    """
+    scoring = league_scoring(conn, league_id)
+    if not scoring:
+        return {}
+
+    if season is None:
+        row = conn.execute("SELECT season FROM leagues WHERE league_id = ?", (league_id,)).fetchone()
+        season = row["season"] if row else None
+
+    points = {}
+    for row in conn.execute(
+        "SELECT player_id, stats FROM player_projections WHERE season = ? AND stats IS NOT NULL",
+        (season,),
+    ):
+        points[row["player_id"]] = score_stats(json.loads(row["stats"]), scoring)
+    return points

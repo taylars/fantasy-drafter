@@ -14,7 +14,8 @@ to track picks live during the draft.
 ## Layout
 
 - `client/sleeper.py` — Sleeper API wrapper, plus snake-draft helpers
-- `db.py` — SQLite schema and upsert helpers
+- `db.py` — connection, migrations, scoring, and upsert helpers
+- `migrations/` — schema changes as numbered `.sql`, applied in order
 - `bin/start` — build the cache if needed, then serve the board
 - `scripts/` — loaders that populate the cache, one concern each
 - `board.json` — the turns and the players tagged at each, per league
@@ -47,10 +48,19 @@ The loaders can also be run individually, in this order:
 | `scripts.load_leagues` | leagues, rosters, and league membership |
 | `scripts.load_drafts` | draft settings and every pick made so far |
 | `scripts.load_players` | the NFL player file, filtered to draftable players |
+| `scripts.load_projections` | season ADP and projections, per player |
 | `scripts.load_board` | `board.json` — the turns and the watch/favorite tags |
 
 To track someone else: `python3 -m scripts.init_db <username>`, then re-run
 `load_all`. To rebuild from nothing, delete `data/fantasy.db` and run it again.
+
+### Schema changes
+
+Each change is a file in `migrations/`, named `NNN_what_it_does.sql`. `db.init`
+compares the leading number against the database's `user_version` and applies
+whatever is newer, lowest first, so an existing cache changes shape in place
+instead of being dropped and refetched. To add one, write the next number up —
+nothing else needs editing.
 
 Then open the board:
 
@@ -115,13 +125,40 @@ rather than guessed at.
 
 ```sql
 -- everyone favorited, in board order
-SELECT t.picks, t.plan, p.full_name, p.position, p.team, g.adp, g.note
+SELECT t.picks, t.plan, p.full_name, p.position, p.team, pr.adp_half_ppr, g.note
 FROM player_tags g
 JOIN players p USING (player_id)
+LEFT JOIN player_projections pr ON pr.player_id = g.player_id AND pr.season = '2026'
 JOIN board_turns t ON t.league_id = g.league_id AND t.turn_no = g.turn_no
 WHERE g.league_id = ? AND g.kind = 'favorite'
 ORDER BY g.turn_no, g.sort_order;
 ```
+
+### ADP and projections
+
+Both come from `api.sleeper.app/projections/nfl/<season>`, which is not in
+Sleeper's public docs and can change without warning — `get_projections` is the
+only thing that touches it. One response carries the ADP set for every scoring
+format and a Rotowire season stat line, keyed by the same `player_id` as the
+player file, so nothing has to be name-matched.
+
+`player_projections` stores ADP one column per format and the projected stat
+line whole, as json. Points are **not** stored, because the same projection is
+worth different amounts in different leagues:
+
+```python
+pts = db.projected_points(conn, league_id)   # {player_id: points}
+```
+
+That applies the league's own `scoring_settings`, which is the point. Sleeper's
+precomputed `pts_half_ppr` uses a generic preset — it docks an interception 1
+point where the Atlanta League says 2, enough to misrank every QB by up to 14
+points. The stored `pts_*` columns are kept only as a sanity check; rank on
+`projected_points`.
+
+`draft-board.html` mirrors this in `scoreStats`, so the board and the database
+agree on what a player is worth. Deep bench players come back with ADP but no
+stat line, so `projected_points` omits them rather than scoring them zero.
 
 ### Mock drafts
 
@@ -137,8 +174,8 @@ python3 -m scripts.load_drafts --draft-id <draft_id>
 After that it's a row like any other and plain `load_drafts` keeps it fresh.
 Mocks store `league_id` null and `is_mock = 1`; `--leagues-only` skips them.
 
-A registered mock is the one row the loaders can't rediscover, so a schema bump
-— which rebuilds the cache from scratch — drops it. Re-register it by id.
+A registered mock is the one row the loaders can't rediscover. Migrations no
+longer drop the cache, so it now survives a schema change.
 
 A mock started from a league (`mock_type = 'league_mock'`) still records which
 league it copied, so it can be joined to that league's scoring and roster rules:

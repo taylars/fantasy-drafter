@@ -145,7 +145,6 @@ def main() -> None:
                     "kind": kind,
                     "turn_no": turn_no,
                     "sort_order": sort_order,
-                    "adp": entry.get("adp"),
                     "note": entry.get("note"),
                     "tie": entry.get("tie"),
                     "flag": entry.get("flag"),
