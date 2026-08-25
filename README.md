@@ -8,6 +8,8 @@ to track picks live during the draft.
 - `client/sleeper.py` — read-only Sleeper API client (players, drafts, leagues)
 - `db.py` + `scripts/` — SQLite cache and the loaders that fill it
 - `strategies` — the plan for each round, written by hand straight into the table
+- `player_grades` — researched context the projections don't carry
+- `docs/` — what the board should rank on, and the formula that does it
 - `watchlist.json` — players to mark out on the board, per league
 - `draft-board.html` — draft board, rendered from the database in the browser
 - Ranking/recommendation logic: not written yet
@@ -51,6 +53,8 @@ The loaders can also be run individually, in this order:
 | `scripts.load_players` | the NFL player file, filtered to the fantasy positions |
 | `scripts.load_projections` | season ADP and projections, per player |
 | `scripts.load_watchlist` | `watchlist.json` — the watch/favorite tags |
+| `scripts.grade_queue` | writes the list of players still needing grades |
+| `scripts.load_grades` | researched grades from `data/grades/graded-*.json` |
 
 To track someone else: `python3 -m scripts.init_db <username>`, then re-run
 `load_all`. To rebuild from nothing, delete `data/fantasy.db` and run it again.
@@ -297,3 +301,37 @@ yourself. `SleeperClient` holds a `requests.Session`, so use it as a context
 manager (or call `.close()`) if you're polling a live draft.
 
 Reference: https://docs.sleeper.com/
+
+### Grades
+
+`player_grades` holds the four things a projection can't tell us: how good the
+offense is, how good the teammates his production depends on are, how many
+games he'll actually play, and how much room sits above the mean case. Nothing
+in Sleeper's API answers any of them, so they're researched rather than
+fetched — see [docs/value-formula.md](docs/value-formula.md) for what consumes
+them and why these four.
+
+```bash
+python3 -m scripts.grade_queue          # who needs grading, in batches of 25
+```
+
+That writes `data/grades/queue-NN.json` — the top 200 by ADP, skipping kickers
+and defenses, whose value is flat across the whole draft. Research fills in a
+`graded-NN.json` beside each one (the `grade-players` skill in `.claude/skills`
+says how, and is written to be run a batch at a time, in parallel), and:
+
+```bash
+python3 -m scripts.load_grades          # every data/grades/graded-*.json
+```
+
+Files are validated whole: a batch with a grade out of range, an unknown
+player, or no sources is rejected entirely and reported, rather than
+half-loaded. `--dry-run` checks a file without writing. Loading is an upsert
+over the players a file names and nothing else, so one bad batch can be redone
+on its own.
+
+This is the third kind of table here. The loaders are caches — run one twice
+and nothing changes. `strategies` is hand-written and irreplaceable. Grades are
+reproducible but not deterministic: re-running the research gives a different
+answer, sometimes a better one. `sources` and `graded_at` are what make one
+auditable and let a stale one be spotted.
