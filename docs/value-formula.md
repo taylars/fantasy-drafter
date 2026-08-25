@@ -34,6 +34,10 @@ own scoring. The grades correct it:
 p̂ = pts × (1 + a·offense + b·support)
 ```
 
+`exp_games` deliberately does *not* appear here. It is priced once, in step 2,
+where the games a player misses fall through to whoever is next at his
+position. Scaling here as well would charge for them twice.
+
 **2. Price the roster by coverage, not by starters.** A season is 17 weeks and
 every starting slot needs all 17 of them. A player only covers the share of the
 season he's actually available for, so the games his starters miss fall to the
@@ -151,6 +155,51 @@ The per-position drop-off shows why — what one more turn of waiting costs:
 K and DEF are *perfectly flat* across the whole draft — the clearest possible
 statement that they are never urgent, and the model arriving at your own rule
 on its own.
+
+## As implemented
+
+`value.py` is the formula above; four things about it were only settled by
+building it and running drafts through it.
+
+- **Gain is monotone, and that took work.** Adding a player must never lower
+  the roster. Two separate things broke it: choosing the FLEX allocation
+  greedily (fixed by maximizing over allocations), and letting a
+  sub-replacement player *displace* the waiver option instead of being ignored
+  (fixed by flooring every covered week at the baseline). Both showed up as
+  negative gains, which made `wait` negative, which inflated the value of
+  whoever caused it. A random-roster check now runs clean over 1,000 rosters,
+  and is worth keeping any time the coverage model is touched.
+
+- **Upside scales by gain, not by points.** A backup quarterback has no route
+  into the lineup, so his breakout is worth nothing to us. Paying him a bonus
+  on his projection instead of on what he adds is how a simulated draft ended
+  up taking five quarterbacks.
+
+- **There is no risk term.** The doc above proposed one; it would double-count.
+  Downside is already priced through `exp_games`, which hands a fragile
+  player's missed games to the next man in the coverage step. Tyreek Hill, at
+  0.12 availability after a season-ending knee injury, comes out at a gain of
+  exactly 0.0 against an empty roster.
+
+- **Legality is separate from value.** A kicker is worth ~0 to draft at any
+  point, correctly — so left alone the model never drafts one, and a roster
+  with no kicker cannot field a lineup. `must_fill` restricts the board once
+  the picks remaining are down to the slots still empty, which is a roster
+  rule rather than a valuation.
+
+Run through a full 15-round draft with ADP-driven opponents, it fills every
+slot, carries the depth floors exactly, and takes its kicker and defense in
+rounds 10–11:
+
+```
+QB 2   RB 3   WR 4   TE 4   K 1   DEF 1
+```
+
+Two behaviors worth checking against your own judgment. Holding three backs the
+fourth is priced at exactly 0.0, because the depth floor of three is acting as
+a ceiling as well as a floor. And the endgame picks are near-arbitrary — values
+of 3.7, 1.2, 0.5, 0.1 — which is the model honestly reporting that those picks
+barely matter, but a human would spend them on handcuffs and lottery tickets.
 
 ## What this tells us to go gather
 

@@ -1,0 +1,546 @@
+"""What each available player is worth to us, right now.
+
+    python3 -m value                          # the default league's live draft
+    python3 -m value --league <id> --draft <id>
+    python3 -m value --plan                   # what to take now vs. what to wait on
+
+The board sorts by ADP, which is what the rest of the league thinks. This is
+what *we* think, and it differs for three reasons: it prices a player against
+the lineup we already hold, against the baseline his position can actually be
+replaced at, and against what waiting until our next pick would get us instead.
+
+docs/value-formula.md works through why, with the numbers. The short version:
+
+  value = gain(player) - wait(position) + upside(round)
+
+where `gain` is what he adds to the best legal starting lineup across a whole
+17-week season, and `wait` is what we'd expect from the best player at that
+position still on the board when we pick again. Ranking on the difference is
+value-based drafting with a next-available baseline (VONA), which is a
+decades-old idea; the parts specific to us are the coverage model and the
+per-position streamability baseline below.
+"""
+
+from __future__ import annotations
+
+import argparse
+import itertools
+import json
+import math
+import sqlite3
+from collections import Counter
+from dataclasses import dataclass
+
+import db
+
+SEASON_GAMES = 17
+
+# Positions a FLEX slot accepts.
+FLEXABLE = frozenset({"RB", "WR", "TE"})
+
+# The only two positions that can genuinely be refilled off waivers week to
+# week. It shows in the data: the gap between the last starting kicker and the
+# best one left after the draft is 0 points, and for a defense it is 1 — where
+# for a running back it is 102. That difference is what the baselines below
+# turn on, and it decides more of the ranking than any other single number.
+STREAMABLE = frozenset({"K", "DEF"})
+
+# Minimum bodies to carry, whatever the starting slots alone imply. An
+# expected-value model averages injuries out; a season does not. You cannot
+# cover a mandatory RB slot with a receiver, so depth at the positions we must
+# start is not optional. This is judgment rather than measurement — without it
+# the model preferred a fourth receiver to a third back by 4.1 points, so it
+# was nearly indifferent and the floor buys the insurance cheaply.
+DEPTH = {"RB": 3, "WR": 3, "QB": 1, "TE": 1, "K": 1, "DEF": 1}
+
+# How far a -2..+2 context grade moves a projection. Deliberately small: we are
+# correcting a provider's number, not replacing it with our own.
+OFFENSE_WEIGHT = 0.05
+SUPPORT_WEIGHT = 0.04
+
+# How much of a player's season an ungraded starter is assumed to be available
+# for. Only used as a fallback — a graded player uses his own exp_games, which
+# is the whole point of grading. player_projections.gp cannot be used for this:
+# it is 18.0 for every player who has one.
+DEFAULT_AVAILABILITY = {"QB": .88, "RB": .79, "WR": .85, "TE": .82, "K": .97, "DEF": 1.0}
+
+# Upside is the right tail, and what it is worth depends on when we're picking.
+# An early pick is bought for its floor — we need those points every week. A
+# late pick is a lottery ticket against a bench slot, where the downside is a
+# player we drop in October, so the tail is the only part worth paying for.
+UPSIDE_STEP = 0.035
+UPSIDE_FULL_ROUND = 12
+
+# ADP is a mean and players go in a range around it. Sleeper publishes no
+# spread, so this is assumed, and it is the least evidenced number in the file:
+# it drives every `wait`. Measuring it from repeated mock drafts would be
+# strictly better than guessing.
+ADP_SPREAD = 0.15
+ADP_SPREAD_FLOOR = 4.0
+
+
+@dataclass
+class Player:
+    """One draftable player, priced for a particular league."""
+
+    player_id: str
+    name: str
+    position: str
+    team: str | None
+    adp: float
+    points: float                       # projected, under this league's scoring
+    availability: float                 # share of the season he'll be there for
+    offense: int = 0
+    support: int = 0
+    upside: int = 0
+    graded: bool = False
+
+    @property
+    def adjusted(self) -> float:
+        """Season points if he played every week, corrected for context.
+
+        Deliberately *not* scaled by availability. The games he misses are
+        priced once, in `lineup`, where they fall through to whoever is next at
+        his position — scaling here as well would charge for them twice.
+        """
+        return self.points * (1 + OFFENSE_WEIGHT * self.offense + SUPPORT_WEIGHT * self.support)
+
+
+def load_pool(conn: sqlite3.Connection, league_id: str, season: str | None = None) -> list[Player]:
+    """Every player with an ADP and a projection, priced for this league."""
+    league = conn.execute("SELECT * FROM leagues WHERE league_id = ?", (league_id,)).fetchone()
+    if league is None:
+        raise LookupError(f"league {league_id} isn't in the cache")
+    season = season or league["season"]
+
+    points = db.projected_points(conn, league_id, season)
+    adp_column = db.adp_column(league["scoring_type"])
+
+    pool = []
+    for row in conn.execute(
+        f"""SELECT p.player_id, p.full_name, p.position, p.team, pr.{adp_column} AS adp,
+                   g.offense, g.support, g.exp_games, g.upside
+              FROM players p
+              JOIN player_projections pr ON pr.player_id = p.player_id AND pr.season = ?
+              LEFT JOIN player_grades g ON g.player_id = p.player_id AND g.season = ?
+             WHERE pr.{adp_column} IS NOT NULL AND pr.{adp_column} < 999""",
+        (season, season),
+    ):
+        # A player with an ADP but no stat line is deep bench filler. Scoring
+        # him zero would rank him below replacement rather than omitting him.
+        if row["player_id"] not in points:
+            continue
+        graded = row["exp_games"] is not None
+        pool.append(Player(
+            player_id=row["player_id"],
+            name=row["full_name"],
+            position=row["position"],
+            team=row["team"],
+            adp=row["adp"],
+            points=points[row["player_id"]],
+            availability=(row["exp_games"] / SEASON_GAMES if graded
+                          else DEFAULT_AVAILABILITY.get(row["position"], 0.85)),
+            offense=row["offense"] or 0,
+            support=row["support"] or 0,
+            upside=row["upside"] or 0,
+            graded=graded,
+        ))
+    return pool
+
+
+def roster_slots(conn: sqlite3.Connection, league_id: str) -> list[str]:
+    row = conn.execute("SELECT roster_positions FROM leagues WHERE league_id = ?",
+                       (league_id,)).fetchone()
+    return json.loads(row["roster_positions"]) if row and row["roster_positions"] else []
+
+
+def baselines(pool: list[Player], teams: int, rounds: int) -> dict[str, float]:
+    """What an unfilled slot at each position is really worth.
+
+    Streamable positions get the last starter, because a top-12 kicker is
+    always a waiver claim away. Everything else gets the best player left once
+    the draft is over, which is what the wire actually offers — for a running
+    back that is a hundred points worse than the last starter, and assuming
+    otherwise makes a receiver-only draft look optimal when it isn't.
+    """
+    drafted = teams * rounds
+    out: dict[str, float] = {}
+    for position in {p.position for p in pool}:
+        ranked = sorted((p.adjusted for p in pool if p.position == position), reverse=True)
+        if not ranked:
+            continue
+        if position in STREAMABLE:
+            out[position] = ranked[min(teams, len(ranked)) - 1]
+        else:
+            taken = sum(1 for p in pool if p.position == position and p.adp <= drafted)
+            out[position] = ranked[min(taken, len(ranked) - 1)]
+    return out
+
+
+def _slot_demand(slots: list[str], flex: tuple[str, ...]) -> dict[str, float]:
+    """Slot-seasons each position owes, for one way of allocating the FLEXes."""
+    need: dict[str, float] = {}
+    for slot in (s for s in slots if s not in ("BN", "FLEX")):
+        need[slot] = need.get(slot, 0) + 1
+    for position in flex:
+        need[position] = need.get(position, 0) + 1
+    for position, floor in DEPTH.items():
+        if position in need:
+            need[position] = max(need[position],
+                                 floor * DEFAULT_AVAILABILITY.get(position, 0.85))
+    return need
+
+
+def _coverage(roster: list[Player], need: dict[str, float], base: dict[str, float]) -> float:
+    """Season points this roster covers against a given demand.
+
+    A player covers only the share of the season he is available for, so the
+    games his starters miss fall to the next man at that position, and to the
+    waiver wire if there isn't one.
+
+    No week is ever worth less than the wire. We would not start a player worse
+    than the best man available at his position, so a covered week is worth the
+    better of the two. Without that floor a sub-replacement player *displaces*
+    the waiver option and lowers the roster by taking a spot — which is how a
+    25-point receiver came to cost 60 points, and how `gain` came to be
+    something a player could be punished for.
+    """
+    total = 0.0
+    for position, needed in need.items():
+        floor = base.get(position, 0.0)
+        mine = sorted((p for p in roster if p.position == position), key=lambda p: -p.adjusted)
+        remaining = float(needed)
+        for player in mine:
+            if remaining <= 0:
+                break
+            covered = min(player.availability, remaining)
+            total += covered * max(player.adjusted, floor)
+            remaining -= covered
+        total += remaining * floor
+    return total
+
+
+def _flex_allocations(slots: list[str]) -> list[tuple[str, ...]]:
+    """Every way the FLEX slots could be shared out among the eligible positions."""
+    count = sum(1 for s in slots if s == "FLEX")
+    return list(itertools.combinations_with_replacement(sorted(FLEXABLE), count))
+
+
+def demand(roster: list[Player], slots: list[str], base: dict[str, float]) -> dict[str, float]:
+    """The demand under the FLEX allocation this roster actually does best on."""
+    return max((_slot_demand(slots, flex) for flex in _flex_allocations(slots)),
+               key=lambda need: _coverage(roster, need, base))
+
+
+def lineup(roster: list[Player], slots: list[str], base: dict[str, float]) -> float:
+    """Season points from the best legal lineup this roster can field.
+
+    Every starting slot needs all seventeen weeks, and depth is what covers the
+    ones a starter misses — a third running back is not a spare, he is the man
+    who plays the games the first two are out for.
+
+    The FLEX allocation is maximized over rather than chosen greedily. That
+    matters for more than accuracy: a greedy choice makes this non-monotone, so
+    adding a player could *lower* the lineup, which then makes `wait` negative
+    and inflates the value of whoever caused it.
+    """
+    return max(_coverage(roster, _slot_demand(slots, flex), base)
+               for flex in _flex_allocations(slots))
+
+
+def gain(player: Player, roster: list[Player], slots: list[str], base: dict[str, float]) -> float:
+    """What this player adds to the lineup we already hold.
+
+    Never negative: a player we can leave on the bench cannot make the roster
+    worse, so noise around a zero-value pick should not read as a reason to
+    avoid him.
+    """
+    return max(0.0, lineup(roster + [player], slots, base) - lineup(roster, slots, base))
+
+
+def survival(adp: float, pick: int) -> float:
+    """Rough chance a player is still on the board at `pick`.
+
+    A smooth function of how far past his ADP the pick is, not a cutoff: ADP is
+    a mean, and the spread around it is what decides whether waiting is a real
+    option or a bet. See ADP_SPREAD — this is the assumed part of the model.
+    """
+    if adp is None or adp >= 999:
+        return 1.0
+    sigma = max(ADP_SPREAD_FLOOR, ADP_SPREAD * adp)
+    return 0.5 * math.erfc((pick - adp) / sigma / math.sqrt(2))
+
+
+def wait(position: str, pool: list[Player], pick: int, roster: list[Player],
+         slots: list[str], base: dict[str, float], depth: int = 40) -> tuple[float, Player | None]:
+    """Expected gain from the best player at `position` still there at `pick`.
+
+    Walks the position best-first: each player contributes his gain weighted by
+    the chance he lasts, times the chance everyone better than him did not.
+    Also returns the player we'd most likely end up with, which is what makes
+    the plan search below able to carry a roster forward.
+    """
+    ranked = sorted(((gain(p, roster, slots, base), p) for p in pool if p.position == position),
+                    key=lambda pair: -pair[0])[:depth]
+    expected, still_gone, likely, best = 0.0, 1.0, None, 0.0
+    for value, player in ranked:
+        chance = survival(player.adp, pick)
+        # The chance this is the one we actually end up with: he lasts, and
+        # nobody better did. That is also what makes him the right player to
+        # carry forward into a plan — the best player at the position is not,
+        # since by definition he is the least likely to still be there.
+        mine = still_gone * chance
+        expected += mine * value
+        if mine > best:
+            best, likely = mine, player
+        still_gone *= (1 - chance)
+    return expected, (likely or (ranked[0][1] if ranked else None))
+
+
+def upside_bonus(player: Player, round_no: int, got: float) -> float:
+    """What the right tail is worth at this point in the draft.
+
+    Scaled by what he'd actually add, not by what he'd score. Upside on a
+    player with no route into the lineup is worth nothing — without this a
+    backup quarterback collects a bonus for a breakout he would never get the
+    chance to have, which is how a simulated draft ended up taking five of them.
+
+    Nothing is subtracted for risk: the downside is already priced, because a
+    fragile player's `availability` hands his missed games to the next man in
+    `lineup`. Charging for it again here would be counting it twice.
+    """
+    weight = UPSIDE_STEP * min(round_no, UPSIDE_FULL_ROUND) / UPSIDE_FULL_ROUND
+    return player.upside * weight * got
+
+
+def our_picks(draft: sqlite3.Row, user_ids: set[str]) -> list[int]:
+    """Every pick number we own, in order.
+
+    Derived from the draft's own order rather than written down: the slot plus
+    teams, rounds and type is enough. A draft whose order isn't set yet has no
+    answer, so it returns nothing rather than guessing.
+    """
+    if not draft["draft_order"]:
+        return []
+    order = json.loads(draft["draft_order"])
+    slot = next((s for user_id, s in order.items() if user_id in user_ids), None)
+    if slot is None:
+        return []
+
+    teams, rounds = draft["teams"], draft["rounds"]
+    reversal = draft["reversal_round"] or 0
+    picks = []
+    for round_no in range(1, rounds + 1):
+        forward = round_no % 2 == 1
+        if reversal and round_no >= reversal:
+            forward = not forward
+        if draft["type"] == "linear":
+            forward = True
+        picks.append((round_no - 1) * teams + (slot if forward else teams - slot + 1))
+    return picks
+
+
+def draft_state(conn: sqlite3.Connection, draft_id: str,
+                user_ids: set[str]) -> tuple[set[str], set[str], int]:
+    """Who's gone, who's ours, and which pick is next.
+
+    A pick with no `picked_by` is an autopick, so it counts as gone rather than
+    as ours — same rule the board uses.
+    """
+    gone, ours = set(), set()
+    count = 0
+    for row in conn.execute(
+        "SELECT player_id, picked_by FROM draft_picks WHERE draft_id = ?", (draft_id,)
+    ):
+        count += 1
+        if not row["player_id"]:
+            continue
+        gone.add(row["player_id"])
+        if row["picked_by"] and row["picked_by"] in user_ids:
+            ours.add(row["player_id"])
+    return gone, ours, count + 1
+
+
+def must_fill(roster: list[Player], slots: list[str], picks_left: int) -> set[str]:
+    """Positions we have to spend our last picks on to field a legal lineup.
+
+    Legality, not value. A kicker is worth ~0 to take at any point — the twelfth
+    best projects within a few points of the first, so `wait` correctly says
+    there is never a reason to hurry. Left alone that logic never takes one at
+    all, and a roster with no kicker cannot field a lineup no matter how good
+    the rest of it is. So once the picks remaining are down to the slots still
+    empty, those slots are the only thing on the board.
+    """
+    needed = Counter(s for s in slots if s not in ("BN", "FLEX"))
+    have = Counter(p.position for p in roster)
+    short = {position: count - have.get(position, 0) for position, count in needed.items()}
+    short = {position: n for position, n in short.items() if n > 0}
+    return set(short) if picks_left <= sum(short.values()) else set()
+
+
+@dataclass
+class Ranked:
+    player: Player
+    value: float
+    gain: float
+    wait: float
+    bonus: float
+
+
+def board(conn: sqlite3.Connection, league_id: str, draft_id: str,
+          limit: int = 200) -> tuple[list[Ranked], list[Player], list[int]]:
+    """Rank what's left by what it's worth to us at the pick we're on."""
+    draft = conn.execute("SELECT * FROM drafts WHERE draft_id = ?", (draft_id,)).fetchone()
+    if draft is None:
+        raise LookupError(f"draft {draft_id} isn't in the cache")
+
+    user_ids = {u["user_id"] for u in db.tracked_users(conn) if u["user_id"]}
+    gone, ours, at_pick = draft_state(conn, draft_id, user_ids)
+
+    pool = load_pool(conn, league_id)
+    slots = roster_slots(conn, league_id)
+    base = baselines(pool, draft["teams"], draft["rounds"])
+
+    roster = [p for p in pool if p.player_id in ours]
+    available = [p for p in pool if p.player_id not in gone]
+    upcoming = [p for p in our_picks(draft, user_ids) if p >= at_pick]
+    # Our next trip to the board, not our next pick: back-to-back picks at a
+    # snake turn are one decision, and waiting past them is what costs.
+    next_pick = next((p for p in upcoming if p > (upcoming[0] if upcoming else 0) + 1),
+                     upcoming[-1] if upcoming else at_pick)
+    round_no = math.ceil(at_pick / draft["teams"]) if draft["teams"] else 1
+
+    forced = must_fill(roster, slots, len(upcoming))
+    candidates = [p for p in available if p.position in forced] if forced else available
+
+    ranked, expected = [], {}
+    for player in sorted(candidates, key=lambda p: p.adp)[:limit]:
+        got = gain(player, roster, slots, base)
+        if player.position not in expected:
+            expected[player.position], _ = wait(player.position, candidates, next_pick,
+                                                roster, slots, base)
+        bonus = upside_bonus(player, round_no, got)
+        ranked.append(Ranked(player, got - expected[player.position] + bonus,
+                             got, expected[player.position], bonus))
+    ranked.sort(key=lambda r: -r.value)
+    return ranked, roster, upcoming
+
+
+def plans(conn: sqlite3.Connection, league_id: str, draft_id: str, ahead: int = 4,
+          positions: tuple[str, ...] = ("RB", "WR", "TE", "QB")) -> list[tuple[float, tuple, list]]:
+    """Score every position order over our next few picks, best first.
+
+    This is what answers "take a back now, or wait a round?" — the one-pick
+    ranking can't, because it can't see that taking a back now changes what we
+    need next time. Two things a naive version gets wrong, both handled here:
+    a snake turn is often two picks rather than one, so a three-turn plan is
+    six players; and the roster has to grow as the plan goes, or every pick is
+    priced against a roster we won't have by then.
+
+    Enumerating is fine at this size — the lookahead does not need to be deep.
+    """
+    draft = conn.execute("SELECT * FROM drafts WHERE draft_id = ?", (draft_id,)).fetchone()
+    user_ids = {u["user_id"] for u in db.tracked_users(conn) if u["user_id"]}
+    gone, ours, at_pick = draft_state(conn, draft_id, user_ids)
+
+    pool = load_pool(conn, league_id)
+    slots = roster_slots(conn, league_id)
+    base = baselines(pool, draft["teams"], draft["rounds"])
+    roster = [p for p in pool if p.player_id in ours]
+    available = [p for p in pool if p.player_id not in gone]
+    upcoming = [p for p in our_picks(draft, user_ids) if p >= at_pick][:ahead]
+
+    scored = []
+    for sequence in itertools.product(positions, repeat=len(upcoming)):
+        have, left, total, taken = list(roster), list(available), 0.0, []
+        for position, pick in zip(sequence, upcoming):
+            if pick == at_pick:
+                options = [(gain(p, have, slots, base), p)
+                           for p in left if p.position == position]
+                got, player = max(options, default=(0.0, None), key=lambda pair: pair[0])
+            else:
+                got, player = wait(position, left, pick, have, slots, base)
+            if player is None:
+                break
+            total += got
+            have.append(player)
+            left = [p for p in left if p.player_id != player.player_id]
+            taken.append((pick, player))
+        else:
+            scored.append((total, sequence, taken))
+    scored.sort(key=lambda row: -row[0])
+    return scored
+
+
+def default_target(conn: sqlite3.Connection) -> tuple[str, str]:
+    """The league and draft to use when none is named."""
+    row = conn.execute(
+        """SELECT l.league_id, d.draft_id FROM leagues l
+             JOIN drafts d ON d.league_id = l.league_id
+            ORDER BY d.status = 'drafting' DESC, d.start_time
+            LIMIT 1"""
+    ).fetchone()
+    if row is None:
+        raise LookupError("no league with a draft in the cache — run scripts.load_all")
+    return row["league_id"], row["draft_id"]
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--league", help="league_id (default: the first with a draft)")
+    parser.add_argument("--draft", help="draft_id (default: that league's draft)")
+    parser.add_argument("--top", type=int, default=15, help="how many players to show")
+    parser.add_argument("--plan", action="store_true",
+                        help="compare position orders over the next few picks")
+    parser.add_argument("--ahead", type=int, default=4, help="picks to plan over")
+    args = parser.parse_args()
+
+    conn = db.connect()
+    db.init(conn, quiet=True)
+
+    league_id, draft_id = args.league, args.draft
+    if not league_id or not draft_id:
+        found_league, found_draft = default_target(conn)
+        league_id, draft_id = league_id or found_league, draft_id or found_draft
+
+    league = conn.execute("SELECT name, scoring_type FROM leagues WHERE league_id = ?",
+                          (league_id,)).fetchone()
+    ranked, roster, upcoming = board(conn, league_id, draft_id, limit=250)
+
+    graded = sum(1 for r in ranked if r.player.graded)
+    print(f"{league['name']} ({league['scoring_type']})")
+    print(f"  our picks: {', '.join(str(p) for p in upcoming[:6])}"
+          f"{' ...' if len(upcoming) > 6 else ''}")
+    print(f"  roster:    {', '.join(p.name for p in roster) or 'empty'}")
+    print(f"  graded:    {graded} of {len(ranked)} shown")
+
+    if args.plan:
+        scored = plans(conn, league_id, draft_id, ahead=args.ahead)
+        if not scored:
+            print("\n  no picks left to plan")
+            return
+        over = ", ".join(str(pick) for pick, _ in scored[0][2])
+        print(f"\n  best plans over picks {over}:")
+        for total, sequence, taken in scored[:5]:
+            who = " -> ".join(player.name for _, player in taken)
+            print(f"    {total:8.1f}  {'/'.join(sequence):16}  {who}")
+        print("\n  best plan starting with each position:")
+        best = scored[0][0]
+        for position in ("RB", "WR", "TE", "QB"):
+            first = next((row for row in scored if row[1][0] == position), None)
+            if first:
+                print(f"    {position:4} {first[0]:8.1f}  {'/'.join(first[1]):16} "
+                      f"{first[0] - best:+7.1f}   ({first[2][0][1].name})")
+        return
+
+    print(f"\n  {'value':>7} {'gain':>7} {'wait':>7} {'up':>5}  {'pos':4} {'adp':>6}  player")
+    for row in ranked[:args.top]:
+        flag = " " if row.player.graded else "?"
+        print(f"  {row.value:7.1f} {row.gain:7.1f} {row.wait:7.1f} {row.bonus:5.1f}  "
+              f"{row.player.position:4} {row.player.adp:6.1f}  {row.player.name}{flag}")
+    conn.close()
+
+
+if __name__ == "__main__":
+    main()

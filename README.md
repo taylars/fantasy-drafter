@@ -12,12 +12,13 @@ to track picks live during the draft.
 - `docs/` — what the board should rank on, and the formula that does it
 - `watchlist.json` — players to mark out on the board, per league
 - `draft-board.html` — draft board, rendered from the database in the browser
-- Ranking/recommendation logic: not written yet
+- `value.py` — what each player is worth to us, given roster and picks left
 
 ## Layout
 
 - `client/sleeper.py` — Sleeper API wrapper, plus snake-draft helpers
 - `db.py` — connection, migrations, scoring, and upsert helpers
+- `value.py` — the draft value formula: lineup coverage, baselines, VONA
 - `migrations/` — schema changes as numbered `.sql`, applied in order
 - `bin/start` — build the cache if needed, then serve the board
 - `scripts/` — loaders that populate the cache, one concern each
@@ -335,3 +336,33 @@ and nothing changes. `strategies` is hand-written and irreplaceable. Grades are
 reproducible but not deterministic: re-running the research gives a different
 answer, sometimes a better one. `sources` and `graded_at` are what make one
 auditable and let a stale one be spotted.
+
+## What a player is worth
+
+The board sorts by ADP, which is what the rest of the league thinks. `value.py`
+is what we think:
+
+```bash
+python3 -m value                  # the live draft, best first
+python3 -m value --plan           # take a back now, or wait a round?
+```
+
+It prices a player three ways at once — against the lineup we already hold,
+against the baseline his position can actually be replaced at, and against what
+waiting until our next pick would get us instead:
+
+```
+value = gain(player) - wait(position) + upside(round)
+```
+
+That last comparison is value-based drafting with a next-available baseline,
+which is a decades-old idea. The parts specific to us are that a season is
+priced as seventeen weeks of coverage rather than a starting lineup — so the
+third running back is the man who plays the games the first two miss — and that
+the replacement baseline turns on whether a position can genuinely be streamed.
+Only kickers and defenses can: the gap between the last starting kicker and the
+best one on the wire is 0 points, where for a running back it is 102.
+
+[docs/value-formula.md](docs/value-formula.md) is the derivation, with the
+numbers and what it was checked against. [docs/drafting-goals.md](docs/drafting-goals.md)
+is why these are the right questions.
