@@ -376,7 +376,7 @@ thirty seconds ago changes what everything is worth, and the page can't see it.
 The **Live** button in the picker row is the answer. Click it and the light
 comes on; click it again and it goes out.
 
-While it's lit, every ten seconds the page asks the server for
+While it's lit, every three seconds the page asks the server for
 `GET /api/value`, which pulls the draft's picks from Sleeper, re-runs
 `value.py` against them, and hands back both. Players taken since the last
 tick get struck through, the roster strip fills in, every value is
@@ -384,12 +384,25 @@ recalculated against the roster we now hold, and the best player available is
 outlined in green. Rows are patched where they stand rather than rebuilt, so
 the scroll position survives — mid-draft that's the thing you're holding onto.
 
-Two details worth knowing. The light stays on through a failed request and
-turns amber instead: a dropped connection during a draft should not be the
-thing that stops the board updating, and the next tick is ten seconds away.
-And polling stops on its own when the tab is hidden, or when you switch
-leagues or drafts — prices belong to one draft's state, so the old numbers go
-rather than linger.
+Three seconds is the cadence [client/sleeper.py](client/sleeper.py) documents
+for a draft loop: 20 polls a minute, well under Sleeper's limit of 1000. It
+started at ten and that was too slow to be live — bots in a mock pick every
+couple of seconds, so a tick could open with most of a round already gone, and
+the board would show it without ever looking broken. The server keeps up by
+sharing one Sleeper session across polls instead of building one per request,
+reusing the draft object for 30s while fetching picks every time, and serving
+requests on threads so a slow call blocks only its own poll.
+
+Three details worth knowing. Only one poll is ever in the air: a request that
+outlasts its interval doesn't get another fired on top of it, and a reply
+overtaken by a newer one is dropped rather than allowed to paint the board back
+to a pick that has already happened. The light stays on through a failed
+request and turns amber instead — a dropped connection during a draft should
+not be the thing that stops the board updating — and once what's on screen is
+more than fifteen seconds old the label says how old, so a board that has
+quietly fallen behind looks different from one that just updated. Polling stops
+on its own when the tab is hidden, or when you switch leagues or drafts; prices
+belong to one draft's state, so the old numbers go rather than linger.
 
 Value is computed on the server rather than in the page. The board already
 mirrors one thing from the database — `scoreStats`, so the page and `db.py`

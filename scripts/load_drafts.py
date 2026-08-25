@@ -37,11 +37,19 @@ import db
 from client.sleeper import SleeperClient
 
 
-def load_draft(conn, sleeper, draft_id: str, draft: dict | None = None) -> None:
-    """Upsert one draft and its picks. Pass `draft` to reuse an already-fetched object."""
+def load_draft(conn, sleeper, draft_id: str, draft: dict | None = None,
+               quiet: bool = False) -> None:
+    """Upsert one draft and its picks.
+
+    Pass `draft` to reuse an already-fetched object. Pass `quiet` when this is
+    running on a timer rather than at someone's request — the live board polls
+    every few seconds, and a line per poll is noise at best and a server
+    blocked on a full stdout pipe at worst.
+    """
     draft = draft or sleeper.get_draft(draft_id)
     if not draft:
-        print(f"  {draft_id}: not found")
+        if not quiet:
+            print(f"  {draft_id}: not found")
         return
 
     settings = draft.get("settings") or {}
@@ -107,9 +115,10 @@ def load_draft(conn, sleeper, draft_id: str, draft: dict | None = None) -> None:
         [draft_id, *live],
     ).rowcount
 
-    note = f", {removed} stale pick(s) removed" if removed else ""
-    kind = metadata.get("type", "mock") if league_id is None else "league"
-    print(f"  {draft_id} [{kind}]: {draft.get('status')}, {len(picks)} pick(s){note}")
+    if not quiet:
+        note = f", {removed} stale pick(s) removed" if removed else ""
+        kind = metadata.get("type", "mock") if league_id is None else "league"
+        print(f"  {draft_id} [{kind}]: {draft.get('status')}, {len(picks)} pick(s){note}")
 
 
 def main() -> None:

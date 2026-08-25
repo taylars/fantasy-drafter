@@ -14,7 +14,10 @@ player_tags: tagging is the one opinion formed while looking at the board
 rather than before it, and sql.js in the page can only read. GET /api/value
 returns what each player is worth right now, and with ?refresh=1 pulls the
 draft's picks from Sleeper first — which is what the live button on the board
-polls while a draft is running.
+polls every few seconds while a draft is running. That cadence is why requests
+are served on threads and why the Sleeper session is shared rather than rebuilt
+per request: a poll that has to queue behind another one is a board falling
+behind the draft it is meant to be tracking.
 
 Value is computed here rather than in the page on purpose. The board already
 mirrors one thing from the database (`scoreStats`), and that duplication has a
@@ -32,6 +35,8 @@ import json
 import pathlib
 import socketserver
 import sqlite3
+import threading
+import time
 import urllib.parse
 import webbrowser
 
@@ -56,6 +61,32 @@ VALUE_LIMIT = 250
 
 # A tag is three short ids; anything larger than this is not one.
 MAX_BODY = 4096
+
+# How long the draft object is reused before it's fetched again. Sleeper has no
+# push API, and client/sleeper.py documents the cadence this is built around:
+# picks every 2-3s, the draft object every ~30s to catch status flipping to
+# paused or complete. Refetching the draft object on every poll doubles both
+# the calls and the round-trip for fields that change twice in a draft.
+DRAFT_MAX_AGE = 30.0
+
+# One client for every poll, not one per poll. SleeperClient holds a session
+# precisely so a draft loop doesn't pay for a TLS handshake every few seconds
+# — building a new one each request threw that away. The lock is what makes
+# the single session safe now that requests are served on threads, and it
+# doubles as the serializer for the writes the refresh does.
+_sleeper_lock = threading.Lock()
+_sleeper: SleeperClient | None = None
+
+# draft_id -> (monotonic time it was fetched, the draft object)
+_draft_cache: dict[str, tuple[float, dict]] = {}
+
+
+def sleeper_client() -> SleeperClient:
+    """The one Sleeper client, built on first use. Call under _sleeper_lock."""
+    global _sleeper
+    if _sleeper is None:
+        _sleeper = SleeperClient()
+    return _sleeper
 
 
 def write_tag(payload: dict) -> dict:
@@ -121,23 +152,25 @@ def register_draft(payload: dict) -> dict:
 
     conn = db.connect(DB_FILE)
     try:
-        with SleeperClient() as sleeper:
+        with _sleeper_lock:
+            sleeper = sleeper_client()
             draft = sleeper.get_draft(draft_id)
             if not draft:
                 raise LookupError(f"no such draft: {draft_id}")
             load_draft(conn, sleeper, draft_id, draft)
 
-        # A mock started cold, not from a league, carries no league_id and no
-        # metadata.league_id either — nothing in it points back to us. Tie it
-        # to the league it was pasted in from so it shows up in that picker.
-        metadata = draft.get("metadata") or {}
-        if draft.get("league_id") is None and not metadata.get("league_id"):
-            conn.execute(
-                "UPDATE drafts SET source_league_id = ? "
-                "WHERE draft_id = ? AND source_league_id IS NULL",
-                (league_id, draft_id),
-            )
-        conn.commit()
+            # A mock started cold, not from a league, carries no league_id and
+            # no metadata.league_id either — nothing in it points back to us.
+            # Tie it to the league it was pasted in from so it shows up in that
+            # picker.
+            metadata = draft.get("metadata") or {}
+            if draft.get("league_id") is None and not metadata.get("league_id"):
+                conn.execute(
+                    "UPDATE drafts SET source_league_id = ? "
+                    "WHERE draft_id = ? AND source_league_id IS NULL",
+                    (league_id, draft_id),
+                )
+            conn.commit()
 
         row = conn.execute(
             "SELECT draft_id, is_mock, mock_type, type, status, rounds, teams,"
@@ -158,14 +191,28 @@ def refresh_picks(draft_id: str) -> None:
     loaded, so it cannot see a pick made since. This is the only way new picks
     reach it mid-draft — and it is why the live button polls the server rather
     than re-reading the file it already has.
+
+    Picks are fetched every time; the draft object is reused for DRAFT_MAX_AGE.
+    Only one refresh runs at a time, so a burst of polls costs one trip to
+    Sleeper rather than several racing each other into the same table.
     """
-    conn = db.connect(DB_FILE)
-    try:
-        with SleeperClient() as sleeper:
-            load_draft(conn, sleeper, draft_id)
-        conn.commit()
-    finally:
-        conn.close()
+    with _sleeper_lock:
+        sleeper = sleeper_client()
+
+        now = time.monotonic()
+        cached = _draft_cache.get(draft_id)
+        draft = cached[1] if cached and now - cached[0] < DRAFT_MAX_AGE else None
+        if draft is None:
+            draft = sleeper.get_draft(draft_id)
+            if draft:
+                _draft_cache[draft_id] = (now, draft)
+
+        conn = db.connect(DB_FILE)
+        try:
+            load_draft(conn, sleeper, draft_id, draft, quiet=True)
+            conn.commit()
+        finally:
+            conn.close()
 
 
 def value_payload(league_id: str, draft_id: str, refresh: bool) -> dict:
@@ -204,6 +251,21 @@ def value_payload(league_id: str, draft_id: str, refresh: bool) -> dict:
             for row in ranked
         ],
     }
+
+
+class Server(socketserver.ThreadingTCPServer):
+    """One thread per request, so a slow Sleeper call blocks only its own poll.
+
+    Served from a single thread, a draft object that took ten seconds to come
+    back held up everything queued behind it — including the next poll, which
+    is how a board falls minutes behind a draft that is still moving. Threads
+    are cheap here because the handlers barely share anything: each opens its
+    own sqlite connection, and the one piece of shared state, the Sleeper
+    session, is taken under _sleeper_lock.
+    """
+
+    allow_reuse_address = True
+    daemon_threads = True
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -245,7 +307,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         except Exception as exc:
             # A live draft is the worst time to lose the board to a traceback:
             # Sleeper can time out or change shape, and the page should be told
-            # so it can keep the light on and try again in ten seconds.
+            # so it can keep the light on and try again on the next tick.
             self.reply(502, {"error": f"{type(exc).__name__}: {exc}"})
 
     def do_POST(self) -> None:
@@ -310,9 +372,8 @@ def main() -> None:
 
     url = f"http://localhost:{args.port}/{PAGE}"
     handler = functools.partial(Handler, directory=str(ROOT))
-    socketserver.TCPServer.allow_reuse_address = True
 
-    with socketserver.TCPServer(("127.0.0.1", args.port), handler) as httpd:
+    with Server(("127.0.0.1", args.port), handler) as httpd:
         print(f"draft board at {url}")
         print("ctrl-c to stop")
         if not args.no_open:

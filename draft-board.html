@@ -424,7 +424,7 @@
     <button type="button" class="add-draft" id="add-draft"
             title="Paste a mock draft url to add it to this league's list">+</button>
     <button type="button" class="live" id="live" aria-pressed="false"
-            title="Poll the draft every 10 seconds and re-price the board">
+            title="Poll the draft every few seconds and re-price the board">
       <span class="dot" aria-hidden="true"></span>
       <span>Live</span>
       <span class="live-when" id="live-when"></span>
@@ -529,8 +529,34 @@ let ARMED = false;
 let LIVE = null;
 
 const VALUE_API = "api/value";
-const POLL_MS = 10000;
+
+// Ten seconds was too slow to be live. Bots in a mock pick every couple of
+// seconds, so a ten-second tick could open with most of a round already gone
+// — and the board would show it without ever looking broken. Three seconds is
+// the cadence client/sleeper.py documents for a draft loop: 20 polls a minute,
+// well under Sleeper's 1000.
+const POLL_MS = 3000;
+
+// How stale the board may get before it says so out loud. Comfortably past a
+// poll or two lost to a hiccup, comfortably short of a round going by while
+// the light sits there looking healthy.
+const STALE_MS = 15000;
+
 const LIVE_KEY = "draft-board:live";
+
+// One poll in the air at a time, and only the newest answer allowed to land.
+// A request that outlasts its interval used to get another fired on top of it,
+// which makes the queue longer rather than the board fresher; and a slow reply
+// arriving after a quick one would paint the board back to a pick that had
+// already happened.
+let POLLING = false;
+let POLL_SEQ = 0;
+
+// When a poll last landed, and the pick it landed on. Kept so the board can
+// say how old what it's showing is, rather than showing a stale pick number
+// with the same confidence as a fresh one.
+let LAST_OK = 0;
+let AT_PICK = 0;
 
 function valueCell(playerId){
   const v = VALUES.get(playerId);
@@ -849,13 +875,26 @@ function renderRow(pl, bump){
 // picks and what they changed.
 async function pollOnce(refresh){
   if(!LEAGUE || !DRAFT) return;
+  if(refresh && POLLING) return;    // one timer poll in the air at a time
+
+  const seq = ++POLL_SEQ;
+  const draftId = DRAFT.draft_id;
   const url = VALUE_API + "?league=" + encodeURIComponent(LEAGUE.league_id) +
-              "&draft=" + encodeURIComponent(DRAFT.draft_id) +
+              "&draft=" + encodeURIComponent(draftId) +
               (refresh ? "&refresh=1" : "");
-  const res = await fetch(url, {headers:{"Accept":"application/json"}});
-  const data = await res.json();
-  if(!res.ok) throw new Error(data.error || ("HTTP " + res.status));
-  applyLive(data);
+
+  if(refresh) POLLING = true;
+  try{
+    const res = await fetch(url, {headers:{"Accept":"application/json"}});
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || ("HTTP " + res.status));
+    // Overtaken while it was out, or answering for a draft we've since
+    // switched away from: either way it isn't the current state of anything.
+    if(seq !== POLL_SEQ || !DRAFT || DRAFT.draft_id !== draftId) return;
+    applyLive(data);
+  }finally{
+    if(refresh) POLLING = false;
+  }
 }
 
 // Patches the rows in place rather than rebuilding the list. A rebuild would
@@ -899,9 +938,22 @@ function applyLive(data){
   });
 
   renderRoster();
-  const when = document.getElementById("live-when");
-  if(when) when.textContent = "pick " + data.at_pick;
+  LAST_OK = Date.now();
+  AT_PICK = data.at_pick;
+  showWhen();
   return changed;
+}
+
+// What the label under the light says. The pick number alone was the thing
+// that hid this bug: a number that hadn't moved in a minute looked exactly
+// like one that had just arrived. Past STALE_MS it admits its own age.
+function showWhen(note){
+  const el = document.getElementById("live-when");
+  if(!el) return;
+  if(!LAST_OK){ el.textContent = note || (ARMED ? "waiting" : ""); return; }
+  const age = Date.now() - LAST_OK;
+  const stale = ARMED && age > STALE_MS ? " · " + Math.round(age / 1000) + "s ago" : "";
+  el.textContent = (note ? note + " · " : "") + "pick " + AT_PICK + stale;
 }
 
 // Whether the light was on is a preference, not draft state, so it outlives a
@@ -930,20 +982,26 @@ function syncLive(){
   const btn = document.getElementById("live");
   btn.classList.toggle("on", ARMED);
   btn.setAttribute("aria-pressed", ARMED ? "true" : "false");
+  showWhen();
 
   if(LIVE){ clearInterval(LIVE); LIVE = null; }
   if(!ARMED || document.hidden || !DRAFT) return;
 
   const tick = async () => {
+    // Before the fetch, not after: a poll that never comes back would
+    // otherwise leave the label frozen at whatever it last said, which is the
+    // one thing this is here to stop.
+    showWhen();
     try{
       await pollOnce(true);
       btn.classList.remove("err");
     }catch(err){
       // Keep the light on and keep trying: a draft is exactly when a dropped
       // request should not be the thing that stops the board updating. The
-      // amber dot says the last attempt failed without pretending we stopped.
+      // amber dot says the last attempt failed without pretending we stopped,
+      // and the label keeps counting so it's clear how far back this is.
       btn.classList.add("err");
-      document.getElementById("live-when").textContent = "retrying";
+      showWhen("retrying");
     }
   };
   tick();
@@ -1333,6 +1391,9 @@ function showDraft(draftId,drafts){
   if(LIVE){ clearInterval(LIVE); LIVE = null; }
   VALUES = new Map();
   BEST = null;
+  LAST_OK = 0;
+  AT_PICK = 0;
+  showWhen();
   DRAFT = drafts.find(d => d.draft_id === draftId) || drafts[0] || null;
   TURNS = asTurns(myPicks());
   const picks = DRAFT ? loadPicks(DRAFT.draft_id) : { gone:[], mine:[] };
