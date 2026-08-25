@@ -98,6 +98,15 @@ CURRENT_INJURY_STATUSES = frozenset({"Questionable", "Doubtful", "Out", "IR",
 # what changes early ones.
 UPSIDE_WEIGHT = 0.035
 
+# A bench player has option value even when the mean projection does not crack
+# today's best lineup.  Upside is the reason to spend a late pick on that
+# outcome: +1 is worth 10 season points and +2 is worth 20.  A small share of
+# above-wire production breaks ties between players with the same upside.
+# This term applies only after the roster can already field every starting
+# slot, so it cannot inflate a player being drafted to fill the lineup.
+BENCH_OPTION_WEIGHT = 0.02
+BENCH_UPSIDE_POINTS = 10.0
+
 # ADP is a mean and players go in a range around it. Sleeper publishes no
 # spread, so this is assumed, and it is the least evidenced number in the file:
 # it drives every `wait`. Measuring it from repeated mock drafts would be
@@ -319,6 +328,40 @@ def gain(player: Player, roster: list[Player], slots: list[str], base: dict[str,
     return max(0.0, lineup(roster + [player], slots, base) - lineup(roster, slots, base))
 
 
+def lineup_filled(roster: list[Player], slots: list[str]) -> bool:
+    """Whether the roster can fill every non-bench slot at once."""
+    have = Counter(player.position for player in roster)
+    exact = Counter(slot for slot in slots if slot not in ("BN", "FLEX"))
+    if any(have.get(position, 0) < count for position, count in exact.items()):
+        return False
+    flex_left = sum(max(0, have.get(position, 0) - exact.get(position, 0))
+                    for position in FLEXABLE)
+    return flex_left >= slots.count("FLEX")
+
+
+def option_value(player: Player, roster: list[Player], slots: list[str],
+                 base: dict[str, float]) -> float:
+    """Small, asymmetric value for a useful bench player's favorable tail.
+
+    The downside of a bench pick is a drop; the upside is that his role grows
+    enough to matter. It applies only to an RB/WR/TE selected after the current
+    roster can already field its full starting lineup. QB, K, and DEF never
+    receive it.
+    """
+    if player.position not in FLEXABLE or not lineup_filled(roster, slots):
+        return 0.0
+    surplus = max(0.0, player.adjusted - base.get(player.position, 0.0))
+    return (BENCH_UPSIDE_POINTS * max(0, player.upside)
+            + BENCH_OPTION_WEIGHT * surplus)
+
+
+def draft_gain(player: Player, roster: list[Player], slots: list[str],
+               base: dict[str, float]) -> float:
+    """Value added by a draft pick: lineup production plus bench option."""
+    lineup_gain = gain(player, roster, slots, base)
+    return lineup_gain + option_value(player, roster, slots, base)
+
+
 def survival(adp: float, pick: int) -> float:
     """Rough chance a player is still on the board at `pick`.
 
@@ -341,7 +384,8 @@ def wait(position: str, pool: list[Player], pick: int, roster: list[Player],
     Also returns the player we'd most likely end up with, which is what makes
     the plan search below able to carry a roster forward.
     """
-    ranked = sorted(((gain(p, roster, slots, base), p) for p in pool if p.position == position),
+    ranked = sorted(((draft_gain(p, roster, slots, base), p)
+                     for p in pool if p.position == position),
                     key=lambda pair: -pair[0])[:depth]
     expected, still_gone, likely, best = 0.0, 1.0, None, 0.0
     for value, player in ranked:
@@ -368,7 +412,8 @@ def wait_outcomes(position: str, pool: list[Player], pick: int, roster: list[Pla
     is gone. We retain an outcome only when that probability times its gain is
     material; the remainder means no worthwhile player is available.
     """
-    ranked = sorted(((gain(p, roster, slots, base), p) for p in pool if p.position == position),
+    ranked = sorted(((draft_gain(p, roster, slots, base), p)
+                     for p in pool if p.position == position),
                     key=lambda pair: -pair[0])[:depth]
     still_gone, outcomes = 1.0, []
     for value, player in ranked:
@@ -471,6 +516,23 @@ PLAN_AHEAD = 4
 PLAN_POSITIONS = ("RB", "WR", "TE", "QB", "K", "DEF")
 
 
+def plan_positions(roster: list[Player], slots: list[str],
+                   positions: tuple[str, ...] = PLAN_POSITIONS) -> tuple[str, ...]:
+    """Positions that can still add a player to the draft plan.
+
+    K and DEF are single-purpose roster slots, not depth positions.  Once all
+    of a league's slots at either position are filled, a later pick there is a
+    replacement rather than useful roster construction.  The lineup model can
+    assign that replacement a tiny positive gain, but the draft planner should
+    not spend a second roster spot chasing it.
+    """
+    have = Counter(player.position for player in roster)
+    needed = Counter(slot for slot in slots if slot in STREAMABLE)
+    return tuple(position for position in positions
+                 if position not in STREAMABLE
+                 or have.get(position, 0) < needed.get(position, 0))
+
+
 @dataclass
 class Situation:
     """The draft as it stands, and everything pricing a pick needs.
@@ -524,7 +586,7 @@ def _continuation(picks: list[int], roster: list[Player], available: list[Player
     if not picks:
         return 0.0, []
     options = []
-    for position in positions:
+    for position in plan_positions(roster, slots, positions):
         got, player = wait(position, available, picks[0], roster, slots, base)
         if player is None:
             continue
@@ -553,7 +615,7 @@ def _continuation_stats(picks: list[int], roster: list[Player], available: list[
     if not picks:
         return 0.0, 0.0
     mean_totals, best_totals = [], []
-    for index, position in enumerate(positions):
+    for index, position in enumerate(plan_positions(roster, slots, positions)):
         outcomes = wait_outcomes(position, available, picks[0], roster, slots, base)
         if not outcomes:
             continue
@@ -585,7 +647,8 @@ def outlook(sit: Situation, candidates: list[Player], gains: dict[str, float],
     """
     picks = sit.upcoming[:ahead]
     rest_of, best_plan, starting_averages = {}, {}, []
-    for position in {p.position for p in candidates if p.position in PLAN_POSITIONS}:
+    open_positions = plan_positions(sit.roster, sit.slots)
+    for position in {p.position for p in candidates if p.position in open_positions}:
         # The player the board would take, which is simply the best gain now
         # that upside is inside it rather than added on afterwards.
         got, player = max(((gains[p.player_id], p) for p in candidates
@@ -606,6 +669,7 @@ class Ranked:
     player: Player
     value: float
     gain: float
+    option: float
     cost: float
     overall_average: float
     best_plan: float
@@ -627,18 +691,25 @@ def board(conn: sqlite3.Connection, league_id: str, draft_id: str,
     sit = situation(conn, league_id, draft_id)
 
     forced = must_fill(sit.roster, sit.slots, len(sit.upcoming))
+    open_positions = plan_positions(sit.roster, sit.slots)
     pickable = ([p for p in sit.available if p.position in forced]
-                if forced else [p for p in sit.available if p.position in PLAN_POSITIONS])
+                if forced else [p for p in sit.available if p.position in open_positions])
     candidates = sorted(pickable, key=lambda p: p.adp)[:limit]
 
-    gains = {p.player_id: gain(p, sit.roster, sit.slots, sit.base) for p in candidates}
+    lineup_gains = {p.player_id: gain(p, sit.roster, sit.slots, sit.base)
+                    for p in candidates}
+    options = {p.player_id: option_value(p, sit.roster, sit.slots, sit.base)
+               for p in candidates}
+    gains = {p.player_id: lineup_gains[p.player_id] + options[p.player_id]
+             for p in candidates}
     rest_of, overall_average, best_plan = outlook(sit, candidates, gains, ahead)
 
     ranked = []
     for player in candidates:
         got = gains[player.player_id]
         score = got + rest_of[player.position] - overall_average
-        ranked.append(Ranked(player, score, got, -score, overall_average,
+        ranked.append(Ranked(player, score, lineup_gains[player.player_id],
+                             options[player.player_id], -score, overall_average,
                              best_plan[player.position]))
     ranked.sort(key=lambda r: -r.value)
     return ranked, sit.roster, sit.upcoming
@@ -658,8 +729,8 @@ def plans(conn: sqlite3.Connection, league_id: str, draft_id: str, ahead: int = 
         return []
 
     scored = []
-    for position in positions:
-        options = [(gain(p, sit.roster, sit.slots, sit.base), p)
+    for position in plan_positions(sit.roster, sit.slots, positions):
+        options = [(draft_gain(p, sit.roster, sit.slots, sit.base), p)
                    for p in sit.available if p.position == position]
         if not options:
             continue
@@ -732,10 +803,11 @@ def main() -> None:
                   f"{'/'.join(sequence):16}  {who}")
         return
 
-    print(f"\n  {'value':>7} {'gain':>7} {'cost':>7}  {'pos':4} {'adp':>6}  player")
+    print(f"\n  {'value':>7} {'gain':>7} {'option':>7} {'cost':>7}  "
+          f"{'pos':4} {'adp':>6}  player")
     for row in ranked[:args.top]:
         flag = " " if row.player.graded else "?"
-        print(f"  {row.value:7.1f} {row.gain:7.1f} {row.cost:7.1f}  "
+        print(f"  {row.value:7.1f} {row.gain:7.1f} {row.option:7.1f} {row.cost:7.1f}  "
               f"{row.player.position:4} {row.player.adp:6.1f}  {row.player.name}{flag}")
     conn.close()
 

@@ -118,11 +118,29 @@ points** — it was nearly indifferent, so the floor buys real insurance cheaply
 
 **5. Rank on regret against the best plan.**
 
+Before searching the plan, each RB/WR/TE also receives a small bench-option
+value. Expected-lineup coverage otherwise makes every player below existing
+depth worth exactly zero, even though a late pick can be dropped at little
+cost if his favorable outcome never arrives. The option stays anchored to
+proven production above the waiver wire, with upside acting as a modifier:
+
 ```
-gain(i)    = lineup(roster + i) − lineup(roster)
-wait(pos)  = Σⱼ gain(j) · P(j survives) · Π_{k better}(1 − P(k survives))
+surplus(i) = max(adjusted_points(i) - waiver_baseline(position(i)), 0)
+option(i)  = 10 * max(upside_grade(i), 0) + 0.02 * surplus(i)
+draft_gain(i) = lineup_gain(i) + option(i)
+```
+
+The option applies only when the roster can already fill every starting slot
+and the player is an RB, WR, or TE—i.e. this pick is being evaluated for the
+bench. Thus `+1` upside is worth at least 10 season points and `+2` at least
+20, with above-wire production breaking ties. Players selected while the
+starting lineup is incomplete receive no bench bonus, and QB/K/DEF never do.
+
+```
+lineup_gain(i) = lineup(roster + i) − lineup(roster)
+wait(pos)  = Σⱼ draft_gain(j) · P(j survives) · Π_{k better}(1 − P(k survives))
 continuation(pos) = best remaining plan after taking the best player at pos
-score(i)   = gain(i) + continuation(pos(i))
+score(i)   = draft_gain(i) + continuation(pos(i))
 ```
 
 Survival is a smooth function of (our next pick − ADP). `wait` is still the

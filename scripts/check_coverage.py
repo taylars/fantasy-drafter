@@ -113,10 +113,11 @@ def check_agreement(league_id: str, draft_id: str) -> int:
     ranked, _, _ = value.board(conn, league_id, draft_id, limit=250)
     sit = value.situation(conn, league_id, draft_id)
     forced = value.must_fill(sit.roster, sit.slots, len(sit.upcoming))
+    open_positions = value.plan_positions(sit.roster, sit.slots)
     pickable = ([p for p in sit.available if p.position in forced]
-                if forced else [p for p in sit.available if p.position in value.PLAN_POSITIONS])
+                if forced else [p for p in sit.available if p.position in open_positions])
     candidates = sorted(pickable, key=lambda player: player.adp)[:250]
-    gains = {player.player_id: value.gain(player, sit.roster, sit.slots, sit.base)
+    gains = {player.player_id: value.draft_gain(player, sit.roster, sit.slots, sit.base)
              for player in candidates}
     rest_of, average, _ = value.outlook(sit, candidates, gains)
     conn.close()
@@ -131,7 +132,7 @@ def check_agreement(league_id: str, draft_id: str) -> int:
         if top is None:
             continue
         board_says = top.value
-        average_says = top.gain + rest_of[position] - average
+        average_says = top.gain + top.option + rest_of[position] - average
         ok = abs(board_says - average_says) < 1e-6
         bad += not ok
         print(f"  {'ok  ' if ok else 'DIFF'} {position:4} board {board_says:8.2f}   "

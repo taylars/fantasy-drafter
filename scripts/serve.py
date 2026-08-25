@@ -252,6 +252,7 @@ def value_payload(league_id: str, draft_id: str, refresh: bool) -> dict:
              "value": round(row.value, 1),
              "edge": round(row.value, 1),
              "gain": round(row.gain, 1),
+             "option": round(row.option, 1),
              "best_plan_edge": round(row.best_plan - row.overall_average, 1),
              "graded": row.player.graded}
             for row in ranked
