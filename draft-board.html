@@ -266,6 +266,57 @@
   }
   .pts::after{content:" pt";opacity:.6;}
   .pts:empty{display:none;}
+  /* What he's worth to us, as against what the room thinks — the ADP column at
+     the other end of the row is the room's answer to the same question. Only
+     drawn once the live button has fetched one, so the board is unchanged
+     until there's something true to put here. */
+  .val{
+    font-family:var(--mono);font-size:12px;font-weight:700;
+    flex-shrink:0;align-self:stretch;display:flex;align-items:center;
+    justify-content:flex-end;min-width:52px;padding:7px 8px;
+    border-left:1.5px solid var(--board-dark);color:var(--ink);
+  }
+  .val:empty{display:none;}
+  .val.neg{color:var(--ink-soft);font-weight:500;}
+  /* The best thing on the board right now. One row carries it, so it reads as
+     an answer rather than a heat map. */
+  .row.best{box-shadow:2px 2px 0 var(--rb),2px 2px 0 2px var(--ink);}
+  .row.best .val{background:var(--rb);color:#fff;}
+  .row.best.mine{box-shadow:2px 2px 0 var(--tape),2px 2px 0 2px var(--ink);}
+
+  /* The live light. Off it is a dead bulb; on it pulses, which is the only
+     moving thing on the page and so says "this is watching" without a label
+     having to. */
+  .live{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--display);font-size:15px;letter-spacing:.06em;
+    text-transform:uppercase;font-weight:700;color:var(--ink-soft);
+    background:var(--sticker);border:2px solid var(--ink);
+    padding:7px 12px;cursor:pointer;align-self:flex-end;
+    box-shadow:2px 2px 0 var(--ink);
+  }
+  .live:hover{background:#FFFBEC;}
+  .live:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink);}
+  .live:focus-visible{outline:3px solid var(--qb);outline-offset:2px;}
+  .live .dot{
+    width:11px;height:11px;border-radius:50%;flex-shrink:0;
+    background:#8C3B3B;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.35);
+  }
+  .live.on{color:var(--ink);}
+  .live.on .dot{
+    background:#E5342A;
+    box-shadow:0 0 0 0 rgba(229,52,42,.7),0 0 9px 2px rgba(229,52,42,.9),
+               inset 0 0 0 1.5px rgba(0,0,0,.2);
+    animation:blip 1.6s ease-out infinite;
+  }
+  .live.err .dot{background:var(--te);animation:none;box-shadow:0 0 7px 1px rgba(180,105,14,.8);}
+  @keyframes blip{
+    0%{box-shadow:0 0 0 0 rgba(229,52,42,.75),0 0 9px 2px rgba(229,52,42,.9),inset 0 0 0 1.5px rgba(0,0,0,.2);}
+    70%{box-shadow:0 0 0 9px rgba(229,52,42,0),0 0 9px 2px rgba(229,52,42,.9),inset 0 0 0 1.5px rgba(0,0,0,.2);}
+    100%{box-shadow:0 0 0 0 rgba(229,52,42,0),0 0 9px 2px rgba(229,52,42,.9),inset 0 0 0 1.5px rgba(0,0,0,.2);}
+  }
+  .live-when{font-family:var(--mono);font-size:10.5px;letter-spacing:0;
+    text-transform:none;font-weight:500;color:var(--ink-soft);}
   /* Drawn on every row rather than only on favorites: the hollow star is how
      the column says it can be tapped, and it keeps the rows in line down the
      length of the list either way. Faint until it means something. */
@@ -325,6 +376,7 @@
   }
   @media (prefers-reduced-motion:reduce){
     .row{transition:none;}
+    .live.on .dot{animation:none;}
     .star{transition:none;}
     .star.bump{animation:none;}
   }
@@ -333,6 +385,7 @@
     .picknum{font-size:26px;padding:5px 7px 3px;}
     .adp{flex-basis:46px;padding:7px 6px;}
     .pts{display:none;}
+    .val{min-width:44px;padding:7px 6px;font-size:11px;}
     .star{flex-basis:28px;}
   }
 </style>
@@ -356,6 +409,12 @@
       <span class="field-lbl">Draft</span>
       <select id="draft-pick"></select>
     </label>
+    <button type="button" class="live" id="live" aria-pressed="false"
+            title="Poll the draft every 10 seconds and re-price the board">
+      <span class="dot" aria-hidden="true"></span>
+      <span>Live</span>
+      <span class="live-when" id="live-when"></span>
+    </button>
   </div>
 
   <div class="roster">
@@ -435,6 +494,28 @@ let ME = [];             // user_ids we track, for spotting our own picks
 // board catches up; there is nothing to tap and nothing to keep in sync.
 let DRAFTED = new Set();
 let MINE = [];
+
+// What each player is worth to us, from GET /api/value. Empty until the live
+// button is switched on, because there is nothing honest to show before then —
+// the number depends on the draft state, and the copy of the database this page
+// downloaded at load time stops being the draft state the moment anyone picks.
+//
+// The formula itself deliberately isn't here. It lives in value.py, and the
+// server runs it: the board already mirrors `scoreStats` from db.py and that
+// one duplication costs something every time scoring changes.
+let VALUES = new Map();  // player_id -> {value, gain, wait}
+let BEST = null;         // player_id of the best thing available right now
+let LIVE = null;         // the poll timer, or null when the light is off
+
+const VALUE_API = "api/value";
+const POLL_MS = 10000;
+
+function valueCell(playerId){
+  const v = VALUES.get(playerId);
+  if(!v) return '<span class="val"></span>';
+  const cls = v.value < 1 ? "val neg" : "val";
+  return '<span class="'+cls+'">'+(v.value >= 0 ? "+" : "")+v.value.toFixed(0)+'</span>';
+}
 
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
@@ -698,6 +779,7 @@ function rowHtml(pl){
       '<span class="who"><span class="nm">'+esc(pl.full_name)+'</span>'+
         '<span class="tm">'+esc(pl.team || "FA")+hurt+'</span></span>'+
       '<span class="pts">'+(pl.points == null ? "" : pl.points.toFixed(0))+'</span>'+
+      valueCell(pl.player_id)+
     '</a>'+
     '<button type="button" class="star'+(fav ? " on" : "")+'"'+
       ' aria-pressed="'+(fav ? "true" : "false")+'"'+
@@ -724,6 +806,98 @@ function renderRow(pl, bump){
   if(focused) row.querySelector(focused).focus();
   if(bump) row.querySelector(".star").classList.add("bump");
   return row;
+}
+
+/* ---------- live ---------- */
+
+// The value of a pick changes with every pick anyone makes, so a board priced
+// once at page load is wrong by the time it matters. This is the only part of
+// the page that isn't a read of the downloaded database: the server refetches
+// the draft from Sleeper, re-runs value.py against it, and hands back both the
+// picks and what they changed.
+async function pollOnce(refresh){
+  if(!LEAGUE || !DRAFT) return;
+  const url = VALUE_API + "?league=" + encodeURIComponent(LEAGUE.league_id) +
+              "&draft=" + encodeURIComponent(DRAFT.draft_id) +
+              (refresh ? "&refresh=1" : "");
+  const res = await fetch(url, {headers:{"Accept":"application/json"}});
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error || ("HTTP " + res.status));
+  applyLive(data);
+}
+
+// Patches the rows in place rather than rebuilding the list. A rebuild would
+// throw away the scroll position, and mid-draft that is the one thing you are
+// holding on to.
+function applyLive(data){
+  VALUES = new Map(data.values.map(v => [v.player_id, v]));
+
+  const gone = new Set(data.picks.map(k => k.player_id).filter(Boolean));
+  const mineIds = new Set(data.roster);
+  const changed = gone.size !== DRAFTED.size;
+  DRAFTED = gone;
+  MINE = data.picks
+    .filter(k => k.player_id && mineIds.has(k.player_id))
+    .map(k => {
+      const pl = BY_ID.get(k.player_id);
+      return {k:k.player_id, n:pl ? pl.full_name : k.player_id, p:pl ? pl.position : ""};
+    });
+
+  // The best available player, which is the whole point of the number: the
+  // list stays in ADP order so the breaks still land where they belong, and
+  // one row is marked instead.
+  BEST = null;
+  for(const v of data.values){
+    if(!DRAFTED.has(v.player_id)){ BEST = v.player_id; break; }
+  }
+
+  document.querySelectorAll(".row").forEach(row => {
+    const id = row.dataset.player;
+    const cell = row.querySelector(".val");
+    if(cell){
+      const v = VALUES.get(id);
+      cell.textContent = v ? ((v.value >= 0 ? "+" : "") + v.value.toFixed(0)) : "";
+      cell.classList.toggle("neg", !!v && v.value < 1);
+      if(v) cell.title = "gain " + v.gain.toFixed(0) + " · waiting costs " +
+                         v.wait.toFixed(0) + (v.graded ? "" : " · ungraded");
+    }
+    row.classList.toggle("gone", DRAFTED.has(id) && !mineIds.has(id));
+    row.classList.toggle("mine", mineIds.has(id));
+    row.classList.toggle("best", id === BEST);
+  });
+
+  renderRoster();
+  const when = document.getElementById("live-when");
+  if(when) when.textContent = "pick " + data.at_pick;
+  return changed;
+}
+
+function setLive(on){
+  const btn = document.getElementById("live");
+  btn.classList.toggle("on", on);
+  btn.classList.remove("err");
+  btn.setAttribute("aria-pressed", on ? "true" : "false");
+
+  if(LIVE){ clearInterval(LIVE); LIVE = null; }
+  if(!on){
+    document.getElementById("live-when").textContent = "";
+    return;
+  }
+
+  const tick = async () => {
+    try{
+      await pollOnce(true);
+      btn.classList.remove("err");
+    }catch(err){
+      // Keep the light on and keep trying: a draft is exactly when a dropped
+      // request should not be the thing that stops the board updating. The
+      // amber dot says the last attempt failed without pretending we stopped.
+      btn.classList.add("err");
+      document.getElementById("live-when").textContent = "retrying";
+    }
+  };
+  tick();
+  LIVE = setInterval(tick, POLL_MS);
 }
 
 function roundLabel(rounds){
@@ -1020,6 +1194,13 @@ function wireBoard(){
   board.addEventListener("click", onClick);
   board.addEventListener("contextmenu", onContextMenu);
   board.addEventListener("keydown", onKeyDown);
+
+  const live = document.getElementById("live");
+  live.addEventListener("click", () => setLive(!LIVE));
+  // Polling a draft nobody is watching is just noise on the server.
+  document.addEventListener("visibilitychange", () => {
+    if(document.hidden && LIVE) setLive(false);
+  });
 }
 
 /* ---------- selection ---------- */
@@ -1027,6 +1208,11 @@ function wireBoard(){
 // The breaks belong to the draft, not the league, so switching drafts rebuilds
 // the list rather than just restyling it.
 function showDraft(draftId,drafts){
+  // Prices belong to one draft's state, so switching drafts drops them and
+  // stops the poll rather than leaving the last draft's numbers on screen.
+  setLive(false);
+  VALUES = new Map();
+  BEST = null;
   DRAFT = drafts.find(d => d.draft_id === draftId) || drafts[0] || null;
   TURNS = asTurns(myPicks());
   const picks = DRAFT ? loadPicks(DRAFT.draft_id) : { gone:[], mine:[] };

@@ -9,10 +9,18 @@ fetch a local file from a file:// page — so the board needs a server, even
 though it's still a static page. This is that server: the standard library's,
 rooted at the repo, and bound to localhost only.
 
-It serves one thing that isn't a file: POST /api/tags, which writes a single
-row of player_tags. Tagging is the one opinion formed while looking at the
-board rather than before it — holding a row or tapping its star has to land
-somewhere that survives a reload, and sql.js in the page can only read.
+It serves two things that aren't files. POST /api/tags writes a single row of
+player_tags: tagging is the one opinion formed while looking at the board
+rather than before it, and sql.js in the page can only read. GET /api/value
+returns what each player is worth right now, and with ?refresh=1 pulls the
+draft's picks from Sleeper first — which is what the live button on the board
+polls while a draft is running.
+
+Value is computed here rather than in the page on purpose. The board already
+mirrors one thing from the database (`scoreStats`), and that duplication has a
+cost every time scoring changes; mirroring the whole value formula would be a
+second copy of something far larger, drifting from `value.py` the first time
+either was touched.
 """
 
 from __future__ import annotations
@@ -24,16 +32,26 @@ import json
 import pathlib
 import socketserver
 import sqlite3
+import urllib.parse
 import webbrowser
 
 import db
+import value as value_model
+from client.sleeper import SleeperClient
+from scripts.load_drafts import load_draft
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PAGE = "draft-board.html"
 DB_FILE = ROOT / "data" / "fantasy.db"
 
 TAGS_API = "/api/tags"
+VALUE_API = "/api/value"
 KINDS = ("favorite", "watch")
+
+# How many players the value endpoint prices. The board shows every player with
+# an ADP, but the ones worth a number are the ones anywhere near being picked —
+# and past a couple of hundred the differences are under a point anyway.
+VALUE_LIMIT = 250
 
 # A tag is three short ids; anything larger than this is not one.
 MAX_BODY = 4096
@@ -86,6 +104,61 @@ def write_tag(payload: dict) -> dict:
             "tagged_at": None if kind is None else tagged_at}
 
 
+def refresh_picks(draft_id: str) -> None:
+    """Pull this draft's picks from Sleeper into the cache.
+
+    The board reads a copy of the database that was downloaded when the page
+    loaded, so it cannot see a pick made since. This is the only way new picks
+    reach it mid-draft — and it is why the live button polls the server rather
+    than re-reading the file it already has.
+    """
+    conn = db.connect(DB_FILE)
+    try:
+        with SleeperClient() as sleeper:
+            load_draft(conn, sleeper, draft_id)
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def value_payload(league_id: str, draft_id: str, refresh: bool) -> dict:
+    """What every available player is worth, and the draft state behind it.
+
+    Returns the picks as well as the values. The page needs both to update
+    without reloading: the picks say who to strike through and which slots are
+    ours, and the values are what those picks just changed.
+    """
+    if refresh:
+        refresh_picks(draft_id)
+
+    conn = db.connect(DB_FILE)
+    try:
+        ranked, roster, upcoming = value_model.board(conn, league_id, draft_id,
+                                                     limit=VALUE_LIMIT)
+        picks = [dict(row) for row in conn.execute(
+            "SELECT player_id, picked_by, pick_no, round FROM draft_picks "
+            "WHERE draft_id = ? ORDER BY pick_no", (draft_id,))]
+    finally:
+        conn.close()
+
+    return {
+        "league_id": league_id,
+        "draft_id": draft_id,
+        "at_pick": len(picks) + 1,
+        "picks": picks,
+        "upcoming": upcoming,
+        "roster": [p.player_id for p in roster],
+        "values": [
+            {"player_id": row.player.player_id,
+             "value": round(row.value, 1),
+             "gain": round(row.gain, 1),
+             "wait": round(row.wait, 1),
+             "graded": row.player.graded}
+            for row in ranked
+        ],
+    }
+
+
 class Handler(http.server.SimpleHTTPRequestHandler):
     """Static files, with the caching turned off.
 
@@ -101,6 +174,32 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         # One line per request is noise; failures are what's worth seeing.
         if not str(args[1] if len(args) > 1 else "").startswith("2"):
             super().log_message(fmt, *args)
+
+    def do_GET(self) -> None:
+        parsed = urllib.parse.urlparse(self.path)
+        if parsed.path != VALUE_API:
+            super().do_GET()
+            return
+
+        query = urllib.parse.parse_qs(parsed.query)
+        league_id = (query.get("league") or [None])[0]
+        draft_id = (query.get("draft") or [None])[0]
+        refresh = (query.get("refresh") or ["0"])[0] not in ("0", "", "false")
+
+        if not league_id or not draft_id:
+            self.reply(400, {"error": "league and draft are required"})
+            return
+        try:
+            self.reply(200, value_payload(league_id, draft_id, refresh))
+        except LookupError as exc:
+            self.reply(404, {"error": str(exc)})
+        except sqlite3.Error as exc:
+            self.reply(500, {"error": f"couldn't read the cache: {exc}"})
+        except Exception as exc:
+            # A live draft is the worst time to lose the board to a traceback:
+            # Sleeper can time out or change shape, and the page should be told
+            # so it can keep the light on and try again in ten seconds.
+            self.reply(502, {"error": f"{type(exc).__name__}: {exc}"})
 
     def do_POST(self) -> None:
         if self.path.split("?")[0] != TAGS_API:

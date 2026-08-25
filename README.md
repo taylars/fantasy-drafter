@@ -12,6 +12,7 @@ to track picks live during the draft.
 - `docs/` — what the board should rank on, and the formula that does it
 - `watchlist.json` — players to mark out on the board, per league
 - `draft-board.html` — draft board, rendered from the database in the browser
+- the live button — polls the draft and re-prices the board while it runs
 - `value.py` — what each player is worth to us, given roster and picks left
 
 ## Layout
@@ -366,3 +367,33 @@ best one on the wire is 0 points, where for a running back it is 102.
 [docs/value-formula.md](docs/value-formula.md) is the derivation, with the
 numbers and what it was checked against. [docs/drafting-goals.md](docs/drafting-goals.md)
 is why these are the right questions.
+
+### Going live
+
+The board is a read of the database as it stood when the page loaded, which is
+the right thing for planning and the wrong thing during a draft: a pick made
+thirty seconds ago changes what everything is worth, and the page can't see it.
+The **Live** button in the picker row is the answer. Click it and the light
+comes on; click it again and it goes out.
+
+While it's lit, every ten seconds the page asks the server for
+`GET /api/value`, which pulls the draft's picks from Sleeper, re-runs
+`value.py` against them, and hands back both. Players taken since the last
+tick get struck through, the roster strip fills in, every value is
+recalculated against the roster we now hold, and the best player available is
+outlined in green. Rows are patched where they stand rather than rebuilt, so
+the scroll position survives — mid-draft that's the thing you're holding onto.
+
+Two details worth knowing. The light stays on through a failed request and
+turns amber instead: a dropped connection during a draft should not be the
+thing that stops the board updating, and the next tick is ten seconds away.
+And polling stops on its own when the tab is hidden, or when you switch
+leagues or drafts — prices belong to one draft's state, so the old numbers go
+rather than linger.
+
+Value is computed on the server rather than in the page. The board already
+mirrors one thing from the database — `scoreStats`, so the page and `db.py`
+agree on what a player is worth — and that single duplication costs something
+every time scoring changes. Mirroring the whole value formula would be a
+second copy of something far larger, and it would drift from `value.py` the
+first time either side was touched.
