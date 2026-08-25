@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Draft Board — 1.01, 12-Team Half PPR</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --board:#D9DDD6;
+    --board-dark:#C6CBC2;
+    --sticker:#FFFFFF;
+    --ink:#16191A;
+    --ink-soft:#5C625E;
+    --tape:#F2C230;
+    --qb:#C2255C;
+    --rb:#157F52;
+    --wr:#2563A8;
+    --te:#B4690E;
+    --k:#6D4AA8;
+    --def:#6B6256;
+    --display:"Barlow Condensed",Impact,sans-serif;
+    --body:"Archivo",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--board);
+    background-image:
+      linear-gradient(rgba(0,0,0,.035) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,0,0,.035) 1px,transparent 1px);
+    background-size:34px 34px;
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:15px;
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:22px 16px 80px;}
+
+  /* ---------- masthead ---------- */
+  .mast{
+    border-bottom:3px solid var(--ink);
+    padding-bottom:14px;
+    margin-bottom:18px;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 6px;
+  }
+  h1{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:clamp(38px,9vw,64px);
+    line-height:.92;
+    letter-spacing:-.01em;
+    text-transform:uppercase;
+    margin:0;
+  }
+  h1 em{
+    font-style:normal;
+    background:var(--tape);
+    padding:0 .18em;
+    box-decoration-break:clone;
+    -webkit-box-decoration-break:clone;
+  }
+  .sub{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--ink-soft);
+    margin:10px 0 0;
+  }
+
+  /* ---------- roster strip ---------- */
+  .roster{
+    position:sticky;top:0;z-index:20;
+    background:var(--board);
+    border-bottom:2px solid var(--ink);
+    margin:0 -16px 26px;
+    padding:10px 16px 12px;
+  }
+  .roster-head{
+    display:flex;justify-content:space-between;align-items:baseline;
+    gap:12px;margin-bottom:8px;
+  }
+  .roster-title{
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-soft);
+  }
+  .slots{display:flex;flex-wrap:wrap;gap:5px;}
+  .slot{
+    font-family:var(--mono);font-size:10.5px;font-weight:500;
+    border:1.5px solid var(--board-dark);
+    background:transparent;color:var(--ink-soft);
+    padding:4px 7px;border-radius:2px;
+    letter-spacing:.04em;white-space:nowrap;
+  }
+  .slot.filled{
+    background:var(--ink);border-color:var(--ink);color:var(--board);
+  }
+  .slot .lbl{opacity:.55;margin-right:5px;}
+  .btn-reset{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+    text-transform:uppercase;background:none;border:1.5px solid var(--ink);
+    color:var(--ink);padding:4px 10px;border-radius:2px;cursor:pointer;
+  }
+  .btn-reset:hover{background:var(--ink);color:var(--board);}
+
+  /* ---------- turn block ---------- */
+  .turn{margin-bottom:38px;}
+  .turn-head{
+    display:flex;align-items:flex-start;gap:12px;margin-bottom:4px;
+  }
+  .picknum{
+    font-family:var(--display);font-weight:700;
+    font-size:clamp(30px,7vw,44px);line-height:.85;
+    background:var(--tape);padding:6px 9px 4px;
+    border:2px solid var(--ink);
+    box-shadow:3px 3px 0 var(--ink);
+    white-space:nowrap;flex-shrink:0;
+  }
+  .turn-meta{padding-top:3px;}
+  .turn-round{
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-soft);
+  }
+  .turn-plan{
+    font-family:var(--display);font-weight:600;
+    font-size:clamp(19px,4.4vw,25px);line-height:1.1;
+    text-transform:uppercase;margin-top:2px;
+  }
+  .turn-note{
+    font-size:13.5px;color:var(--ink-soft);
+    margin:10px 0 14px;max-width:62ch;
+  }
+
+  /* ---------- section rules inside a turn ---------- */
+  .rule{
+    display:flex;align-items:center;gap:10px;
+    margin:0 0 9px;
+  }
+  .rule-lbl{
+    font-family:var(--mono);font-size:10.5px;font-weight:600;
+    letter-spacing:.16em;text-transform:uppercase;
+    white-space:nowrap;
+  }
+  .rule.take .rule-lbl{
+    background:var(--tape);color:var(--ink);
+    border:2px solid var(--ink);
+    box-shadow:2px 2px 0 var(--ink);
+    padding:3px 8px;
+  }
+  .rule.rest .rule-lbl{color:var(--ink-soft);}
+  .rule .line{flex:1;height:0;border-top:2px solid var(--ink);}
+  .rule.rest .line{border-top:1px dashed var(--board-dark);}
+  .rest-block{margin-top:20px;}
+
+  /* ---------- sticker cards ---------- */
+  .cards{
+    display:grid;gap:8px;
+    grid-template-columns:repeat(auto-fill,minmax(258px,1fr));
+  }
+  .cards.picks{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:10px;}
+  .card{
+    display:flex;align-items:stretch;gap:0;
+    background:var(--sticker);
+    border:2px solid var(--ink);
+    box-shadow:3px 3px 0 var(--ink);
+    border-radius:2px;
+    transition:transform .18s ease,box-shadow .18s ease,opacity .18s ease,filter .18s ease;
+    overflow:hidden;
+  }
+  .card.gone{
+    transform:rotate(-1.1deg) scale(.982);
+    box-shadow:none;opacity:.42;filter:grayscale(1);
+  }
+  .card.mine{
+    box-shadow:3px 3px 0 var(--tape),3px 3px 0 2px var(--ink);
+  }
+  .card.rec{
+    background:#FFFBEC;
+    box-shadow:5px 5px 0 var(--ink);
+  }
+  .card.rec.mine{
+    box-shadow:5px 5px 0 var(--tape),5px 5px 0 2px var(--ink);
+  }
+  .card.rec.gone{box-shadow:none;}
+  .tap{
+    flex:1;display:flex;align-items:center;gap:9px;
+    background:none;border:0;padding:9px 4px 9px 0;
+    font-family:inherit;text-align:left;cursor:pointer;color:inherit;
+    min-width:0;
+  }
+  .card.rec .tap{padding:10px 4px 10px 0;align-items:flex-start;}
+  .pos{
+    font-family:var(--display);font-weight:700;font-size:13px;
+    letter-spacing:.06em;color:#fff;
+    padding:0 7px;align-self:stretch;
+    display:flex;align-items:center;flex-shrink:0;
+  }
+  .pos.QB{background:var(--qb);} .pos.RB{background:var(--rb);}
+  .pos.WR{background:var(--wr);} .pos.TE{background:var(--te);}
+  .pos.K{background:var(--k);}   .pos.DEF{background:var(--def);}
+  .who{min-width:0;flex:1;}
+  .nm{
+    font-weight:600;font-size:14px;line-height:1.2;
+    display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .card.rec .nm{font-size:15.5px;white-space:normal;}
+  .card.gone .nm{text-decoration:line-through;}
+  .tm{
+    font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);
+    letter-spacing:.05em;
+  }
+  .why{
+    display:block;font-size:12.5px;line-height:1.35;
+    color:var(--ink);margin-top:4px;
+  }
+  .card.gone .why{color:var(--ink-soft);}
+  .tie{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink);
+    background:var(--tape);padding:1px 5px;border:1px solid var(--ink);
+    display:inline-block;margin-top:5px;
+  }
+  .adp{
+    font-family:var(--mono);font-size:12px;font-weight:600;
+    color:var(--ink-soft);padding-right:8px;align-self:center;flex-shrink:0;
+  }
+  .card.rec .adp{align-self:flex-start;padding-top:2px;}
+  .flag{
+    font-family:var(--mono);font-size:9.5px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--qb);display:block;margin-top:1px;
+  }
+  .claim{
+    font-family:var(--display);font-weight:600;font-size:12px;
+    letter-spacing:.09em;text-transform:uppercase;
+    background:var(--ink);color:var(--board);
+    border:0;border-left:2px solid var(--ink);
+    padding:0 11px;cursor:pointer;flex-shrink:0;
+  }
+  .claim:hover{background:var(--rb);}
+  .card.mine .claim{background:var(--tape);color:var(--ink);}
+  .tap:focus-visible,.claim:focus-visible,.btn-reset:focus-visible{
+    outline:3px solid var(--qb);outline-offset:2px;
+  }
+
+  .legend{
+    font-family:var(--mono);font-size:11px;color:var(--ink-soft);
+    border-top:2px solid var(--ink);padding-top:12px;margin-top:6px;
+    display:flex;flex-wrap:wrap;gap:16px;
+  }
+  @media (prefers-reduced-motion:reduce){
+    .card{transition:none;} .card.gone{transform:none;}
+  }
+  @media (max-width:520px){
+    .picknum{font-size:26px;padding:5px 7px 3px;}
+    .cards,.cards.picks{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <p class="eyebrow">12-Team · Half PPR · Snake · 15 Rounds</p>
+    <h1>Board from the <em>1.01</em></h1>
+    <p class="sub">Tap a name when he's gone. Hit DRAFT for the ones you take.</p>
+  </header>
+
+  <div class="roster">
+    <div class="roster-head">
+      <span class="roster-title">My roster</span>
+      <button class="btn-reset" id="reset">Clear board</button>
+    </div>
+    <div class="slots" id="slots"></div>
+  </div>
+
+  <main id="board"></main>
+
+  <div class="legend">
+    <span>ADP = 12-team half-PPR average draft position, Aug 18–23</span>
+    <span>Yellow card = the pick to make</span>
+    <span>Struck = off the board</span>
+    <span>Yellow shadow = yours</span>
+  </div>
+</div>
+
+<script>
+const TURNS = [
+  { picks:"1", round:"Round 1", plan:"Take Bijan",
+    note:"Gibbs is the consensus 1.01 by a hair, but Bijan's the guy you want and nobody can take him ahead of you. Lock it in and move on.",
+    players:[
+      {n:"Bijan Robinson",t:"ATL",p:"RB",a:"2.3",f:"your pick",r:1,
+       w:"The one pick in this draft nobody can take from you. Don't overthink Gibbs."},
+      {n:"Jahmyr Gibbs",t:"DET",p:"RB",a:"1.5"},
+      {n:"Ja'Marr Chase",t:"CIN",p:"WR",a:"3.9"}
+    ]},
+
+  { picks:"24 · 25", round:"Round 2 / 3 turn", plan:"One WR, one RB",
+    note:"Twenty-two picks until you're back. Grab a WR you actually want plus a volume back — you don't want to leave this turn with RB2 unfilled. Javonte is the back you want — he's going eight picks later than Jacobs or Kyren, so take your receiver at 24 and him at 25.",
+    players:[
+      {n:"Nico Collins",t:"HOU",p:"WR",a:"21.0",r:1,f:"needs a slide",
+       w:"The WR you want — true alpha target share and the best week-winner in this range. He's going 21st, though, so he only reaches you if three or four picks go off-script. Nabers or Pickens if he doesn't."},
+      {n:"Javonte Williams",t:"DAL",p:"RB",a:"33.4",r:1,
+       w:"Your RB2. Lead back on a line that will run it, and the cheapest of the volume backs — use pick 25 on him and spend 24 on the receiver."},
+      {n:"Kenneth Walker",t:"KC",p:"RB",a:"21.5"},
+      {n:"Chris Olave",t:"NO",p:"WR",a:"23.8"},
+      {n:"Josh Jacobs",t:"GB",p:"RB",a:"24.0"},
+      {n:"Omarion Hampton",t:"LAC",p:"RB",a:"24.0",f:"rotoworld fade"},
+      {n:"George Pickens",t:"DAL",p:"WR",a:"25.0"},
+      {n:"Zay Flowers",t:"BAL",p:"WR",a:"25.7"},
+      {n:"Kyren Williams",t:"LAR",p:"RB",a:"27.2"},
+      {n:"Malik Nabers",t:"NYG",p:"WR",a:"28.0"},
+      {n:"Jeremiyah Love",t:"ARI",p:"RB",a:"29.4"},
+      {n:"Garrett Wilson",t:"NYJ",p:"WR",a:"31.4"},
+      {n:"Tetairoa McMillan",t:"CAR",p:"WR",a:"31.5"},
+      {n:"DeVonta Smith",t:"PHI",p:"WR",a:"32.1"}
+    ]},
+
+  { picks:"48 · 49", round:"Round 4 / 5 turn", plan:"Elite TE if he falls + WR",
+    note:"Your tight end window. Bowers has gone as late as 5.12 and McBride as late as 5.02 — if either is sitting there, take him, because the drop after those two is a cliff. Pair him with a receiver — you already have Bijan and Kyren, and the WR tier here is deeper than the RB tier.",
+    players:[
+      {n:"Trey McBride",t:"ARI",p:"TE",a:"38.0",r:1,tie:"tie — take whichever is there",
+       w:"Nothing separates these two at this cost. Either one is a weekly two-position advantage; after them the TE room is streaming."},
+      {n:"Brock Bowers",t:"LV",p:"TE",a:"43.5",r:1,tie:"tie — take whichever is there",
+       w:"Falls further than McBride in most rooms, so he's the likelier one to still be on the board at 48."},
+      {n:"Jaylen Waddle",t:"DEN",p:"WR",a:"48.1",r:1,
+       w:"WR2. Full-time role and a target share nobody on that roster threatens — if McLaurin or Odunze somehow lasts, same tier, take either."},
+      {n:"D'Andre Swift",t:"CHI",p:"RB",a:"43.0"},
+      {n:"Terry McLaurin",t:"WAS",p:"WR",a:"44.7"},
+      {n:"Bucky Irving",t:"TB",p:"RB",a:"45.8"},
+      {n:"Rome Odunze",t:"CHI",p:"WR",a:"47.8"},
+      {n:"DJ Moore",t:"BUF",p:"WR",a:"48.8"},
+      {n:"Quinshon Judkins",t:"CLE",p:"RB",a:"51.6"},
+      {n:"Bhayshul Tuten",t:"JAX",p:"RB",a:"53.3"},
+      {n:"Mike Evans",t:"SF",p:"WR",a:"54.6"},
+      {n:"David Montgomery",t:"HOU",p:"RB",a:"55.0"},
+      {n:"Christian Watson",t:"GB",p:"WR",a:"56.3"}
+    ]},
+
+  { picks:"72 · 73", round:"Round 6 / 7 turn", plan:"Fill your thinnest starter",
+    note:"Look at your lineup and patch the hole. This is also the last comfortable spot for a top-8 QB if you want one — but waiting two more rounds costs you almost nothing.",
+    players:[
+      {n:"Parker Washington",t:"JAX",p:"WR",a:"65.3",r:1,
+       w:"The WR here — and it fits your read on Jacksonville: if Thomas isn't the guy, Washington is the one who absorbs those targets. Going 65th, so he may need pick 72, not 73."},
+      {n:"Rhamondre Stevenson",t:"NE",p:"RB",a:"67.1",r:1,tie:"tie — same ADP, take either",
+       w:"If RB is your thin spot: starting job, pass-game work, identical price to Pollard. Coin flip between them."},
+      {n:"Tony Pollard",t:"TEN",p:"RB",a:"67.1",r:1,tie:"tie — same ADP, take either",
+       w:"Same cost, same argument — lead back with receiving snaps. Take whichever your board likes better."},
+      {n:"DK Metcalf",t:"PIT",p:"WR",a:"63.6"},
+      {n:"Marvin Harrison Jr.",t:"ARI",p:"WR",a:"64.7"},
+      {n:"Dak Prescott",t:"DAL",p:"QB",a:"65.7"},
+      {n:"Jayden Daniels",t:"WAS",p:"QB",a:"70.0"},
+      {n:"Tyler Warren",t:"IND",p:"TE",a:"72.2"},
+      {n:"Carnell Tate",t:"TEN",p:"WR",a:"74.4"},
+      {n:"Jadarian Price",t:"SEA",p:"RB",a:"74.6"},
+      {n:"Rico Dowdle",t:"PIT",p:"RB",a:"75.5"},
+      {n:"Chris Godwin",t:"TB",p:"WR",a:"77.0"},
+      {n:"Chuba Hubbard",t:"CAR",p:"RB",a:"79.9"},
+      {n:"J.K. Dobbins",t:"DEN",p:"RB",a:"80.6"}
+    ]},
+
+  { picks:"96 · 97", round:"Round 8 / 9 turn", plan:"Quarterback here",
+    note:"The QB value pocket. Take one of these and you've spent a ninth-round pick on a top-12 arm. Grab a receiver with the other pick — this is the last turn where WR3 upside is still cheap. If you punted tight end in round 4, this is your catch-up spot too.",
+    players:[
+      {n:"Caleb Williams",t:"CHI",p:"QB",a:"91.0",r:1,
+       w:"Your QB. The rushing floor is what separates him from the pocket guys at this cost — but he's going 91st, so he may not survive to 96. Lawrence, Goff, or Mahomes if he doesn't."},
+      {n:"Jayden Reed",t:"GB",p:"WR",a:"91.2",r:1,
+       w:"WR3/FLEX with the best ceiling left. Diggs or Wan'Dale do the same job a tick safer if Reed's gone."},
+      {n:"Tucker Kraft",t:"GB",p:"TE",a:"100.3",r:1,
+       w:"Only if you skipped McBride/Bowers. Real target volume this late is the difference between a TE and a hole in your lineup."},
+      {n:"Harold Fannin Jr.",t:"CLE",p:"TE",a:"84.0"},
+      {n:"Kyle Pitts",t:"ATL",p:"TE",a:"85.1"},
+      {n:"Jakobi Meyers",t:"JAX",p:"WR",a:"85.5"},
+      {n:"Josh Downs",t:"IND",p:"WR",a:"87.7"},
+      {n:"Jordan Addison",t:"MIN",p:"WR",a:"88.1"},
+      {n:"Wan'Dale Robinson",t:"TEN",p:"WR",a:"93.2"},
+      {n:"Stefon Diggs",t:"WAS",p:"WR",a:"94.2"},
+      {n:"Trevor Lawrence",t:"JAX",p:"QB",a:"94.6"},
+      {n:"RJ Harvey",t:"DEN",p:"RB",a:"96.0"},
+      {n:"Kyle Monangai",t:"CHI",p:"RB",a:"96.2"},
+      {n:"Jonathon Brooks",t:"CAR",p:"RB",a:"97.1",f:"adp rising"},
+      {n:"Jared Goff",t:"DET",p:"QB",a:"101.0"},
+      {n:"Patrick Mahomes",t:"KC",p:"QB",a:"103.5"}
+    ]},
+
+  { picks:"120 · 121", round:"Round 10 / 11 turn", plan:"Bench upside, two swings",
+    note:"One backup runner one injury from a starting job, one receiver with a real ceiling. Still no kicker, still no defense.",
+    players:[
+      {n:"Jordan Mason",t:"MIN",p:"RB",a:"115.5",r:1,
+       w:"Best version of this bet on the page: he'd be a locked-in starter the week the job opens, and he already has standalone touches."},
+      {n:"Rashid Shaheed",t:"SEA",p:"WR",a:"119.4",r:1,
+       w:"The receiver swing. Big-play role that has posted WR2 stretches — more useful off this bench than a third handcuff back."},
+      {n:"Jacory Croskey-Merritt",t:"WAS",p:"RB",a:"105.0"},
+      {n:"Aaron Jones",t:"MIN",p:"RB",a:"105.4"},
+      {n:"Khalil Shakir",t:"BUF",p:"WR",a:"106.7"},
+      {n:"Romeo Doubs",t:"NE",p:"WR",a:"108.0"},
+      {n:"Justin Herbert",t:"LAC",p:"QB",a:"110.2"},
+      {n:"Makai Lemon",t:"PHI",p:"WR",a:"110.9"},
+      {n:"Bo Nix",t:"DEN",p:"QB",a:"114.7"},
+      {n:"KC Concepcion",t:"CLE",p:"WR",a:"117.4"},
+      {n:"Jalen Coker",t:"CAR",p:"WR",a:"117.5"},
+      {n:"George Kittle",t:"SF",p:"TE",a:"120.2"},
+      {n:"Blake Corum",t:"LAR",p:"RB",a:"120.8"},
+      {n:"Travis Kelce",t:"KC",p:"TE",a:"121.7"},
+      {n:"Rachaad White",t:"WAS",p:"RB",a:"121.8"}
+    ]},
+
+  { picks:"144 · 145", round:"Round 12 / 13 turn", plan:"Bijan insurance + a WR dart",
+    note:"Defense waits for your last two picks now, so this turn takes Brian Robinson Jr. about fifteen picks early — worth it, since he's the one handcuff on this board with standalone value and he won't survive to 168. Pair him with a receiver dart. Skip Jordyn Tyson — he re-injured the hamstring in camp on a two-month timeline.",
+    players:[
+      {n:"Brian Robinson Jr.",t:"ATL",p:"RB",a:"159.6",f:"bijan handcuff",r:1,
+       w:"Your first-rounder's insurance policy — an immediate top-24 back with weekly RB1 upside if Bijan missed time. Going 160th, so 145 is a reach, but it's the last look you get at him."},
+      {n:"Calvin Ridley",t:"TEN",p:"WR",a:"137.2",r:1,tie:"tie — take whichever is there",
+       w:"The dart. Still the clear No. 1 on his own offense at WR60 cost."},
+      {n:"Tre Tucker",t:"LV",p:"WR",a:"132.4",r:1,tie:"tie — take whichever is there",
+       w:"Same swing at the same price, and he goes five picks earlier — so he's the likelier of the two to already be gone. Jalen McMillan if you miss on both."},
+      {n:"Zach Charbonnet",t:"SEA",p:"RB",a:"131.3"},
+      {n:"Brandon Aubrey",t:"DAL",p:"K",a:"131.5"},
+      {n:"Mark Andrews",t:"BAL",p:"TE",a:"132.1"},
+      {n:"De'Zhaun Stribling",t:"SF",p:"WR",a:"133.5"},
+      {n:"Isaiah Likely",t:"NYG",p:"TE",a:"135.2"},
+      {n:"Jalen McMillan",t:"TB",p:"WR",a:"136.0"},
+      {n:"Woody Marks",t:"HOU",p:"RB",a:"139.2"},
+      {n:"Philadelphia",t:"PHI",p:"DEF",a:"139.9"},
+      {n:"Tyjae Spears",t:"TEN",p:"RB",a:"140.1"},
+      {n:"LA Chargers",t:"LAC",p:"DEF",a:"142.8"}
+    ]},
+
+  { picks:"168 · 169", round:"Round 14 / 15 turn", plan:"Kicker + defense",
+    note:"Both roster holes closed with your last two picks. The cost is that Philadelphia and the Chargers are long gone by 168 — these are the units that actually last this deep. Small price: streaming a defense off matchups gets you most of the way to rostering a good one.",
+    players:[
+      {n:"Cam Little",t:"JAX",p:"K",a:"150.1",r:1,tie:"tie — any of these three",
+       w:"Kickers are interchangeable; Little, Bates, and Mevis are the same pick. Take whoever's left and spend zero thought on it."},
+      {n:"Jacksonville",t:"JAX",p:"DEF",a:"159.8",r:1,tie:"tie — take whichever is there",
+       w:"Best unit still on the board this late. Fine as a Week 1 starter, and you stream from there the moment the schedule turns."},
+      {n:"Buffalo",t:"BUF",p:"DEF",a:"160.6",r:1,tie:"tie — take whichever is there",
+       w:"Goes a pick later, so slightly likelier to survive to 169. No real gap between the two — grab whoever's there."},
+      {n:"Jake Bates",t:"DET",p:"K",a:"150.7"},
+      {n:"Harrison Mevis",t:"LAR",p:"K",a:"150.7"},
+      {n:"Tank Bigsby",t:"PHI",p:"RB",a:"152.8"},
+      {n:"Dalton Kincaid",t:"BUF",p:"TE",a:"153.8"},
+      {n:"Tyler Allgeier",t:"ARI",p:"RB",a:"154.6"},
+      {n:"Tank Dell",t:"HOU",p:"WR",a:"155.0"},
+      {n:"Isiah Pacheco",t:"DET",p:"RB",a:"156.6"},
+      {n:"Chris Rodriguez Jr.",t:"JAX",p:"RB",a:"156.7"}
+    ]}
+];
+
+const SLOTS = ["QB","RB","RB","WR","WR","TE","FLEX","FLEX","K","DEF","BN","BN","BN","BN","BN"];
+const FLEXOK = ["RB","WR","TE"];
+const state = { gone:new Set(), mine:[] };
+
+function key(ti,pi){ return ti+"-"+pi; }
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+function makeCard(ti,pi,pl){
+  const k = key(ti,pi);
+  const card = document.createElement("div");
+  card.className = "card" + (pl.r ? " rec" : "");
+  card.dataset.key = k;
+
+  const tap = document.createElement("button");
+  tap.className = "tap";
+  tap.setAttribute("aria-pressed","false");
+  tap.setAttribute("aria-label","Mark "+pl.n+" as off the board");
+  tap.innerHTML =
+    '<span class="pos '+pl.p+'">'+pl.p+'</span>'+
+    '<span class="who"><span class="nm">'+esc(pl.n)+'</span>'+
+    '<span class="tm">'+pl.t+(pl.f?' · <span class="flag" style="display:inline">'+esc(pl.f)+'</span>':'')+'</span>'+
+    (pl.w?'<span class="why">'+esc(pl.w)+'</span>':'')+
+    (pl.tie?'<span class="tie">'+esc(pl.tie)+'</span>':'')+
+    '</span>'+
+    '<span class="adp">'+pl.a+'</span>';
+  tap.addEventListener("click",()=>toggleGone(k));
+
+  const claim = document.createElement("button");
+  claim.className = "claim";
+  claim.textContent = "Draft";
+  claim.setAttribute("aria-label","Add "+pl.n+" to my roster");
+  claim.addEventListener("click",()=>claimPlayer(k,pl));
+
+  card.appendChild(tap);
+  card.appendChild(claim);
+  return card;
+}
+
+function makeRule(cls,label){
+  const r = document.createElement("div");
+  r.className = "rule " + cls;
+  r.innerHTML = '<span class="rule-lbl">'+label+'</span><span class="line"></span>';
+  return r;
+}
+
+function buildBoard(){
+  const board = document.getElementById("board");
+  board.innerHTML = "";
+  TURNS.forEach((turn,ti)=>{
+    const sec = document.createElement("section");
+    sec.className = "turn";
+    const head = document.createElement("div");
+    head.className = "turn-head";
+    head.innerHTML =
+      '<div class="picknum">'+turn.picks+'</div>'+
+      '<div class="turn-meta"><div class="turn-round">'+turn.round+'</div>'+
+      '<div class="turn-plan">'+turn.plan+'</div></div>';
+    sec.appendChild(head);
+
+    const note = document.createElement("p");
+    note.className = "turn-note";
+    note.textContent = turn.note;
+    sec.appendChild(note);
+
+    const indexed = turn.players.map((pl,pi)=>({pl:pl,pi:pi}));
+    const recs = indexed.filter(x=>x.pl.r);
+    const rest = indexed.filter(x=>!x.pl.r);
+
+    if(recs.length){
+      const n = recs.length;
+      sec.appendChild(makeRule("take", n===1 ? "Take this" : "Take these — "+n));
+      const g = document.createElement("div");
+      g.className = "cards picks";
+      recs.forEach(x=>g.appendChild(makeCard(ti,x.pi,x.pl)));
+      sec.appendChild(g);
+    }
+
+    if(rest.length){
+      const block = document.createElement("div");
+      block.className = "rest-block";
+      block.appendChild(makeRule("rest","If they're gone — everyone else in range"));
+      const g = document.createElement("div");
+      g.className = "cards";
+      rest.forEach(x=>g.appendChild(makeCard(ti,x.pi,x.pl)));
+      block.appendChild(g);
+      sec.appendChild(block);
+    }
+
+    board.appendChild(sec);
+  });
+}
+
+function toggleGone(k){
+  if(state.gone.has(k)){
+    state.gone.delete(k);
+    state.mine = state.mine.filter(m=>m.k!==k);
+  } else {
+    state.gone.add(k);
+  }
+  render();
+}
+
+function claimPlayer(k,pl){
+  const already = state.mine.find(m=>m.k===k);
+  if(already){
+    state.mine = state.mine.filter(m=>m.k!==k);
+    state.gone.delete(k);
+  } else {
+    state.gone.add(k);
+    state.mine.push({k:k,n:pl.n,p:pl.p});
+  }
+  render();
+}
+
+function assignSlots(){
+  const filled = SLOTS.map(s=>({label:s,player:null}));
+  const pool = state.mine.slice();
+  // exact position first
+  pool.forEach(m=>{
+    const s = filled.find(f=>f.label===m.p && !f.player);
+    if(s){ s.player = m; m.placed = true; } else { m.placed = false; }
+  });
+  // then flex, then bench
+  pool.filter(m=>!m.placed).forEach(m=>{
+    let s = null;
+    if(FLEXOK.includes(m.p)) s = filled.find(f=>f.label==="FLEX" && !f.player);
+    if(!s) s = filled.find(f=>f.label==="BN" && !f.player);
+    if(s){ s.player = m; m.placed = true; }
+  });
+  return filled;
+}
+
+function render(){
+  document.querySelectorAll(".card").forEach(c=>{
+    const k = c.dataset.key;
+    const isGone = state.gone.has(k);
+    const isMine = state.mine.some(m=>m.k===k);
+    c.classList.toggle("gone",isGone && !isMine);
+    c.classList.toggle("mine",isMine);
+    const tap = c.querySelector(".tap");
+    tap.setAttribute("aria-pressed",String(isGone));
+    c.querySelector(".claim").textContent = isMine ? "Mine" : "Draft";
+  });
+
+  const wrap = document.getElementById("slots");
+  wrap.innerHTML = "";
+  assignSlots().forEach(f=>{
+    const el = document.createElement("span");
+    el.className = "slot" + (f.player ? " filled" : "");
+    el.innerHTML = '<span class="lbl">'+f.label+'</span>'+(f.player ? f.player.n : "—");
+    wrap.appendChild(el);
+  });
+}
+
+document.getElementById("reset").addEventListener("click",()=>{
+  state.gone.clear();
+  state.mine = [];
+  render();
+});
+
+buildBoard();
+render();
+</script>
+</body>
+</html>
