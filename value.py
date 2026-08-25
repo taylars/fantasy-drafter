@@ -494,8 +494,14 @@ def outlook(sit: Situation, candidates: list[Player], gains: dict[str, float],
     picks = sit.upcoming[:ahead]
     rest_of, best = {}, 0.0
     for position in {p.position for p in candidates}:
+        # Picked the way the board ranks — on gain *and* upside — because the
+        # plan has to assume we take the player we would actually take. Only
+        # the gain goes into the total; the bonus is the board's adjustment,
+        # not points the roster collects.
         got, player = max(((gains[p.player_id], p) for p in candidates
-                           if p.position == position), key=lambda pair: pair[0])
+                           if p.position == position),
+                          key=lambda pair: pair[0] + upside_bonus(pair[1], sit.round_no,
+                                                                  pair[0]))
         rest_of[position], _ = _continuation(
             picks[1:], sit.roster + [player],
             [p for p in sit.available if p.player_id != player.player_id],
@@ -568,7 +574,8 @@ def plans(conn: sqlite3.Connection, league_id: str, draft_id: str, ahead: int = 
                    for p in sit.available if p.position == position]
         if not options:
             continue
-        got, player = max(options, key=lambda pair: pair[0])
+        got, player = max(options, key=lambda pair: pair[0] + upside_bonus(
+            pair[1], sit.round_no, pair[0]))
         rest, taken = _continuation(
             picks[1:], sit.roster + [player],
             [p for p in sit.available if p.player_id != player.player_id],
