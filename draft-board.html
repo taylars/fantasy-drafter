@@ -575,7 +575,7 @@ let MINE = [];
 // The formula itself deliberately isn't here. It lives in value.py, and the
 // server runs it: the board already mirrors `scoreStats` from db.py and that
 // one duplication costs something every time scoring changes.
-let VALUES = new Map();  // player_id -> {value, gain, wait}
+let VALUES = new Map();  // player_id -> {value, gain, plan}
 let BEST = null;         // player_id of the best thing available right now
 
 // Two different things, kept apart on purpose. ARMED is what the button says
@@ -615,10 +615,16 @@ let POLL_SEQ = 0;
 let LAST_OK = 0;
 let AT_PICK = 0;
 
+// Value is regret against the best plan we have: the pick to make sits at 0
+// and everything else is negative by what taking it instead costs the rest of
+// the draft. So "behind" is the normal state of a row, and only a player who
+// is properly behind should read as one.
+const BEHIND = -5;
+
 function valueCell(playerId){
   const v = VALUES.get(playerId);
   if(!v) return '<span class="val"></span>';
-  const cls = v.value < 1 ? "val neg" : "val";
+  const cls = v.value < BEHIND ? "val neg" : "val";
   return '<span class="'+cls+'">'+(v.value >= 0 ? "+" : "")+v.value.toFixed(0)+'</span>';
 }
 
@@ -985,9 +991,12 @@ function applyLive(data){
     if(cell){
       const v = VALUES.get(id);
       cell.textContent = v ? ((v.value >= 0 ? "+" : "") + v.value.toFixed(0)) : "";
-      cell.classList.toggle("neg", !!v && v.value < 1);
-      if(v) cell.title = "gain " + v.gain.toFixed(0) + " · waiting costs " +
-                         v.wait.toFixed(0) + (v.graded ? "" : " · ungraded");
+      cell.classList.toggle("neg", !!v && v.value < BEHIND);
+      const pl = BY_ID.get(id);
+      if(v) cell.title = "gain " + v.gain.toFixed(0) +
+                         " · " + (pl ? pl.position : "") + " plan " +
+                         (v.plan >= 0 ? "+" : "") + v.plan.toFixed(0) +
+                         (v.graded ? "" : " · ungraded");
     }
     row.classList.toggle("gone", DRAFTED.has(id) && !mineIds.has(id));
     row.classList.toggle("mine", mineIds.has(id));

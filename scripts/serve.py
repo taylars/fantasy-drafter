@@ -235,6 +235,16 @@ def value_payload(league_id: str, draft_id: str, refresh: bool) -> dict:
     finally:
         conn.close()
 
+    # The position-level number behind every row: what the whole plan is worth
+    # if we spend this pick here, against the best plan going. Zero for the
+    # position to take now, negative by what waiting on the others costs. It is
+    # a property of the position rather than the player, so it is the best
+    # player there with his own upside bonus taken back off.
+    plan = {}
+    for row in ranked:
+        position = row.player.position
+        plan[position] = max(plan.get(position, float("-inf")), row.value - row.bonus)
+
     return {
         "league_id": league_id,
         "draft_id": draft_id,
@@ -246,7 +256,7 @@ def value_payload(league_id: str, draft_id: str, refresh: bool) -> dict:
             {"player_id": row.player.player_id,
              "value": round(row.value, 1),
              "gain": round(row.gain, 1),
-             "wait": round(row.wait, 1),
+             "plan": round(plan[row.player.position], 1),
              "graded": row.player.graded}
             for row in ranked
         ],

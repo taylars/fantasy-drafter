@@ -48,11 +48,26 @@ lineup(roster) = Σ over positions:
     Σ (availability × p̂) over our players at that position, best first,
       until the position's demand is met
     + (whatever demand is left) × baseline(position)
+
+  + FLEX: Σ (leftover availability × p̂) over whoever is spare, best first,
+      until the FLEX slots are full
+    + (whatever is still empty) × max baseline over RB/WR/TE
 ```
 
 This replaces a flat "bench is worth 10%" credit, and it is what makes depth
 worth paying for: a third RB is not a spare, he is the man who starts the four
 games the first two miss.
+
+**The FLEX is settled last, out of leftovers, and is never assigned to a
+position.** Handing it to one — enumerating the allocations and keeping the
+best — looks equivalent and is not, because step 3 floors an unfilled slot at
+its baseline. A FLEX nominally allocated to TE then collects the *TE* baseline
+for free, and in this league that is 115 against a receiver's 96, so the model
+preferred two imaginary waiver tight ends to any real receiver it could put
+there. On a live board at pick 73 it priced all fifteen available receivers at
+exactly 0.0, Malik Nabers among them — 64 points clear of the wire, worth
+nothing. Carrying the FLEX as its own demand and filling it from spare
+player-weeks fixes it, and drops the allocation search entirely.
 
 **3. The baseline is per-position, and it hinges on streamability.** This is
 the single most consequential number in the model. Only two positions can
@@ -94,50 +109,68 @@ This is a stated assumption, not a derivation. It is worth knowing how much it
 costs: without it the model preferred four receivers at pick 48 by **4.1
 points** — it was nearly indifferent, so the floor buys real insurance cheaply.
 
-**5. Rank on value over next available.**
+**5. Rank on regret against the best plan.**
 
 ```
+gain(i)    = lineup(roster + i) − lineup(roster)
 wait(pos)  = Σⱼ gain(j) · P(j survives) · Π_{k better}(1 − P(k survives))
-value(i)   = gain(i) − wait(pos(i)) − risk(round) + upside(round)
+cost(pos)  = best plan going − what's left after spending this pick on pos
+value(i)   = gain(i) − cost(pos(i)) + upside(round)
 ```
 
-where `gain(i) = lineup(roster + i) − lineup(roster)`, and survival is a smooth
-function of (our next pick − ADP).
+Survival is a smooth function of (our next pick − ADP). `wait` is still the
+engine — it is how the plan below prices a pick we haven't reached yet — but it
+is no longer what the board ranks on directly. Ranking a single pick on
+`gain − wait` prices the position as if this pick were the only one left, which
+flatters a thin position: scarcity gets credited, and the deep positions still
+to fill are never charged for.
+
+So the board ranks on the plan instead. Value is regret, in season points: the
+pick to make sits at zero and everything below it is what taking that player
+instead costs the rest of the draft.
 
 ## Roster and future picks
 
 **Existing roster: yes**, directly — `gain()` is measured against the lineup we
 already hold.
 
-**Future picks: plan over them, don't peek one turn ahead.** Two things a
-naive version gets wrong:
+**Future picks: plan over them, don't peek one turn ahead.** This is what the
+board ranks on, not a separate tool alongside it — they were two calculations
+once, and drifted far enough apart to give opposite advice about a tight end at
+pick 49. Three things a naive version gets wrong:
 
 1. **Turns are not picks.** A snake turn is often two picks (our slot-1 turns
    are `24·25`, `48·49`), so a three-turn plan is six players, not three.
 2. **The roster has to evolve inside the plan.** Score a *sequence* — take a
    position, add the expected player, re-price the next pick against that
    roster — rather than scoring each pick independently.
+3. **Prefixes are shared.** Searching recursively rather than enumerating whole
+   sequences prices every prefix once instead of once per sequence starting
+   with it — the same 256 plans for a third of the work, which is what makes
+   this affordable to run on every row of a live board.
 
 The output that answers "RB now or later" is the best plan starting with each
 position, differenced against the best plan overall:
 
 ```
-Atlanta League @ pick 24, holding Gibbs — planning 24, 25, 48, 49
-  WR    367.9   WR→WR→RB→WR   (Nico Collins)     +0.0
-  QB    358.2   QB→WR→RB→WR   (Josh Allen)       -9.7
-  RB    359.6   RB→RB→RB→RB   (Breece Hall)      -8.2
-  TE    351.2   TE→TE→RB→TE   (Brock Bowers)    -16.7
+@ pick 49, holding Bijan + Kyren + Pickens + Flowers — planning 49, 72, 73, 96
+  RB    279.1   +0.0   RB/WR/WR/QB   Jadarian Price
+  WR    272.8   -6.3   WR/WR/RB/QB   Jameson Williams
+  TE    255.8  -23.3   TE/WR/RB/QB   Tyler Warren
+  QB    250.9  -28.3   QB/WR/RB/WR   Caleb Williams
 
-Atlanta League @ pick 48, holding Gibbs + Hall — planning 48, 49, 72, 73
-  RB    293.8   RB→RB→WR→RB   (David Montgomery) +0.0
-  WR    277.9   WR→RB→RB→RB   (Mike Evans)      -15.9
-  TE    268.1   TE→TE→TE→RB   (Colston Loveland)-25.7
-  QB    255.8   QB→WR→WR→WR   (Drake Maye)      -38.0
+@ pick 73, the same roster plus Warren + Washington — planning 73, 96, 97, 120
+  RB    201.7   +0.0   RB/WR/QB/WR   Kyle Monangai
+  QB    199.7   -2.0   QB/RB/WR/WR   Caleb Williams
+  WR    198.8   -2.9   WR/RB/QB/WR   Jayden Reed
+  TE    190.7  -11.0   TE/RB/WR/QB   Mark Andrews
 ```
 
-At 24, taking the receiver and coming back for a back at 48 wins by 8 — RB is
-nearly flat across that gap. By 48 it has inverted and RB is the position that
-can't wait. Same roster, opposite advice, twenty-four picks apart.
+At 49 the tight end is 23 points behind and the quarterback is nearly a round's
+worth of value away. By 73 the quarterback has closed to 2 — the position is
+flat enough that Caleb Williams at 75 and Jared Goff at 140 are worth almost
+the same thing, so the gap to be paid for is small. Same draft, twenty-four
+picks apart.
 
 The per-position drop-off shows why — what one more turn of waiting costs:
 
@@ -158,17 +191,23 @@ on its own.
 
 ## As implemented
 
-`value.py` is the formula above; four things about it were only settled by
+`value.py` is the formula above; five things about it were only settled by
 building it and running drafts through it.
 
 - **Gain is monotone, and that took work.** Adding a player must never lower
   the roster. Two separate things broke it: choosing the FLEX allocation
-  greedily (fixed by maximizing over allocations), and letting a
-  sub-replacement player *displace* the waiver option instead of being ignored
-  (fixed by flooring every covered week at the baseline). Both showed up as
-  negative gains, which made `wait` negative, which inflated the value of
-  whoever caused it. A random-roster check now runs clean over 1,000 rosters,
-  and is worth keeping any time the coverage model is touched.
+  greedily, and letting a sub-replacement player *displace* the waiver option
+  instead of being ignored (fixed by flooring every covered week at the
+  baseline). Both showed up as negative gains, which made `wait` negative,
+  which inflated the value of whoever caused it.
+
+  The first fix — maximize over every way of allocating the FLEXes — restored
+  monotonicity but bought a worse bug with it, the free-waiver-tight-end above.
+  Filling the FLEX from leftovers instead is monotone *and* right, and it needs
+  no search. `python3 -m scripts.check_coverage` holds both properties down:
+  monotonicity over 1,000 random rosters, and the rule the allocation search
+  broke — anyone better than the wire must be worth something in an open FLEX.
+  Worth running any time the coverage model is touched.
 
 - **Upside scales by gain, not by points.** A backup quarterback has no route
   into the lineup, so his breakout is worth nothing to us. Paying him a bonus
@@ -180,6 +219,15 @@ building it and running drafts through it.
   player's missed games to the next man in the coverage step. Tyreek Hill, at
   0.12 availability after a season-ending knee injury, comes out at a gain of
   exactly 0.0 against an empty roster.
+
+- **The board and the plan are one search.** The board is the plan read
+  per-player: `value(i) = gain(i) + continuation(pos) − best plan`, so the best
+  player at each position scores exactly that position's plan delta, less his
+  own upside bonus. `scripts.check_coverage` asserts that equality — it is the
+  cheapest guard against the two drifting again, which they did once and
+  expensively. The cost is real: the board went from 0.03s to 1.6s, because it
+  now runs a four-deep search rather than one pass. That is affordable at a
+  draft's pace, and `--ahead 2` is there when it isn't.
 
 - **Legality is separate from value.** A kicker is worth ~0 to draft at any
   point, correctly — so left alone the model never drafts one, and a roster
