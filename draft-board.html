@@ -328,11 +328,10 @@
     border-left:1.5px solid var(--board-dark);color:var(--ink);
   }
   .val:empty{display:none;}
-  /* The best thing on the board right now. One row carries it, so it reads as
-     an answer rather than a heat map. */
-  .row.best{box-shadow:2px 2px 0 var(--rb),2px 2px 0 2px var(--ink);}
-  .row.best .val{background:var(--rb);color:#fff;}
-  .row.best.mine{box-shadow:2px 2px 0 var(--tape),2px 2px 0 2px var(--ink);}
+  /* The three best things on the board right now. */
+  .row.recommended{box-shadow:2px 2px 0 var(--rb),2px 2px 0 2px var(--ink);}
+  .row.recommended .val{background:var(--rb);color:#fff;}
+  .row.recommended.mine{box-shadow:2px 2px 0 var(--tape),2px 2px 0 2px var(--ink);}
 
   /* The live light. Off it is a dead bulb; on it pulses, which is the only
      moving thing on the page and so says "this is watching" without a label
@@ -574,7 +573,7 @@ let MINE = [];
 // server runs it: the board already mirrors `scoreStats` from db.py and that
 // one duplication costs something every time scoring changes.
 let VALUES = new Map();  // player_id -> {value, edge, gain, best_plan_edge}
-let BEST = null;         // player_id of the best thing available right now
+let RECOMMENDED = new Set(); // player_ids of the three best available choices
 
 // Two different things, kept apart on purpose. ARMED is what the button says
 // and what survives a reload; LIVE is whether a timer is actually running. They
@@ -972,12 +971,12 @@ function applyLive(data){
       return {k:k.player_id, n:pl ? pl.full_name : k.player_id, p:pl ? pl.position : ""};
     });
 
-  // The best available player, which is the whole point of the number: the
-  // list stays in ADP order so the breaks still land where they belong, and
-  // one row is marked instead.
-  BEST = null;
+  // Keep the list in ADP order so the breaks still land where they belong,
+  // and mark the three best available choices instead.
+  RECOMMENDED = new Set();
   for(const v of data.values){
-    if(!DRAFTED.has(v.player_id)){ BEST = v.player_id; break; }
+    if(!DRAFTED.has(v.player_id)) RECOMMENDED.add(v.player_id);
+    if(RECOMMENDED.size === 3) break;
   }
 
   document.querySelectorAll(".row").forEach(row => {
@@ -996,7 +995,7 @@ function applyLive(data){
     }
     row.classList.toggle("gone", DRAFTED.has(id) && !mineIds.has(id));
     row.classList.toggle("mine", mineIds.has(id));
-    row.classList.toggle("best", id === BEST);
+    row.classList.toggle("recommended", RECOMMENDED.has(id));
   });
 
   renderRoster();
@@ -1547,7 +1546,7 @@ function showDraft(draftId,drafts){
   // the polling at whatever is now selected.
   if(LIVE){ clearInterval(LIVE); LIVE = null; }
   VALUES = new Map();
-  BEST = null;
+  RECOMMENDED = new Set();
   LAST_OK = 0;
   AT_PICK = 0;
   showWhen();
