@@ -9,6 +9,13 @@ Gotchas worth knowing before you build on this:
   - There is no push API. Poll /draft/{id}/picks every 2-3s during a draft
     (3s = 20 calls/min, comfortably under the limit) and poll the draft object
     every ~30s to catch status flipping to paused/complete.
+  - **The draft endpoints sit behind Cloudflare with `s-maxage=86400`.** Poll
+    them plainly and you get an edge copy that can be a day old — verified:
+    the same `x-request-id` came back over and over with `cf-cache-status: HIT`
+    and `age` climbing past 6800s. Request `Cache-Control: no-cache` and
+    `Pragma: no-cache` are both ignored. A unique query parameter is what gets
+    through to the origin, which is what `fresh=True` adds. Sleeper's own app
+    uses websockets and so never notices this.
   - `draft_order` and `slot_to_roster_id` are null until the order is set.
   - `picked_by` is "" on autopicks — fall back to `roster_id`.
   - A commissioner can undo a pick, so diff on the set of `pick_no` values
@@ -37,6 +44,10 @@ PLAYER_CACHE = pathlib.Path("data/players_nfl.json")
 PLAYER_CACHE_MAX_AGE = 24 * 60 * 60
 
 RETRY_STATUSES = {429, 500, 502, 503, 504}
+
+# Query parameter used to miss the CDN — see the note about Cloudflare above.
+# The name is arbitrary; Sleeper ignores parameters it doesn't know.
+CACHE_BUSTER = "_"
 
 
 class SleeperError(RuntimeError):
@@ -69,11 +80,21 @@ class SleeperClient:
 
     # ------------------------------------------------------------------ core
 
-    def get(self, path: str, **params) -> dict | list | None:
+    def get(self, path: str, *, fresh: bool = False, **params) -> dict | list | None:
         """GET a path relative to the API base, retrying on 429/5xx.
 
         Returns None for a 404 — Sleeper uses it for unknown users and leagues,
         which is a normal miss rather than an error.
+
+        `fresh` adds a cache-busting parameter so the request misses
+        Cloudflare's edge cache and reaches Sleeper. Pass it for anything whose
+        whole point is the current state; leave it off for the things that
+        genuinely change daily, where the edge cache is doing us a favour.
+
+        The buster is the wall-clock second rather than a random value: it is
+        fine enough for any polling cadence worth using, and coarse enough that
+        two polls landing in the same second still share one cache entry
+        instead of minting a fresh one apiece.
         """
         url = f"{BASE_URL}{path}"
 
@@ -81,8 +102,12 @@ class SleeperClient:
         for attempt in range(self.retries):
             if attempt:
                 time.sleep(2**attempt)  # 2s, 4s
+            # Re-stamped per attempt, not once up front: a retry is asking
+            # again because the last answer never arrived, and reusing that
+            # attempt's buster can land on whatever it managed to cache.
+            sent = {**params, CACHE_BUSTER: int(time.time())} if fresh else params
             try:
-                response = self.session.get(url, params=params, timeout=self.timeout)
+                response = self.session.get(url, params=sent, timeout=self.timeout)
                 if response.status_code == 404:
                     return None
                 if response.status_code in RETRY_STATUSES:
@@ -129,23 +154,32 @@ class SleeperClient:
 
     # ---------------------------------------------------------------- drafts
 
-    def get_draft(self, draft_id: str) -> dict | None:
+    def get_draft(self, draft_id: str, fresh: bool = True) -> dict | None:
         """Draft metadata: status, type, settings, draft_order, slot_to_roster_id.
 
         status is one of pre_draft / drafting / paused / complete; type is
         snake / linear / auction. settings carries teams, rounds, pick_timer,
         reversal_round, and the slots_* roster construction.
-        """
-        return self.get(f"/draft/{draft_id}")
 
-    def get_draft_picks(self, draft_id: str) -> list:
+        Fresh by default: `status` is the field worth having, and a cached copy
+        of it is a draft that looks like it hasn't started yet.
+        """
+        return self.get(f"/draft/{draft_id}", fresh=fresh)
+
+    def get_draft_picks(self, draft_id: str, fresh: bool = True) -> list:
         """Picks made so far, ordered by pick_no. Empty before the draft starts.
 
         Each pick embeds a `metadata` dict (name, position, team, injury_status),
         so drafted players can be identified without joining the player file.
         Auction drafts put the winning bid in `metadata.amount`.
+
+        Fresh by default, and this is the endpoint that most needs it: Sleeper
+        lets Cloudflare hold this for a day, so a plain poll can sit on the same
+        edge copy while the draft moves on without you. There is no such thing
+        as a usefully stale pick list — the whole point of asking is what has
+        happened since.
         """
-        return self.get(f"/draft/{draft_id}/picks") or []
+        return self.get(f"/draft/{draft_id}/picks", fresh=fresh) or []
 
     def get_draft_traded_picks(self, draft_id: str) -> list:
         """Traded picks for the draft (dynasty/keeper leagues)."""

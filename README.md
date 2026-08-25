@@ -384,6 +384,21 @@ recalculated against the roster we now hold, and the best player available is
 outlined in green. Rows are patched where they stand rather than rebuilt, so
 the scroll position survives — mid-draft that's the thing you're holding onto.
 
+**Sleeper's draft endpoints sit behind Cloudflare with `s-maxage=86400`, and
+that is the thing most likely to make the board look stuck.** Poll them plainly
+and you can be handed an edge copy that is hours old: verified against a real
+draft, the same `x-request-id` came back over and over with
+`cf-cache-status: HIT` and `age` climbing past 6800 seconds. Polling faster
+changes nothing when the CDN keeps answering with the same body, which is why
+the first attempt at fixing this — just shortening the interval — didn't help.
+Request `Cache-Control: no-cache` and `Pragma: no-cache` are both ignored;
+a unique query parameter is what reaches the origin, and that is what
+`SleeperClient`'s `fresh=True` adds. It is the default on `get_draft` and
+`get_draft_picks`, because there is no such thing as a usefully stale pick
+list. It costs about 100ms a request — an origin round trip instead of an edge
+one — which is a trade worth making every time. Sleeper's own app uses
+websockets and never notices any of this.
+
 Three seconds is the cadence [client/sleeper.py](client/sleeper.py) documents
 for a draft loop: 20 polls a minute, well under Sleeper's limit of 1000. It
 started at ten and that was too slow to be live — bots in a mock pick every
@@ -403,6 +418,19 @@ more than fifteen seconds old the label says how old, so a board that has
 quietly fallen behind looks different from one that just updated. Polling stops
 on its own when the tab is hidden, or when you switch leagues or drafts; prices
 belong to one draft's state, so the old numbers go rather than linger.
+
+If the board ever looks behind again, measure it rather than guess:
+
+```
+python3 -m scripts.watch_draft <draft_id>
+```
+
+[scripts/watch_draft.py](scripts/watch_draft.py) times each pick from Sleeper's
+own `last_picked` clock to our first sighting of it, correcting for the skew
+between the two machines, and by default polls the plain cached endpoint
+alongside the busted one so you can see how far the CDN copy is trailing. It
+answers the question the board can't answer about itself: whether a lagging
+board is us polling too slowly or Sleeper handing out a stale answer.
 
 Value is computed on the server rather than in the page. The board already
 mirrors one thing from the database — `scoreStats`, so the page and `db.py`
