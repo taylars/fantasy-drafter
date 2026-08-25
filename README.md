@@ -82,10 +82,12 @@ each pick from `strategies`, the flagged players from `player_tags`, the roster
 slots from the league's own `roster_positions`. The HTML never needs touching.
 
 The board is one vertical list of every player with an ADP, best first, broken
-up wherever one of your own picks falls. It is a read-only view of the cache:
-there is nothing to tap through and no state of its own to get out of step with
-the draft. Tapping a row opens that player's page on Sleeper in a new tab.
-Nothing about the layout is written down anywhere:
+up wherever one of your own picks falls. Tapping a row opens that player's page
+on Sleeper in a new tab; holding a row watches him and tapping his star
+favorites him (see [Watchlists](#watchlists)). Tagging is the only thing on the
+page that writes — everything else is the cache's answer, not the board's, so
+there is no state here to get out of step with the draft. Nothing about the
+layout is written down anywhere:
 
 - **The order** is the league's own ADP column — `adp_ppr` for a PPR league,
   `adp_half_ppr` for a half-PPR one, and so on. Sleeper reports "not drafted"
@@ -110,7 +112,17 @@ Nothing about the layout is written down anywhere:
 The one cost of reading the database directly is that the page can't be opened
 from disk any more — browsers won't let a `file://` page fetch a local file.
 `scripts.serve` is a stdlib static server bound to localhost that exists for
-that reason, and `bin/start` is the way in.
+that reason, and `bin/start` is the way in. It serves one thing that isn't a
+file, `POST /api/tags`, which writes a single `player_tags` row:
+
+```
+POST /api/tags   {"league_id": "...", "player_id": "4866", "kind": "watch"}
+                 {"league_id": "...", "player_id": "4866", "kind": null}   # untag
+```
+
+sql.js only reads, so a tag made on the board has to go back to the server to
+outlive the tab. It writes the same row `load_watchlist` writes, and nothing
+else on the page posts anywhere.
 
 Two pickers at the top choose what's on show:
 
@@ -161,9 +173,25 @@ Being tagged at all is what the highlight says; the star picks the favorites
 back out of it.
 
 A player holds at most one tag per league, so favoriting a watched player
-promotes the row rather than adding a second one. `load_watchlist` clears the
-league's tags before it writes, which makes `watchlist.json` the whole truth:
-drop a player from the file and he leaves the table.
+promotes the row rather than adding a second one.
+
+Tags can be made from the file or from the board itself, since the ones worth
+making during a draft are the ones you'd never have written down beforehand:
+
+- **Hold a row** — watches an untagged player, and clears whatever tag a
+  tagged one has. A press that travels is a scroll, so the list still scrolls
+  normally.
+- **Tap the star** — favorites him, and un-favoriting drops him back to a
+  watch rather than off the list. Between the two gestures every state is
+  reachable, and nothing can be tagged into a state the other can't undo.
+- **W and F** do the same two things from the keyboard, on whichever row has
+  focus, for anyone tabbing through the list.
+
+Either way the row redraws first and the write follows; a write that fails puts
+the row back the way it was and says so. `load_watchlist` clears the league's
+tags before it writes, which makes `watchlist.json` the whole truth when it
+runs — so a tag made on the board is lost the next time the file is loaded
+against that league.
 
 Names in `watchlist.json` are resolved against the `players` table on name plus
 position — Sleeper stores "Brian Robinson", never "Brian Robinson Jr.", so both
