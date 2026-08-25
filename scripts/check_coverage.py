@@ -103,10 +103,10 @@ def check_team_offense(season: str = "2026") -> int:
 def check_agreement(league_id: str, draft_id: str) -> int:
     """The board and the plan are one search, so they cannot rank differently.
 
-    `value` is regret against the best plan going, so the best player at each
-    position must score exactly that position's plan delta. These were separate
-    calculations once and drifted twenty points apart on whether to take a
-    tight end.
+    The board score is the absolute value of its plan, so the best player at
+    each position must score exactly that position's plan total. These were
+    separate calculations once and drifted twenty points apart on whether to
+    take a tight end.
     """
     conn = db.connect()
     db.init(conn, quiet=True)
@@ -117,18 +117,17 @@ def check_agreement(league_id: str, draft_id: str) -> int:
         print("agreement: no picks left to plan, skipped")
         return 0
 
-    best = scored[0][0]
     bad = 0
     for total, sequence, _ in scored:
         top = max((r for r in ranked if r.player.position == sequence[0]),
                   key=lambda r: r.value, default=None)
         if top is None:
             continue
-        board_says, plan_says = top.value, total - best
+        board_says, plan_says = top.value, total
         ok = abs(board_says - plan_says) < 1e-6
         bad += not ok
-        print(f"  {'ok  ' if ok else 'DIFF'} {sequence[0]:4} board {board_says:+8.2f}   "
-              f"plan {plan_says:+8.2f}   ({top.player.name})")
+        print(f"  {'ok  ' if ok else 'DIFF'} {sequence[0]:4} board {board_says:8.2f}   "
+              f"plan {plan_says:8.2f}   ({top.player.name})")
     print(f"board agrees with plan: {len(scored) - bad}/{len(scored)} positions")
     return bad
 

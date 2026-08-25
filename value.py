@@ -406,11 +406,11 @@ def must_fill(roster: list[Player], slots: list[str], picks_left: int) -> set[st
 # How many of our upcoming picks to plan over, and the positions worth planning
 # with. Four picks is often only two turns — a snake turn is frequently two
 # back-to-back picks — and the prior art is clear that looking deeper than that
-# buys almost nothing. K and DEF are deliberately absent: they are flat across
-# the whole draft, so they never belong in the middle of a plan, though they are
-# still priced as a *first* pick like anything else.
+# buys almost nothing. K and DEF are flat enough to be selected later, but they
+# still need to be part of the plan: excluding them lets a first-pick K/DEF
+# claim its gain without ever spending a later pick on one.
 PLAN_AHEAD = 4
-PLAN_POSITIONS = ("RB", "WR", "TE", "QB")
+PLAN_POSITIONS = ("RB", "WR", "TE", "QB", "K", "DEF")
 
 
 @dataclass
@@ -485,9 +485,8 @@ def outlook(sit: Situation, candidates: list[Player], gains: dict[str, float],
     """What the rest of the draft is worth after spending this pick on each position.
 
     Returns the continuation value per position and the best whole plan going.
-    Spending the pick on a position costs us `best - continuation[position]`,
-    and that is what the board ranks on: not what a position is worth now, but
-    what taking it now does to everything that follows.
+    The board adds each player's direct gain to this position continuation,
+    yielding the absolute score of the plan that begins with that player.
     """
     picks = sit.upcoming[:ahead]
     rest_of, best = {}, 0.0
@@ -516,12 +515,11 @@ def board(conn: sqlite3.Connection, league_id: str, draft_id: str,
           limit: int = 200, ahead: int = PLAN_AHEAD) -> tuple[list[Ranked], list[Player], list[int]]:
     """Rank what's left by what it's worth to us at the pick we're on.
 
-    Value is regret against the best plan we have: zero at the top of the
-    board, and negative by however much taking that player instead costs the
-    rest of the draft.
+    Each row's score is the absolute value of its plan: take that player now,
+    then follow the best continuation for his position at the next planned
+    picks.
 
-        value(i) = gain(i) - cost(position)
-        cost(pos) = best plan going - what's left after spending this pick on pos
+        score(i) = gain(i) + continuation(position after taking i)
 
     The board and `plans` are the same search read two ways, which they have to
     be — ranking one pick on `gain - wait` and the draft on a plan had them
@@ -541,8 +539,8 @@ def board(conn: sqlite3.Connection, league_id: str, draft_id: str,
     ranked = []
     for player in candidates:
         got = gains[player.player_id]
-        cost = best - rest_of[player.position]
-        ranked.append(Ranked(player, got - cost, got, cost))
+        score = got + rest_of[player.position]
+        ranked.append(Ranked(player, score, got, best - score))
     ranked.sort(key=lambda r: -r.value)
     return ranked, sit.roster, sit.upcoming
 

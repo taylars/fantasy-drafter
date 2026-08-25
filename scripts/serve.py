@@ -235,11 +235,9 @@ def value_payload(league_id: str, draft_id: str, refresh: bool) -> dict:
     finally:
         conn.close()
 
-    # The position-level number behind every row: what the whole plan is worth
-    # if we spend this pick here, against the best plan going. Zero for the
-    # position to take now, negative by what waiting on the others costs. It is
-    # a property of the position rather than the player, so it is simply the
-    # best player there.
+    # The position-level absolute plan score remains available for the row
+    # tooltip. The board displays the same score, calculated by value.py from
+    # the player now plus the best continuation.
     plan = {}
     for row in ranked:
         position = row.player.position

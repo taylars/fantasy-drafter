@@ -121,8 +121,8 @@ points** — it was nearly indifferent, so the floor buys real insurance cheaply
 ```
 gain(i)    = lineup(roster + i) − lineup(roster)
 wait(pos)  = Σⱼ gain(j) · P(j survives) · Π_{k better}(1 − P(k survives))
-cost(pos)  = best plan going − what's left after spending this pick on pos
-value(i)   = gain(i) − cost(pos(i))
+continuation(pos) = best remaining plan after taking the best player at pos
+score(i)   = gain(i) + continuation(pos(i))
 ```
 
 Survival is a smooth function of (our next pick − ADP). `wait` is still the
@@ -132,9 +132,11 @@ is no longer what the board ranks on directly. Ranking a single pick on
 flatters a thin position: scarcity gets credited, and the deep positions still
 to fill are never charged for.
 
-So the board ranks on the plan instead. Value is regret, in season points: the
-pick to make sits at zero and everything below it is what taking that player
-instead costs the rest of the draft.
+So the board ranks on the plan instead. Each row displays that plan's absolute
+score in season-lineup points: the player's `gain(i)` plus the best
+continuation after selecting that position. The best choice has the largest
+score rather than a relative zero, and the board and plan output are therefore
+the same calculation.
 
 ## Roster and future picks
 

@@ -318,8 +318,7 @@
   }
   .pts::after{content:" pt";opacity:.6;}
   .pts:empty{display:none;}
-  /* What he's worth to us, as against what the room thinks — the ADP column at
-     the other end of the row is the room's answer to the same question. Only
+  /* The projected value of the best plan beginning with this player. Only
      drawn once the live button has fetched one, so the board is unchanged
      until there's something true to put here. */
   .val{
@@ -329,7 +328,6 @@
     border-left:1.5px solid var(--board-dark);color:var(--ink);
   }
   .val:empty{display:none;}
-  .val.neg{color:var(--ink-soft);font-weight:500;}
   /* The best thing on the board right now. One row carries it, so it reads as
      an answer rather than a heat map. */
   .row.best{box-shadow:2px 2px 0 var(--rb),2px 2px 0 2px var(--ink);}
@@ -615,17 +613,10 @@ let POLL_SEQ = 0;
 let LAST_OK = 0;
 let AT_PICK = 0;
 
-// Value is regret against the best plan we have: the pick to make sits at 0
-// and everything else is negative by what taking it instead costs the rest of
-// the draft. So "behind" is the normal state of a row, and only a player who
-// is properly behind should read as one.
-const BEHIND = -5;
-
 function valueCell(playerId){
   const v = VALUES.get(playerId);
   if(!v) return '<span class="val"></span>';
-  const cls = v.value < BEHIND ? "val neg" : "val";
-  return '<span class="'+cls+'">'+(v.value >= 0 ? "+" : "")+v.value.toFixed(0)+'</span>';
+  return '<span class="val">'+v.value.toFixed(0)+'</span>';
 }
 
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
@@ -990,12 +981,12 @@ function applyLive(data){
     const cell = row.querySelector(".val");
     if(cell){
       const v = VALUES.get(id);
-      cell.textContent = v ? ((v.value >= 0 ? "+" : "") + v.value.toFixed(0)) : "";
-      cell.classList.toggle("neg", !!v && v.value < BEHIND);
+      cell.textContent = v ? v.value.toFixed(0) : "";
       const pl = BY_ID.get(id);
-      if(v) cell.title = "gain " + v.gain.toFixed(0) +
+      if(v) cell.title = "best four-pick plan " + v.value.toFixed(0) +
+                         " · this player's lineup gain " + v.gain.toFixed(0) +
                          " · " + (pl ? pl.position : "") + " plan " +
-                         (v.plan >= 0 ? "+" : "") + v.plan.toFixed(0) +
+                         v.plan.toFixed(0) +
                          (v.graded ? "" : " · ungraded");
     }
     row.classList.toggle("gone", DRAFTED.has(id) && !mineIds.has(id));
