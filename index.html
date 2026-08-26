@@ -175,9 +175,12 @@
   .slot .lbl{opacity:.55;margin-right:5px;}
 
   /* ---------- the break at one of our picks ---------- */
-  .brk{margin:30px 0 14px;}
+  .brk{margin:34px 0 12px;}
   .sect:first-child .brk{margin-top:0;}
-  .brk-head{display:flex;align-items:flex-start;gap:12px;}
+  /* Centred, not top-aligned. This row used to carry a headline under the round
+     label, which is what the number was tall enough to sit against; without one
+     the label floated at the top of it over an inch of nothing. */
+  .brk-head{display:flex;align-items:center;gap:13px;}
   /* The pick number is the handle for its round: pressing it folds away every
      player between this turn and the next one, and the fold is remembered. */
   .picknum{
@@ -198,25 +201,38 @@
     background:var(--board-dark);box-shadow:3px 3px 0 var(--ink-soft);
   }
   .sect.collapsed .picknum:hover{box-shadow:5px 5px 0 var(--ink-soft);}
-  /* A shut turn has nothing under its rule, so it doesn't need the room. */
+  /* A shut turn has nothing under it, so it doesn't need the room. */
   .sect.collapsed .brk{margin-bottom:0;}
-  .sect.collapsed .brk-rule{margin:10px 0 0;}
-  .brk-meta{padding-top:3px;min-width:0;}
+  .brk-meta{min-width:0;flex-shrink:0;}
+  /* Two lines, because they answer different questions. The round is where we
+     are in the draft; the slot is how the pick gets said out loud. */
   .brk-round{
-    font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+    font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:.16em;
     text-transform:uppercase;color:var(--ink-soft);
   }
-  .picknum.multi{font-size:clamp(22px,4.6vw,32px);}
-  .brk-rule{
-    height:0;border-top:2px solid var(--ink);
-    margin:12px 0 10px;
+  .brk-slot{
+    font-family:var(--display);font-weight:600;
+    font-size:clamp(19px,4vw,25px);line-height:1.02;
+    letter-spacing:.01em;margin-top:1px;
   }
-  /* How many players the fold is hiding — only worth saying while it's shut. */
+  .picknum.multi{font-size:clamp(22px,4.6vw,32px);}
+  /* Runs out to the margin, which is what makes this a break in the list
+     rather than a heading sitting on top of it. */
+  .brk-rule{
+    flex:1;min-width:16px;height:0;
+    border-top:2px solid var(--ink);
+  }
+  /* How many players the fold is hiding — only worth saying while it's shut, so
+     it rides the far end of the rule rather than crowding the label. */
   .brk-count{
     font-family:var(--mono);font-size:10.5px;font-weight:600;
     letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+    white-space:nowrap;flex-shrink:0;
   }
   .sect:not(.collapsed) .brk-count{display:none;}
+  /* A shut turn is a closed drawer: the rule and the label go quiet with it. */
+  .sect.collapsed .brk-rule{border-top-color:var(--board-dark);}
+  .sect.collapsed .brk-slot{color:var(--ink-soft);}
   .sect{display:flex;flex-direction:column;gap:4px;}
   .sect-rows{display:flex;flex-direction:column;gap:4px;}
   .sect.collapsed .sect-rows{display:none;}
@@ -388,6 +404,14 @@
   @media (max-width:520px){
     .field{flex:1 1 100%;}
     .picknum{font-size:26px;padding:5px 7px 3px;}
+    /* The widest break the board can draw — a two-pick snake turn, collapsed,
+       so the hidden count is showing as well — lands within a pixel of the
+       margin on a 320px screen. The rule is what gives way first, and it is
+       allowed to vanish entirely rather than force the row wider than the
+       page. The ellipsis below is the last resort after that. */
+    .brk-rule{min-width:0;}
+    .brk-meta{min-width:0;flex-shrink:1;}
+    .brk-slot{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
     .adp{flex-basis:46px;padding:7px 6px;}
     .pts{display:none;}
     .val{min-width:44px;padding:7px 6px;font-size:11px;}

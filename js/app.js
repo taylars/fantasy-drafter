@@ -241,20 +241,31 @@ function rowHtml(pl) {
   "</div>";
 }
 
+/* The marker at one of our own picks.
+ *
+ * Three things, in the order they answer questions. The pick number is the
+ * handle — it is what folds the stretch away, so it is the one thing built to
+ * be pressed. The round and the slot beneath it are how a pick gets talked
+ * about out loud ("round one, the eight"). The rule runs out to the margin,
+ * which is what makes this read as a break in the list rather than a heading
+ * on top of it, and the hidden count rides the far end where it is legible
+ * without crowding the label it isn't part of.
+ */
 function breakHtml(turn, hidden) {
+  const shut = COLLAPSED.has(turnKey(turn));
   return '<div class="brk">' +
     '<div class="brk-head">' +
       '<button type="button" class="picknum' + (turn.length > 1 ? " multi" : "") + '"' +
-        ' aria-expanded="' + (COLLAPSED.has(turnKey(turn)) ? "false" : "true") + '"' +
+        ' aria-expanded="' + (shut ? "false" : "true") + '"' +
         ' title="Fold away the players who go between this pick and the next">' +
         turn.map((p) => p.pick_no).join(" · ") + "</button>" +
       '<div class="brk-meta">' +
-        '<div class="brk-round">' + esc(roundLabel(turn.map((p) => p.round))) +
-          " · " + esc(turn.map(slotLabel).join(" · ")) +
-          '<span class="brk-count"> · ' + hidden + " hidden</span></div>" +
+        '<div class="brk-round">' + esc(roundLabel(turn.map((p) => p.round))) + "</div>" +
+        '<div class="brk-slot">' + esc(turn.map(slotLabel).join(" · ")) + "</div>" +
       "</div>" +
+      '<div class="brk-rule"></div>' +
+      '<span class="brk-count">' + hidden + " hidden</span>" +
     "</div>" +
-    '<div class="brk-rule"></div>' +
   "</div>";
 }
 
