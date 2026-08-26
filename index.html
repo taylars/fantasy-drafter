@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Draft Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --board:#D9DDD6;
+    --board-dark:#C6CBC2;
+    --sticker:#FFFFFF;
+    --ink:#16191A;
+    --ink-soft:#5C625E;
+    --tape:#F2C230;
+    --qb:#C2255C;
+    --rb:#157F52;
+    --wr:#2563A8;
+    --te:#B4690E;
+    --k:#6D4AA8;
+    --def:#6B6256;
+    --gold:#C99400;
+    --display:"Barlow Condensed",Impact,sans-serif;
+    --body:"Archivo",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--board);
+    background-image:
+      linear-gradient(rgba(0,0,0,.035) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,0,0,.035) 1px,transparent 1px);
+    background-size:34px 34px;
+    color:var(--ink);
+    font-family:var(--body);
+    font-size:15px;
+    line-height:1.45;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:22px 16px 80px;}
+
+  /* ---------- masthead ---------- */
+  .mast{
+    border-bottom:3px solid var(--ink);
+    padding-bottom:14px;
+    margin-bottom:18px;
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    margin:0 0 6px;
+  }
+  h1{
+    font-family:var(--display);
+    font-weight:700;
+    font-size:clamp(38px,9vw,64px);
+    line-height:.92;
+    letter-spacing:-.01em;
+    text-transform:uppercase;
+    margin:0;
+  }
+  h1 em{
+    font-style:normal;
+    background:var(--tape);
+    padding:0 .18em;
+    box-decoration-break:clone;
+    -webkit-box-decoration-break:clone;
+  }
+  .sub{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--ink-soft);
+    margin:10px 0 0;
+  }
+
+  /* ---------- league / draft pickers ---------- */
+  .picker{
+    display:flex;flex-wrap:wrap;gap:14px;
+    margin:0 0 24px;
+  }
+  .field{
+    display:flex;flex-direction:column;gap:6px;
+    flex:1 1 250px;min-width:0;
+  }
+  .field-lbl{
+    font-family:var(--mono);font-size:10.5px;font-weight:600;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
+  }
+  .field select{
+    appearance:none;-webkit-appearance:none;
+    font-family:var(--display);font-weight:600;
+    font-size:18px;line-height:1.15;letter-spacing:.02em;
+    text-transform:uppercase;color:var(--ink);
+    background-color:var(--sticker);
+    /* chevron, drawn in ink so it sits with the borders */
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' fill='none' stroke='%2316191A' stroke-width='2'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 11px center;
+    background-size:11px 7px;
+    border:2px solid var(--ink);border-radius:2px;
+    box-shadow:3px 3px 0 var(--ink);
+    padding:8px 34px 7px 10px;width:100%;
+    cursor:pointer;
+    text-overflow:ellipsis;
+  }
+  .field select:hover{background-color:#FFFBEC;}
+  .field select:focus-visible{outline:3px solid var(--qb);outline-offset:2px;}
+  .field select:disabled{
+    color:var(--ink-soft);background-color:transparent;
+    border-color:var(--board-dark);box-shadow:none;cursor:default;
+    background-image:none;
+  }
+  .field option{
+    font-family:var(--body);font-size:14px;text-transform:none;
+  }
+
+  /* ---------- roster strip ---------- */
+  .roster{
+    position:sticky;top:0;z-index:20;
+    background:var(--board);
+    border-bottom:2px solid var(--ink);
+    margin:0 -16px 26px;
+    padding:10px 16px 12px;
+  }
+  .roster-head{
+    display:flex;align-items:center;flex-wrap:wrap;
+    gap:6px 12px;margin-bottom:8px;
+  }
+  .roster-title{
+    font-family:var(--mono);font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--ink-soft);
+  }
+  /* What we hold, counted by position — the shape of the roster, where the
+     slots below say who is in it. A position the league starts is listed even
+     at zero, since an empty one is the thing you need to know about. */
+  .pos-counts{display:flex;flex-wrap:wrap;gap:5px;}
+  .pos-count{
+    display:inline-flex;align-items:stretch;line-height:1;
+    border:1.5px solid var(--ink);border-radius:2px;overflow:hidden;
+  }
+  .pos-count .pc-pos{
+    font-family:var(--display);font-weight:700;font-size:11px;
+    letter-spacing:.06em;color:#fff;padding:4px 5px 3px;
+  }
+  .pos-count .pc-n{
+    font-family:var(--mono);font-size:10.5px;font-weight:600;
+    background:var(--sticker);padding:4px 6px 3px;
+  }
+  .pos-count.QB .pc-pos{background:var(--qb);}
+  .pos-count.RB .pc-pos{background:var(--rb);}
+  .pos-count.WR .pc-pos{background:var(--wr);}
+  .pos-count.TE .pc-pos{background:var(--te);}
+  .pos-count.K  .pc-pos{background:var(--k);}
+  .pos-count.DEF .pc-pos{background:var(--def);}
+  .pos-count.none{border-color:var(--board-dark);}
+  .pos-count.none .pc-pos{background:var(--board-dark);color:var(--ink-soft);}
+  .pos-count.none .pc-n{background:transparent;color:var(--ink-soft);}
+  .slots{display:flex;flex-wrap:wrap;gap:5px;}
+  .slot{
+    font-family:var(--mono);font-size:10.5px;font-weight:500;
+    border:1.5px solid var(--board-dark);
+    background:transparent;color:var(--ink-soft);
+    padding:4px 7px;border-radius:2px;
+    letter-spacing:.04em;white-space:nowrap;
+  }
+  .slot.filled{
+    background:var(--ink);border-color:var(--ink);color:var(--board);
+  }
+  .slot .lbl{opacity:.55;margin-right:5px;}
+
+  /* ---------- the break at one of our picks ---------- */
+  .brk{margin:30px 0 14px;}
+  .sect:first-child .brk{margin-top:0;}
+  .brk-head{display:flex;align-items:flex-start;gap:12px;}
+  /* The pick number is the handle for its round: pressing it folds away every
+     player between this turn and the next one, and the fold is remembered. */
+  .picknum{
+    font-family:var(--display);font-weight:700;color:var(--ink);
+    font-size:clamp(28px,6vw,40px);line-height:.85;
+    background:var(--tape);padding:6px 9px 4px;
+    border:2px solid var(--ink);border-radius:0;
+    box-shadow:3px 3px 0 var(--ink);
+    white-space:nowrap;flex-shrink:0;
+    -webkit-appearance:none;appearance:none;
+    cursor:pointer;text-align:center;
+    transition:box-shadow .12s ease,transform .12s ease;
+  }
+  .picknum:hover{box-shadow:5px 5px 0 var(--ink);}
+  .picknum:active{box-shadow:1px 1px 0 var(--ink);transform:translate(2px,2px);}
+  .picknum:focus-visible{outline:3px solid var(--ink);outline-offset:3px;}
+  .sect.collapsed .picknum{
+    background:var(--board-dark);box-shadow:3px 3px 0 var(--ink-soft);
+  }
+  .sect.collapsed .picknum:hover{box-shadow:5px 5px 0 var(--ink-soft);}
+  /* A shut turn has nothing under its rule, so it doesn't need the room. */
+  .sect.collapsed .brk{margin-bottom:0;}
+  .sect.collapsed .brk-rule{margin:10px 0 0;}
+  .brk-meta{padding-top:3px;min-width:0;}
+  .brk-round{
+    font-family:var(--mono);font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-soft);
+  }
+  .picknum.multi{font-size:clamp(22px,4.6vw,32px);}
+  .brk-rule{
+    height:0;border-top:2px solid var(--ink);
+    margin:12px 0 10px;
+  }
+  /* How many players the fold is hiding — only worth saying while it's shut. */
+  .brk-count{
+    font-family:var(--mono);font-size:10.5px;font-weight:600;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+  }
+  .sect:not(.collapsed) .brk-count{display:none;}
+  .sect{display:flex;flex-direction:column;gap:4px;}
+  .sect-rows{display:flex;flex-direction:column;gap:4px;}
+  .sect.collapsed .sect-rows{display:none;}
+
+  /* ---------- the list ---------- */
+  .list{display:flex;flex-direction:column;gap:4px;}
+  /* The whole row is the link, so there's no dead strip to miss with a
+     thumb. */
+  .row{
+    display:flex;align-items:center;gap:10px;
+    position:relative;
+    background:var(--sticker);
+    border:2px solid var(--ink);
+    box-shadow:2px 2px 0 var(--ink);
+    border-radius:2px;
+    transition:opacity .18s ease,filter .18s ease,box-shadow .18s ease;
+  }
+  .open{
+    display:flex;align-items:center;gap:10px;align-self:stretch;
+    flex:1;min-width:0;
+    color:inherit;text-decoration:none;
+    -webkit-user-select:none;user-select:none;
+    -webkit-touch-callout:none;
+    -webkit-tap-highlight-color:transparent;
+  }
+  /* Struck through is the draft's own doing: somebody else has him. */
+  .row.gone{box-shadow:none;opacity:.4;filter:grayscale(1);}
+  .row.mine{box-shadow:2px 2px 0 var(--tape),2px 2px 0 2px var(--ink);}
+
+  .row:hover{box-shadow:4px 4px 0 var(--ink);}
+  .row.mine:hover{box-shadow:4px 4px 0 var(--tape),4px 4px 0 2px var(--ink);}
+  .row.gone:hover{box-shadow:2px 2px 0 var(--board-dark);}
+  /* ADP leads the row, because that's what the list is sorted on — reading
+     straight down the left edge gives you the ladder. */
+  .adp{
+    font-family:var(--mono);font-size:13px;font-weight:600;
+    align-self:stretch;display:flex;align-items:center;justify-content:flex-end;
+    flex:0 0 52px;padding:7px 8px;
+    border-right:1.5px solid var(--board-dark);
+    color:var(--ink-soft);
+  }
+  .pos{
+    font-family:var(--display);font-weight:700;font-size:13px;
+    letter-spacing:.06em;color:#fff;
+    padding:0 7px;align-self:stretch;
+    display:flex;align-items:center;flex-shrink:0;
+  }
+  .pos.QB{background:var(--qb);} .pos.RB{background:var(--rb);}
+  .pos.WR{background:var(--wr);} .pos.TE{background:var(--te);}
+  .pos.K{background:var(--k);}   .pos.DEF{background:var(--def);}
+  .who{min-width:0;flex:1;padding:6px 0;}
+  .nm{
+    font-weight:600;font-size:14px;line-height:1.2;
+    display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
+  .row.gone .nm{text-decoration:line-through;}
+  .tm{
+    font-family:var(--mono);font-size:10.5px;color:var(--ink-soft);
+    letter-spacing:.05em;
+  }
+  .hurt{color:var(--qb);}
+  .pts{
+    font-family:var(--mono);font-size:11px;font-weight:500;
+    color:var(--ink-soft);flex-shrink:0;align-self:center;
+    text-align:right;min-width:44px;
+  }
+  .pts::after{content:" pt";opacity:.6;}
+  .pts:empty{display:none;}
+  /* This pick's expected team-value edge over the average modeled plan. Only
+     drawn once the live button has fetched one, so the board is unchanged
+     until there's something true to put here. */
+  .val{
+    font-family:var(--mono);font-size:12px;font-weight:700;
+    flex-shrink:0;align-self:stretch;display:flex;align-items:center;
+    justify-content:flex-end;min-width:52px;padding:7px 8px;
+    border-left:1.5px solid var(--board-dark);color:var(--ink);
+  }
+  .val:empty{display:none;}
+  /* The three best things on the board right now. */
+  .row.recommended{box-shadow:2px 2px 0 var(--rb),2px 2px 0 2px var(--ink);}
+  .row.recommended .val{background:var(--rb);color:#fff;}
+  .row.recommended.mine{box-shadow:2px 2px 0 var(--tape),2px 2px 0 2px var(--ink);}
+
+  /* The live light. Off it is a dead bulb; on it pulses, which is the only
+     moving thing on the page and so says "this is watching" without a label
+     having to. */
+  .live{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--display);font-size:15px;letter-spacing:.06em;
+    text-transform:uppercase;font-weight:700;color:var(--ink-soft);
+    background:var(--sticker);border:2px solid var(--ink);
+    padding:7px 12px;cursor:pointer;align-self:flex-end;
+    box-shadow:2px 2px 0 var(--ink);
+  }
+  .live:hover{background:#FFFBEC;}
+  .live:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink);}
+  .live:focus-visible{outline:3px solid var(--qb);outline-offset:2px;}
+  .live .dot{
+    width:11px;height:11px;border-radius:50%;flex-shrink:0;
+    background:#8C3B3B;box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.35);
+  }
+  .live.on{color:var(--ink);}
+  .live.on .dot{
+    background:#E5342A;
+    box-shadow:0 0 0 0 rgba(229,52,42,.7),0 0 9px 2px rgba(229,52,42,.9),
+               inset 0 0 0 1.5px rgba(0,0,0,.2);
+    animation:blip 1.6s ease-out infinite;
+  }
+  .live.err .dot{background:var(--te);animation:none;box-shadow:0 0 7px 1px rgba(180,105,14,.8);}
+  @keyframes blip{
+    0%{box-shadow:0 0 0 0 rgba(229,52,42,.75),0 0 9px 2px rgba(229,52,42,.9),inset 0 0 0 1.5px rgba(0,0,0,.2);}
+    70%{box-shadow:0 0 0 9px rgba(229,52,42,0),0 0 9px 2px rgba(229,52,42,.9),inset 0 0 0 1.5px rgba(0,0,0,.2);}
+    100%{box-shadow:0 0 0 0 rgba(229,52,42,0),0 0 9px 2px rgba(229,52,42,.9),inset 0 0 0 1.5px rgba(0,0,0,.2);}
+  }
+  .live-when{font-family:var(--mono);font-size:10.5px;letter-spacing:0;
+    text-transform:none;font-weight:500;color:var(--ink-soft);}
+
+  .add-draft{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:34px;height:34px;align-self:flex-end;
+    font-family:var(--display);font-size:20px;font-weight:700;line-height:1;
+    color:var(--ink-soft);background:var(--sticker);border:2px solid var(--ink);
+    cursor:pointer;box-shadow:2px 2px 0 var(--ink);
+  }
+  .add-draft:hover{background:#FFFBEC;color:var(--ink);}
+  .add-draft:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink);}
+  .add-draft:focus-visible{outline:3px solid var(--qb);outline-offset:2px;}
+  .add-draft[disabled]{opacity:.5;cursor:default;}
+  .open:focus-visible{outline:3px solid var(--qb);outline-offset:-3px;}
+
+  /* ---------- load / error state ---------- */
+  .status{
+    font-family:var(--mono);font-size:12.5px;line-height:1.7;
+    color:var(--ink-soft);margin:0;padding:18px 20px;
+    border:2px dashed var(--board-dark);background:rgba(255,255,255,.4);
+  }
+  .status.err{
+    border:2px solid var(--ink);border-left:8px solid var(--qb);
+    background:var(--sticker);color:var(--ink);
+  }
+  .status b{font-weight:600;}
+  .status code{
+    background:var(--board-dark);border:1px solid var(--board-dark);
+    padding:1px 5px;border-radius:2px;white-space:nowrap;
+  }
+
+  /* Says what adding a mock draft did, and the one place a failed write
+     shows. */
+  .toast{
+    position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
+    background:var(--ink);color:#fff;
+    font-family:var(--mono);font-size:12px;line-height:1.4;
+    padding:8px 12px;border-radius:2px;
+    box-shadow:3px 3px 0 rgba(0,0,0,.25);
+    max-width:92vw;z-index:10;
+  }
+  .toast.err{background:var(--qb);}
+  .toast[hidden]{display:none;}
+
+  .legend{
+    font-family:var(--mono);font-size:11px;color:var(--ink-soft);
+    border-top:2px solid var(--ink);padding-top:12px;margin-top:26px;
+    display:flex;flex-wrap:wrap;gap:16px;
+  }
+  @media (prefers-reduced-motion:reduce){
+    .row{transition:none;}
+    .live.on .dot{animation:none;}
+  }
+  @media (max-width:520px){
+    .field{flex:1 1 100%;}
+    .picknum{font-size:26px;padding:5px 7px 3px;}
+    .adp{flex-basis:46px;padding:7px 6px;}
+    .pts{display:none;}
+    .val{min-width:44px;padding:7px 6px;font-size:11px;}
+  }
+
+  /* ---------- the start screen ---------- */
+  /* One field, because there is only one thing the board needs to know. The
+     leagues, the draft, the seat, the picks and the roster all follow from it. */
+  .start{
+    max-width:520px;margin:0 auto;padding:64px 16px 80px;
+  }
+  .start h1{margin-bottom:6px;}
+  .start .sub{margin-bottom:26px;max-width:46ch;}
+  .start-form{display:flex;gap:8px;flex-wrap:wrap;}
+  .start-form label{flex:1 1 220px;display:flex;flex-direction:column;gap:5px;min-width:0;}
+  #username{
+    font-family:var(--mono);font-size:16px;
+    background:var(--sticker);color:var(--ink);
+    border:2px solid var(--ink);box-shadow:2px 2px 0 var(--ink);
+    border-radius:2px;padding:11px 12px;width:100%;
+  }
+  #username:focus-visible{outline:3px solid var(--qb);outline-offset:2px;}
+  #username:disabled{opacity:.6;}
+  .start-go{
+    font-family:var(--display);font-weight:700;font-size:19px;
+    letter-spacing:.04em;text-transform:uppercase;
+    background:var(--ink);color:#fff;
+    border:2px solid var(--ink);box-shadow:2px 2px 0 var(--tape);
+    border-radius:2px;padding:0 20px;cursor:pointer;align-self:flex-end;
+    height:47px;
+  }
+  .start-go:hover{background:#2C3133;}
+  .start-go:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--tape);}
+  .start-go:focus-visible{outline:3px solid var(--qb);outline-offset:2px;}
+  .start-go[disabled]{opacity:.5;cursor:default;transform:none;}
+  /* Says which of the four fetches is out. Signing in is several round trips to
+     someone else's API, and a page that looks frozen for three seconds is the
+     thing this is here to prevent. */
+  .start-note{
+    font-family:var(--mono);font-size:12px;color:var(--ink-soft);
+    margin:14px 0 0;min-height:1.4em;
+  }
+  .start-error{
+    font-family:var(--mono);font-size:12.5px;line-height:1.6;
+    border:2px solid var(--ink);border-left:8px solid var(--qb);
+    background:var(--sticker);padding:11px 13px;margin:18px 0 0;
+  }
+  .start-error[hidden]{display:none;}
+  .start-foot{
+    font-family:var(--mono);font-size:11px;color:var(--ink-soft);
+    border-top:2px solid var(--ink);padding-top:12px;margin-top:34px;
+    display:flex;flex-wrap:wrap;gap:14px;
+  }
+
+  /* Who the board is showing, and the way back to the field above. */
+  .whoami{
+    display:flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--ink-soft);
+  }
+  .whoami b{color:var(--ink);font-weight:600;letter-spacing:.04em;text-transform:none;
+    font-family:var(--body);font-size:13px;}
+  .switch-user{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    background:none;border:0;padding:2px 0;margin:0;cursor:pointer;
+    color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px;
+  }
+  .switch-user:hover{color:var(--qb);}
+  .switch-user:focus-visible{outline:2px solid var(--qb);outline-offset:2px;}
+</style>
+</head>
+<body>
+
+<!-- Everything the board knows comes from this one field. -->
+<section class="start" id="start" hidden>
+  <p class="eyebrow">Fantasy drafter</p>
+  <h1>Draft <em>board</em></h1>
+  <p class="sub">Type your Sleeper username. Your leagues, your draft, your seat in it
+    and every pick made so far come from there.</p>
+
+  <form class="start-form" id="start-form" autocomplete="off">
+    <label>
+      <span class="field-lbl">Sleeper username</span>
+      <input type="text" id="username" name="username" required
+             autocapitalize="none" autocorrect="off" spellcheck="false"
+             placeholder="username">
+    </label>
+    <button type="submit" class="start-go" id="start-go">Go</button>
+  </form>
+
+  <p class="start-note" id="start-note"></p>
+  <p class="start-error" id="start-error" role="alert" hidden></p>
+
+  <div class="start-foot">
+    <span>Reads Sleeper directly — nothing is sent anywhere else</span>
+    <span>Nothing to sign in to; the username is public</span>
+  </div>
+</section>
+
+<div class="wrap" id="app" hidden>
+
+  <header class="mast">
+    <p class="eyebrow" id="eyebrow">&nbsp;</p>
+    <h1 id="headline">Draft <em>board</em></h1>
+    <p class="sub">Everyone already drafted is struck out. Tap a name to open him
+      on Sleeper.</p>
+    <p class="whoami">Showing <b id="who"></b>
+      <button type="button" class="switch-user" id="switch-user">not you?</button></p>
+  </header>
+
+  <div class="picker" id="picker" hidden>
+    <label class="field">
+      <span class="field-lbl">League</span>
+      <select id="league-pick"></select>
+    </label>
+    <label class="field">
+      <span class="field-lbl">Draft</span>
+      <select id="draft-pick"></select>
+    </label>
+    <button type="button" class="add-draft" id="add-draft"
+            title="Paste a mock draft url to add it to this league's list">+</button>
+    <button type="button" class="live" id="live" aria-pressed="false"
+            title="Poll the draft every few seconds and re-price the board">
+      <span class="dot" aria-hidden="true"></span>
+      <span>Live</span>
+      <span class="live-when" id="live-when"></span>
+    </button>
+  </div>
+
+  <div class="roster">
+    <div class="roster-head">
+      <span class="roster-title">My roster</span>
+      <div class="pos-counts" id="pos-counts"></div>
+    </div>
+    <div class="slots" id="slots"></div>
+  </div>
+
+  <main id="board">
+    <p class="status" id="status">Pricing the board…</p>
+  </main>
+
+  <div class="legend">
+    <span id="adp-legend"></span>
+    <span>Break = one of your picks</span>
+    <span>Tap a pick number to fold that stretch away</span>
+    <span>Green edge = one of the three best picks now</span>
+    <span>Struck = drafted by someone else</span>
+    <span>Gold edge = drafted by you</span>
+    <span id="source"></span>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>

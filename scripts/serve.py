@@ -1,6 +1,6 @@
 """Serve the draft board over http.
 
-    python3 -m scripts.serve            # http://localhost:8000/draft-board.html
+    python3 -m scripts.serve            # http://localhost:8000/index.html
     python3 -m scripts.serve --port 9000
     python3 -m scripts.serve --no-open
 
@@ -46,7 +46,7 @@ from client.sleeper import SleeperClient
 from scripts.load_drafts import load_draft
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-PAGE = "draft-board.html"
+PAGE = "index.html"
 DB_FILE = ROOT / "data" / "fantasy.db"
 
 VALUE_API = "/api/value"

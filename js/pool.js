@@ -156,6 +156,30 @@ export function buildPool(projections, grades, league) {
   return pool;
 }
 
+/* The draft object, flattened to the handful of fields the model reads.
+ *
+ * Sleeper nests teams/rounds/reversal under `settings` and leaves type, status
+ * and draft_order at the top level. value.js should not have to know that, and
+ * the board and the CLI should not each have their own idea of it.
+ */
+export function draftShape(draft) {
+  const settings = draft.settings ?? {};
+  return {
+    draft_id: draft.draft_id,
+    league_id: draft.league_id ?? null,
+    type: draft.type,
+    status: draft.status,
+    teams: settings.teams,
+    rounds: settings.rounds,
+    reversal_round: settings.reversal_round ?? 0,
+    start_time: draft.start_time ?? null,
+    draft_order: draft.draft_order,
+    // A mock started from a league records it here even though league_id is
+    // null and the league's own /drafts endpoint won't return it.
+    source_league_id: draft.metadata?.league_id ?? draft.league_id ?? null,
+  };
+}
+
 /* Who's gone, who's ours, and which pick is next.
  *
  * A pick with no `picked_by` is an autopick, so it counts as gone rather than

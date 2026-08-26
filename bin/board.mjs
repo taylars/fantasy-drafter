@@ -18,7 +18,7 @@
 import { readFile } from "node:fs/promises";
 import { SleeperClient } from "../js/sleeper.js";
 import { FileCache } from "../js/cache-fs.js";
-import { buildPool, draftState, scoringType } from "../js/pool.js";
+import { buildPool, draftState, draftShape, scoringType } from "../js/pool.js";
 import { situation, board, plans } from "../js/value.js";
 
 const GRADES = "data/grades.json";
@@ -32,24 +32,6 @@ function parseArgs(argv) {
     else if (flag.startsWith("--")) args[flag.slice(2)] = argv[++i];
   }
   return args;
-}
-
-/* The draft object, flattened to the handful of fields the model reads.
- *
- * Sleeper nests teams/rounds/reversal under `settings` and leaves the rest at
- * the top level; value.js should not have to know that.
- */
-function draftShape(draft) {
-  const settings = draft.settings ?? {};
-  return {
-    draft_id: draft.draft_id,
-    type: draft.type,
-    status: draft.status,
-    teams: settings.teams,
-    rounds: settings.rounds,
-    reversal_round: settings.reversal_round ?? 0,
-    draft_order: draft.draft_order,
-  };
 }
 
 async function main() {

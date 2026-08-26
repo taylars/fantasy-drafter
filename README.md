@@ -11,7 +11,7 @@ to track picks live during the draft.
 - `db.py` + `scripts/` — SQLite cache and the loaders that fill it
 - `player_grades` — researched context the projections don't carry
 - `docs/` — what the board should rank on, and the formula that does it
-- `draft-board.html` — draft board, rendered from the database in the browser
+- `index.html` — the board itself: a Sleeper username in, a priced board out
 - the live button — polls the draft and re-prices the board while it runs
 - `value.py` — what each player is worth to us, given roster and picks left
 
@@ -26,7 +26,7 @@ to track picks live during the draft.
 - `migrations/` — schema changes as numbered `.sql`, applied in order
 - `bin/start` — build the cache if needed, then serve the board
 - `scripts/` — loaders that populate the cache, one concern each
-- `draft-board.html` — the draft board / best-available UI
+- `index.html` — the draft board, and the only page there is
 - `data/` — the SQLite database and cached player file (gitignored)
 
 ## Usage
@@ -118,16 +118,35 @@ alongside his ADP and stat line.
 
 ## The board
 
-`draft-board.html` has no data in it. It opens `data/fantasy.db` in the browser
-with [sql.js](https://sql.js.org) and reads the board out of it — every player
-Sleeper publishes an ADP for from `players` / `player_projections`, the roster
-slots from the league's own `roster_positions`. The HTML never needs touching.
+`index.html` has no data in it and nothing to set up. It asks for a Sleeper
+username, and everything else follows: the leagues that username is in, the
+draft, the seat you hold in it, the picks already made, and every player Sleeper
+publishes an ADP for. It talks to Sleeper directly from the browser — there is
+no server, no database, and nothing to run first.
+
+The one thing it ships rather than fetches is `data/grades.json`, the researched
+context in [Grades](#grades). That is the whole reason the value column is worth
+more than the ADP beside it.
+
+### Signing in
+
+The start screen is one field. A username that isn't a Sleeper account says so;
+one that is in no leagues this season says that instead, rather than failing
+somewhere deeper as an empty board. Both are the ordinary way to get this wrong
+and neither should look like a bug.
+
+Once in, the address bar carries `?user=&league=&draft=`, so a board worth
+coming back to can be bookmarked and it opens straight onto that board. **Not
+you?** in the masthead goes back to the field.
+
+Nothing is signed in to and nothing is stored anywhere but your own browser: a
+Sleeper username is public, and reading one needs no credential.
+
+### The list
 
 The board is one vertical list of every player with an ADP, best first, broken
 up wherever one of your own picks falls. Tapping a row opens that player's page
-on Sleeper in a new tab. Everything on the page is the cache's answer rather
-than the board's, so there is no state here to get out of step with the draft.
-Nothing about the layout is written down anywhere:
+on Sleeper in a new tab. Nothing about the layout is written down anywhere:
 
 - **The order** is the league's own ADP column — `adp_ppr` for a PPR league,
   `adp_half_ppr` for a half-PPR one, and so on. Sleeper reports "not drafted"
@@ -145,13 +164,18 @@ Nothing about the layout is written down anywhere:
   `user_id` is marked as yours instead and fills a roster slot. Re-run
   `load_drafts` mid-draft and the board catches up on reload.
 
-The one cost of reading the database directly is that the page can't be opened
-from disk any more — browsers won't let a `file://` page fetch a local file.
-`scripts.serve` is a stdlib static server bound to localhost that exists for
-that reason, and `bin/start` is the way in. It also answers `GET /api/value`,
-which is where the numbers on the rows come from, and `POST /api/drafts`, which
-registers a pasted mock draft — sql.js only reads, so adding one has to go back
-to the server. Nothing else on the page posts anywhere.
+### Pricing
+
+The value column is `js/value.js`, run in a Web Worker. Pricing a board is a few
+hundred milliseconds of arithmetic — a plan search four picks deep, branching
+over six positions — which is not long, but far too long to spend on the thread
+keeping the page scrollable, and it happens again every three seconds while a
+draft is live. The worker holds the player pool; each poll sends it only the
+picks.
+
+The board prices itself once on load whatever the live button is doing, because
+a board with numbers on it is worth more than one without, and that first
+pricing costs no requests at all.
 
 Two pickers at the top choose what's on show:
 
@@ -194,7 +218,7 @@ point where the Atlanta League says 2, enough to misrank every QB by up to 14
 points. The stored `pts_*` columns are kept only as a sanity check; rank on
 `projected_points`.
 
-`draft-board.html` mirrors this in `scoreStats`, so the board and the database
+`js/pool.js` mirrors this in `scoreStats`, so the board and the database
 agree on what a player is worth. Deep bench players come back with ADP but no
 stat line, so `projected_points` omits them rather than scoring them zero.
 
@@ -202,15 +226,14 @@ stat line, so `projected_points` omits them rather than scoring them zero.
 
 Mock drafts **cannot be enumerated through the API**. A live mock appears in
 neither `/user/{id}/drafts` nor the source league's `/drafts`, and no
-undocumented variant returns it. Register one by the id in its URL
-(`https://sleeper.com/draft/nfl/<draft_id>`):
+undocumented variant returns it. So the board can't list one for you: press
+**+** next to the draft picker and paste the url it hands out
+(`https://sleeper.com/draft/nfl/<draft_id>`).
 
-```bash
-python3 -m scripts.load_drafts --draft-id <draft_id>
-```
-
-After that it's a row like any other and plain `load_drafts` keeps it fresh.
-Mocks store `league_id` null and `is_mock = 1`; `--leagues-only` skips them.
+That id is the one thing about a mock nothing else can tell us, so the browser
+remembers it against the league it was pasted in from and re-fetches it on the
+next visit. A mock that has since been deleted is dropped from the picker
+rather than breaking it.
 
 A registered mock is the one row the loaders can't rediscover. Migrations no
 longer drop the cache, so it now survives a schema change.
