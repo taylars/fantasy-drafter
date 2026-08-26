@@ -120,14 +120,26 @@ export class SleeperClient {
 
   // ------------------------------------------------------------------- users
 
-  /* Look up a user by username or user_id → {user_id, display_name, ...}. */
-  getUser(usernameOrId) {
-    return this.get(`/user/${encodeURIComponent(usernameOrId)}`);
+  /* Look up a user by username or user_id → {user_id, display_name, ...}.
+   *
+   * Cached for a day. A username maps to a user_id once and essentially never
+   * again, and this is the request standing between someone reopening the board
+   * and seeing it.
+   */
+  getUser(usernameOrId, { ttlMs = 24 * 60 * 60 * 1000 } = {}) {
+    return this.cached(`user:${usernameOrId}`, ttlMs,
+      () => this.get(`/user/${encodeURIComponent(usernameOrId)}`));
   }
 
-  /* Every league the user is in for a season. Each carries its draft_id. */
-  async getUserLeagues(userId, season, sport = "nfl") {
-    return (await this.get(`/user/${userId}/leagues/${sport}/${season}`)) ?? [];
+  /* Every league the user is in for a season. Each carries its draft_id.
+   *
+   * Cached briefly rather than not at all. Joining a league mid-session is
+   * rare, reopening the board is not, and ten minutes is short enough that a
+   * new league is one reload away.
+   */
+  async getUserLeagues(userId, season, sport = "nfl", { ttlMs = 10 * 60 * 1000 } = {}) {
+    return (await this.cached(`leagues:${userId}:${sport}:${season}`, ttlMs,
+      () => this.get(`/user/${userId}/leagues/${sport}/${season}`))) ?? [];
   }
 
   /* Every draft the user is in for a season, skipping the league lookup. */
@@ -152,9 +164,16 @@ export class SleeperClient {
     return (await this.get(`/league/${leagueId}/rosters`)) ?? [];
   }
 
-  /* All drafts for a league, newest first (dynasty leagues have several). */
-  async getLeagueDrafts(leagueId) {
-    return (await this.get(`/league/${leagueId}/drafts`)) ?? [];
+  /* All drafts for a league, newest first (dynasty leagues have several).
+   *
+   * A minute, which is long enough to make switching between leagues feel
+   * instant and short enough that a draft created while the board is open shows
+   * up without a hard reload. The draft's own state never comes from here —
+   * getDraft and getDraftPicks are both fresh by default.
+   */
+  async getLeagueDrafts(leagueId, { ttlMs = 60 * 1000 } = {}) {
+    return (await this.cached(`drafts:${leagueId}`, ttlMs,
+      () => this.get(`/league/${leagueId}/drafts`))) ?? [];
   }
 
   // ------------------------------------------------------------------ drafts
@@ -217,6 +236,23 @@ export class SleeperClient {
       ttlMs,
       async () => (await this.request(url.toString())) ?? [],
     );
+  }
+
+  /* Every player Sleeper knows, keyed by player_id. Fourteen megabytes.
+   *
+   * The board never calls this, and that is the whole design: the projections
+   * response already carries each player's name, team, position and injury
+   * status, so a browser has no reason to download the full file to draw a
+   * list. What only lives here is `age` and `depth_chart_order`, which nothing
+   * on the board reads but a researcher grading a player wants to see.
+   *
+   * So this is for the command line, where a 14 MB response cached for a day is
+   * a fair price for context a person is about to spend an hour thinking about.
+   * Never call it in a loop, and never from the page.
+   */
+  async getAllPlayers(sport = "nfl", { ttlMs = 24 * 60 * 60 * 1000 } = {}) {
+    return (await this.cached(`players:${sport}`, ttlMs,
+      () => this.get(`/players/${sport}`))) ?? {};
   }
 
   /* Current season and week → {season, week, season_type, ...}. */

@@ -49,8 +49,10 @@ const STALE_MS = 15000;
 
 const LIVE_KEY = "draft-board:live";
 const COLLAPSE_KEY = "draft-board:collapsed";
+const SESSION_KEY = "draft-board:session";
 
-const sleeper = new SleeperClient({ cache: new IndexedDbCache() });
+const cache = new IndexedDbCache();
+const sleeper = new SleeperClient({ cache });
 
 let USER = null;         // {user_id, display_name} — everything hangs off this
 let SEASON = null;
@@ -199,13 +201,17 @@ function fillDraftPicker(drafts) {
   if (!drafts.length) $("draft-pick").innerHTML = '<option>no draft yet</option>';
 }
 
-// The address bar is the way to bookmark a board, so it tracks the pickers.
+// The address bar is the way to bookmark a board, and localStorage is the way
+// back to it without one. They say the same thing, so they are written
+// together: a board that survives a bookmark but not a reload, or the other way
+// round, is a board that remembers you inconsistently.
 function syncUrl() {
   const params = new URLSearchParams();
   if (USER) params.set("user", USER.username ?? USER.display_name);
   if (LEAGUE) params.set("league", LEAGUE.league_id);
   if (DRAFT) params.set("draft", DRAFT.draft_id);
   history.replaceState(null, "", params.toString() ? "?" + params : location.pathname);
+  saveSession();
 }
 
 /* ---------- rendering ---------- */
@@ -545,6 +551,39 @@ async function primeValues() {
   }
 }
 
+/* ---------- the session ---------- */
+
+/* Who the board is for, and which board it was showing.
+ *
+ * A draft runs for hours across a tab that gets backgrounded, a phone that
+ * locks, and a browser that decides to reclaim the memory. Coming back to a
+ * username field mid-draft — and having to remember which of four mocks you
+ * were on — is the failure this exists to prevent.
+ *
+ * Only the three ids are kept. Everything they point at is refetched, because
+ * a remembered draft is not the same thing as a remembered pick list: the
+ * picks are the part that must never be stale, and they are the part that is
+ * cheapest to ask for.
+ */
+function readSession() {
+  try { return JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); } catch { return null; }
+}
+
+function saveSession() {
+  try {
+    if (!USER) { localStorage.removeItem(SESSION_KEY); return; }
+    localStorage.setItem(SESSION_KEY, JSON.stringify({
+      username: USER.username,
+      league: LEAGUE ? LEAGUE.league_id : null,
+      draft: DRAFT ? DRAFT.draft_id : null,
+    }));
+  } catch { /* storage off — the board just asks again next time */ }
+}
+
+function forgetSession() {
+  try { localStorage.removeItem(SESSION_KEY); } catch { /* nothing to forget */ }
+}
+
 /* ---------- folding a turn's stretch of the board ---------- */
 
 const turnKey = (turn) => turn.map((p) => p.pick_no).join("-");
@@ -779,9 +818,30 @@ function wire() {
   $("add-draft").addEventListener("click", onAddDraft);
   $("league-pick").addEventListener("change", (e) => showLeague(e.target.value, null));
   $("draft-pick").addEventListener("change", (e) => showDraft(e.target.value));
+  /* ADP and projections are held for six hours, which is right for a number
+   * that moves over days — but only until the evening Sleeper republishes and
+   * the board is still showing this morning's. This drops the lot and starts
+   * again, and it is deliberately the only thing on the page that clears a
+   * cache: everything else expires on its own. */
+  $("refresh-data").addEventListener("click", async () => {
+    const btn = $("refresh-data");
+    btn.disabled = true;
+    try {
+      await cache.clear();
+      toast("fetching fresh projections…");
+      location.reload();
+    } catch {
+      btn.disabled = false;
+      toast("couldn't clear the cached data", true);
+    }
+  });
+
   $("switch-user").addEventListener("click", () => {
     if (LIVE) { clearInterval(LIVE); LIVE = null; }
+    USER = null;
+    forgetSession();
     history.replaceState(null, "", location.pathname);
+    $("username").value = "";
     showStart();
   });
 
@@ -797,13 +857,24 @@ function wire() {
   document.addEventListener("visibilitychange", syncLive);
 }
 
+/* Where the board comes back to.
+ *
+ * A link wins over a remembered session, because a link is something someone
+ * just chose — following one into the board you were last on rather than the
+ * one you were sent to would be the wrong answer every time.
+ */
 function main() {
   wire();
   const params = new URLSearchParams(location.search);
-  const user = params.get("user");
-  if (user) {
-    $("username").value = user;
-    signIn(user, { league: params.get("league"), draft: params.get("draft") });
+  const linked = params.get("user");
+  const remembered = readSession();
+
+  if (linked) {
+    $("username").value = linked;
+    signIn(linked, { league: params.get("league"), draft: params.get("draft") });
+  } else if (remembered?.username) {
+    $("username").value = remembered.username;
+    signIn(remembered.username, { league: remembered.league, draft: remembered.draft });
   } else {
     showStart();
   }
