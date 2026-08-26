@@ -69,6 +69,7 @@ where it was:
 | what | where | why there |
 |---|---|---|
 | username, league, draft | `localStorage` | three ids, needed before anything can be fetched |
+| favorites | `localStorage`, per league | an opinion, and the only one the board stores |
 | ADP and projections | IndexedDB, 6h | 3 MB; moves over days, not over a draft |
 | user, leagues, draft lists | IndexedDB, 24h / 10m / 1m | the round trips between opening the board and seeing it |
 | which stretches are folded | `localStorage`, per draft | a view preference, not draft state |
@@ -109,6 +110,20 @@ about the layout is written down anywhere:
   a roster slot. Autopicks come through with no `picked_by`, so they count as
   gone rather than as yours.
 - **The value** is the green number, and the three best available are outlined.
+
+### Favorites
+
+Tap a row's star, or press **F** with it focused. The row lifts out of the list
+and the star fills.
+
+That is all it does. It changes no number and moves no row — a favorite is on
+the list either way, at whatever ADP puts him. Everything else on a row is
+computed, and this is the exception: the player you decided you want, for a
+reason the formula doesn't have. Making him findable while scrolling past two
+hundred rows on the clock is the whole job.
+
+Favorites are per league, and live in your browser. There is nowhere else to
+put them, which also means they are yours and go nowhere.
 
 ### Pricing
 

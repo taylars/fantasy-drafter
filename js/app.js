@@ -50,6 +50,7 @@ const STALE_MS = 15000;
 const LIVE_KEY = "draft-board:live";
 const COLLAPSE_KEY = "draft-board:collapsed";
 const SESSION_KEY = "draft-board:session";
+const FAVORITES_KEY = "draft-board:favorites";
 
 const cache = new IndexedDbCache();
 const sleeper = new SleeperClient({ cache });
@@ -71,6 +72,10 @@ let COLLAPSED = new Set();
 // Who's off the board is the draft's answer, not ours.
 let DRAFTED = new Set();
 let MINE = [];
+
+// Players marked out by hand, for this league. Emphasis and nothing else: a
+// favorite is on the list either way, at whatever ADP puts him.
+let FAVORITES = new Set();
 
 // What each player is worth to us, computed in the worker.
 let VALUES = new Map();
@@ -225,12 +230,16 @@ function rowHtml(pl) {
   const isMine = MINE.some((m) => m.k === pl.player_id);
   const isGone = DRAFTED.has(pl.player_id) && !isMine;
 
-  const cls = ["row", isGone && "gone", isMine && "mine",
+  const isFavorite = FAVORITES.has(pl.player_id);
+
+  const cls = ["row", isGone && "gone", isMine && "mine", isFavorite && "fav",
                RECOMMENDED.has(pl.player_id) && "recommended"].filter(Boolean).join(" ");
-  // A strikethrough says nothing out loud, so the state goes in the name.
+  // A strikethrough says nothing out loud, and neither does a highlight, so
+  // both states go in the name.
   const label = [pl.name, pl.position + " " + (pl.team || "free agent"),
                  "ADP " + pl.adp.toFixed(1),
-                 isMine ? "drafted by you" : isGone ? "drafted" : null]
+                 isMine ? "drafted by you" : isGone ? "drafted" : null,
+                 isFavorite ? "favorite" : null]
                 .filter(Boolean).join(", ");
 
   return '<div class="' + cls + '" data-player="' + esc(pl.player_id) + '">' +
@@ -244,6 +253,9 @@ function rowHtml(pl) {
       '<span class="pts">' + (pl.points == null ? "" : pl.points.toFixed(0)) + "</span>" +
       valueCell(pl.player_id) +
     "</a>" +
+    '<button type="button" class="star' + (isFavorite ? " on" : "") + '"' +
+      ' aria-pressed="' + (isFavorite ? "true" : "false") + '"' +
+      ' aria-label="Favorite ' + esc(pl.name) + '">' + (isFavorite ? "★" : "☆") + "</button>" +
   "</div>";
 }
 
@@ -472,6 +484,7 @@ function applyLive(picks, gone, ours, result) {
     }
     row.classList.toggle("gone", DRAFTED.has(id) && !ours.has(id));
     row.classList.toggle("mine", ours.has(id));
+    row.classList.toggle("fav", FAVORITES.has(id));
     row.classList.toggle("recommended", RECOMMENDED.has(id));
   }
 
@@ -584,6 +597,69 @@ function forgetSession() {
   try { localStorage.removeItem(SESSION_KEY); } catch { /* nothing to forget */ }
 }
 
+/* ---------- favorites ---------- */
+
+/* The one opinion the board lets you form while looking at it.
+ *
+ * Everything else on a row is computed — ADP from Sleeper, the value from the
+ * model — and a favorite is the exception: the guy you decided you want,
+ * for a reason the formula does not have. It changes no number and moves no
+ * row. It makes him findable while scrolling past two hundred of them on the
+ * clock, which is the whole job.
+ *
+ * Per league, because a player you want in one is not one you want in another,
+ * and in the browser because there is nowhere else to put it — which also
+ * means it is yours and goes nowhere.
+ */
+function readFavorites() {
+  try { return JSON.parse(localStorage.getItem(FAVORITES_KEY) || "{}") || {}; } catch { return {}; }
+}
+
+function loadFavorites() {
+  const mine = LEAGUE ? readFavorites()[LEAGUE.league_id] : null;
+  FAVORITES = new Set(Array.isArray(mine) ? mine : []);
+}
+
+function saveFavorites() {
+  try {
+    const all = readFavorites();
+    if (FAVORITES.size) all[LEAGUE.league_id] = [...FAVORITES];
+    else delete all[LEAGUE.league_id];
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(all));
+  } catch {
+    // Out of quota, or storage turned off. The star still lit, so say why it
+    // won't be there tomorrow rather than let it look saved.
+    toast("couldn't save that favorite — storage is unavailable", true);
+  }
+}
+
+/* Redrawn where it stands. Rebuilding the list to light one star would throw
+ * away the scroll position, which mid-draft is the thing you're holding on to.
+ */
+function toggleFavorite(playerId) {
+  const player = BY_ID.get(playerId);
+  if (!player) return;
+
+  const wasFavorite = FAVORITES.has(playerId);
+  if (wasFavorite) FAVORITES.delete(playerId); else FAVORITES.add(playerId);
+  saveFavorites();
+
+  const old = document.querySelector('.row[data-player="' + CSS.escape(playerId) + '"]');
+  if (!old) return;
+
+  // Which part of the row had the keyboard, so favoriting with Enter or F
+  // doesn't drop focus back to the top of the page.
+  const focused = old.contains(document.activeElement)
+    ? (document.activeElement.closest(".star") ? ".star" : ".open") : null;
+
+  const holder = document.createElement("div");
+  holder.innerHTML = rowHtml(player);
+  const row = holder.firstElementChild;
+  old.replaceWith(row);
+  if (focused) row.querySelector(focused).focus();
+  if (!wasFavorite) row.querySelector(".star").classList.add("bump");
+}
+
 /* ---------- folding a turn's stretch of the board ---------- */
 
 const turnKey = (turn) => turn.map((p) => p.pick_no).join("-");
@@ -620,11 +696,28 @@ function toggleSection(sect) {
 
 /* ---------- gestures ---------- */
 
-// The pick number is the only control on the board that isn't a link: pressing
-// it folds away the stretch of players between that turn and the next.
+// Two controls on the board aren't links: the pick number, which folds away the
+// stretch of players between that turn and the next, and the star.
 function onClick(e) {
   const num = e.target.closest(".picknum");
-  if (num) toggleSection(num.closest(".sect"));
+  if (num) { toggleSection(num.closest(".sect")); return; }
+
+  const star = e.target.closest(".star");
+  if (star) {
+    e.preventDefault();
+    toggleFavorite(star.closest(".row").dataset.player);
+  }
+}
+
+// The same toggle for anyone who can't reach a 34px target, or who is tabbing
+// down the list rather than pointing at it.
+function onKeyDown(e) {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key.toLowerCase() !== "f") return;
+  const row = e.target.closest?.(".row");
+  if (!row) return;
+  e.preventDefault();
+  toggleFavorite(row.dataset.player);
 }
 
 /* ---------- adding a mock draft ---------- */
@@ -714,6 +807,7 @@ async function showDraft(draftId) {
 
 async function showLeague(leagueId, wantedDraft) {
   LEAGUE = LEAGUES.find((l) => l.league_id === leagueId) || LEAGUES[0];
+  loadFavorites();
   SLOTS = LEAGUE.roster_positions ?? [];
   PLAYERS = buildPool(PROJECTIONS, GRADES, LEAGUE);
   BY_ID = new Map(PLAYERS.map((pl) => [pl.player_id, pl]));
@@ -814,6 +908,7 @@ async function loadGrades() {
 
 function wire() {
   $("board").addEventListener("click", onClick);
+  $("board").addEventListener("keydown", onKeyDown);
   $("live").addEventListener("click", () => setLive(!ARMED));
   $("add-draft").addEventListener("click", onAddDraft);
   $("league-pick").addEventListener("change", (e) => showLeague(e.target.value, null));

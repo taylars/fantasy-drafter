@@ -239,8 +239,9 @@
 
   /* ---------- the list ---------- */
   .list{display:flex;flex-direction:column;gap:4px;}
-  /* The whole row is the link, so there's no dead strip to miss with a
-     thumb. */
+  /* The row is the link — everything but the star, so there's no dead strip
+     to miss with a thumb. The star is the one thing that isn't the link,
+     because favoriting isn't opening. */
   .row{
     display:flex;align-items:center;gap:10px;
     position:relative;
@@ -261,6 +262,10 @@
   /* Struck through is the draft's own doing: somebody else has him. */
   .row.gone{box-shadow:none;opacity:.4;filter:grayscale(1);}
   .row.mine{box-shadow:2px 2px 0 var(--tape),2px 2px 0 2px var(--ink);}
+  /* A favorite is emphasis and nothing else — he is on the list either way,
+     at whatever ADP puts him. This is what makes him findable while scrolling
+     past two hundred rows on the clock. */
+  .row.fav{background:#FFFBEC;}
 
   .row:hover{box-shadow:4px 4px 0 var(--ink);}
   .row.mine:hover{box-shadow:4px 4px 0 var(--tape),4px 4px 0 2px var(--ink);}
@@ -274,6 +279,7 @@
     border-right:1.5px solid var(--board-dark);
     color:var(--ink-soft);
   }
+  .row.fav .adp{color:var(--ink);}
   .pos{
     font-family:var(--display);font-weight:700;font-size:13px;
     letter-spacing:.06em;color:#fff;
@@ -361,7 +367,28 @@
   .add-draft:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink);}
   .add-draft:focus-visible{outline:3px solid var(--qb);outline-offset:2px;}
   .add-draft[disabled]{opacity:.5;cursor:default;}
+  /* Drawn on every row rather than only on favorites: the hollow star is how
+     the column says it can be tapped, and it keeps the rows in line down the
+     length of the list either way. Faint until it means something. */
+  .star{
+    flex:0 0 34px;align-self:stretch;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--gold);font-size:17px;line-height:1;
+    background:none;border:0;padding:0;margin:0;font-family:inherit;
+    cursor:pointer;opacity:.2;
+    -webkit-tap-highlight-color:transparent;
+    transition:opacity .15s ease,transform .12s ease;
+  }
+  .row:hover .star{opacity:.45;}
+  .star.on{opacity:1;}
+  .star:hover,.star:focus-visible{opacity:1;}
+  .star:active{transform:scale(.85);}
+  /* A tap that lands should look like it landed. */
+  .star.bump{animation:bump .22s ease;}
+  @keyframes bump{ 40%{transform:scale(1.35);} 100%{transform:scale(1);} }
+
   .open:focus-visible{outline:3px solid var(--qb);outline-offset:-3px;}
+  .star:focus-visible{outline:3px solid var(--qb);outline-offset:-3px;}
 
   /* ---------- load / error state ---------- */
   .status{
@@ -400,6 +427,8 @@
   @media (prefers-reduced-motion:reduce){
     .row{transition:none;}
     .live.on .dot{animation:none;}
+    .star{transition:none;}
+    .star.bump{animation:none;}
   }
   @media (max-width:520px){
     .field{flex:1 1 100%;}
@@ -415,6 +444,7 @@
     .adp{flex-basis:46px;padding:7px 6px;}
     .pts{display:none;}
     .val{min-width:44px;padding:7px 6px;font-size:11px;}
+    .star{flex-basis:28px;}
   }
 
   /* ---------- the start screen ---------- */
@@ -517,7 +547,7 @@
     <p class="eyebrow" id="eyebrow">&nbsp;</p>
     <h1 id="headline">Draft <em>board</em></h1>
     <p class="sub">Everyone already drafted is struck out. Tap a name to open him
-      on Sleeper.</p>
+      on Sleeper, or his star to mark him a favorite.</p>
     <p class="whoami">Showing <b id="who"></b>
       <button type="button" class="switch-user" id="switch-user">not you?</button></p>
   </header>
@@ -559,6 +589,7 @@
     <span>Tap a pick number to fold that stretch away</span>
     <span>Green edge = one of the three best picks now</span>
     <span>Struck = drafted by someone else</span>
+    <span>★ = favorite · F from the keyboard</span>
     <span>Gold edge = drafted by you</span>
     <span id="source"></span>
     <button type="button" class="switch-user" id="refresh-data"
