@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "draft-board",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "scripts.serve", "--no-open"],
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["bin/dev"],
       "port": 8000
     }
   ]

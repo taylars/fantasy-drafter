@@ -5,6 +5,11 @@
   "type": "module",
   "description": "A draft board that runs entirely in the browser, off the Sleeper API.",
   "scripts": {
-    "board": "node bin/board.mjs"
+    "dev": "node bin/dev",
+    "board": "node bin/board.mjs",
+    "grades": "node bin/grades.mjs"
+  },
+  "engines": {
+    "node": ">=22"
   }
 }

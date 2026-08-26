@@ -1,6 +1,6 @@
 ---
 name: grade-players
-description: Research and grade NFL players on the four context factors the draft value formula consumes — offense quality, role security, expected games played, and upside. Use when filling or refreshing the player_grades table, grading a batch from data/grades/queue-*.json, or when asked to research players for the draft board.
+description: Research and grade NFL players on the four context factors the draft value formula consumes — offense quality, role security, expected games played, and upside. Use when filling or refreshing data/grades.json, grading a batch from data/grades/queue-*.json, or when asked to research players for the draft board.
 ---
 
 # Grading players
@@ -26,11 +26,25 @@ you from spending equal effort on all four.
    he is actually on and say so in the note.
 2. Research each one. Grade the four factors.
 3. Write `data/grades/graded-NN.json` — same number as the queue file.
-4. Validate: `python3 -m scripts.load_grades data/grades/graded-NN.json --dry-run`
+4. Validate: `node bin/grades.mjs build --check data/grades/graded-NN.json`
 5. Report which players you were unsure about and why.
 
-Do not edit the queue file, and do not write to the database directly —
-`scripts.load_grades` is the only thing that writes to `player_grades`.
+Do not edit the queue file, and do not edit `data/grades.json` — it is built
+from the graded files by `node bin/grades.mjs build`, so an edit there is
+overwritten the next time anyone runs it. The graded files are the source of
+truth; `data/grades.json` is what the board downloads.
+
+If there is no queue to work from, make one: `node bin/grades.mjs queue`.
+
+To see what a grade did to the board, run it:
+
+```bash
+node bin/grades.mjs build          # merge every batch into data/grades.json
+node bin/board.mjs --user <name>   # the board those grades produce
+```
+
+That loop is the reason to care about `exp_games` most: it scales a player's
+points linearly, where the other three move them a few percent.
 
 ## The four grades
 
@@ -188,12 +202,17 @@ copy; grade on what you can verify.
 }
 ```
 
-Keep `player_id` exactly as the queue gives it — that is what the loader keys
-on. The `note` is one line explaining the grades to a person reading the board
-later; make it say *why*, not restate the numbers.
+Keep `player_id` exactly as the queue gives it — that is what the build keys
+on, and a player_id that isn't in Sleeper's projections is rejected rather than
+guessed at. The `note` is one line explaining the grades to a person reading the
+board later; make it say *why*, not restate the numbers.
 
 Then validate, and fix anything it reports:
 
 ```bash
-python3 -m scripts.load_grades data/grades/graded-03.json --dry-run
+node bin/grades.mjs build --check data/grades/graded-03.json
 ```
+
+A file is rejected whole if any row in it is malformed — a batch is a unit of
+research, and a half-loaded one is harder to reason about than a rejected one.
+Every other batch still builds, so one bad file is re-run on its own.

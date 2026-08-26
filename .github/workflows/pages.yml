@@ -1,0 +1,55 @@
+# Publish the board to GitHub Pages.
+#
+# There is no build step: the board is plain ES modules with no dependencies, so
+# what gets uploaded is the repository as it stands. That is deliberate — a
+# bundler here would mean the thing that ships is not the thing you ran locally.
+#
+# Turn this on once, under Settings → Pages → Source → GitHub Actions.
+name: Deploy to Pages
+
+on:
+  push:
+    branches: [main]
+  # So a broken deploy can be re-run without an empty commit.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deploy at a time, and a queued one is worth waiting for rather than
+# cancelling: each push is a version someone might already be looking for.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      # The grades are the one thing the board ships rather than fetches, and
+      # they are derived from data/grades/graded-*.json. Rebuilding here means a
+      # graded batch that was committed without running the build still reaches
+      # the board, and that a malformed one fails the deploy rather than
+      # shipping quietly.
+      - name: Check the grades build
+        run: node bin/grades.mjs build --check
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
