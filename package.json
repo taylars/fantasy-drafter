@@ -1,0 +1,10 @@
+{
+  "name": "fantasy-drafter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A draft board that runs entirely in the browser, off the Sleeper API.",
+  "scripts": {
+    "board": "node bin/board.mjs"
+  }
+}

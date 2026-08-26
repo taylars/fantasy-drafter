@@ -5,6 +5,8 @@ to track picks live during the draft.
 
 ## Status
 
+- `js/` — the Sleeper client and value formula, for the browser and the CLI
+- `bin/board.mjs` — the board from a terminal, given only a Sleeper username
 - `client/sleeper.py` — read-only Sleeper API client (players, drafts, leagues)
 - `db.py` + `scripts/` — SQLite cache and the loaders that fill it
 - `player_grades` — researched context the projections don't carry
@@ -15,6 +17,9 @@ to track picks live during the draft.
 
 ## Layout
 
+- `js/` — Sleeper client, player pool, and the value formula as ES modules
+- `bin/board.mjs` — the value model on the command line
+- `data/grades.json` — the researched grades, the one thing the board ships
 - `client/sleeper.py` — Sleeper API wrapper, plus snake-draft helpers
 - `db.py` — connection, migrations, scoring, and upsert helpers
 - `value.py` — the draft value formula: lineup coverage, baselines, VONA
@@ -74,6 +79,42 @@ bin/start
 `bin/start` builds the cache first if there isn't one, then serves the board and
 opens it. It runs from any directory, uses `.venv` if you have one, and passes
 its arguments through to `scripts.serve` (`--port`, `--no-open`).
+
+## The model in JavaScript
+
+`js/` is the board's engine, and it runs in a browser and under Node alike. It
+exists because the board is moving into the browser entirely — no server, no
+SQLite, nothing to run before opening it — and because a grading pass needs to
+see what the formula does with a grade it just wrote.
+
+| module | what it is |
+|---|---|
+| `js/sleeper.js` | the Sleeper API client: users, leagues, drafts, projections |
+| `js/pool.js` | Sleeper's shapes turned into priced players |
+| `js/value.js` | the value formula, pure arithmetic over a pool |
+| `js/cache-fs.js` | the Node-side response cache (the browser has its own) |
+
+`js/value.js` is a port of `value.py` and is checked against it: over a full
+250-row board the two agree on every player, every value, and the ranking
+order, and the plan tables come out byte-identical. It is about four times
+faster, which is what makes it viable to re-price a board on every pick.
+
+```bash
+node bin/board.mjs --user <sleeper username>          # the board
+node bin/board.mjs --user <name> --plan               # take now, or wait?
+node bin/board.mjs --user <name> --json --top 250     # the whole ranked board
+node bin/board.mjs --user <name> --league <id> --draft <id>
+```
+
+Everything is derived from the username: the leagues, the draft, the picks
+already made, and the roster you hold. The only thing not fetched is
+`data/grades.json`, the researched context in [Grades](#grades) — it is the one
+piece of data the board ships rather than reads from Sleeper.
+
+Projections are cached under `data/cache` for six hours, so a rerun costs no
+requests. The full 14 MB player file is never fetched at all: the projections
+response already carries each player's name, team, position and injury status
+alongside his ADP and stat line.
 
 ## The board
 

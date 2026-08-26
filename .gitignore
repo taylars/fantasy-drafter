@@ -8,8 +8,14 @@ venv/
 data/*.csv
 data/*.json
 !data/.gitkeep
+# The board's only shipped data: the researched grades, merged from
+# data/grades/graded-*.json. It has to be committed — GitHub Pages serves it.
+!data/grades.json
 
 data/*.db
+
+# Sleeper responses the CLI keeps so a rerun costs no requests.
+data/cache/
 
 # Regenerated from the cache; the graded output beside them is kept.
 data/grades/queue-*.json
