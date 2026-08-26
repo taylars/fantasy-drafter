@@ -9,12 +9,10 @@ Grades come back from research as one json file per batch (see
 docs/value-formula.md for what consumes them). This is the only thing that
 writes to `player_grades`.
 
-Unlike `load_watchlist`, this does not clear before it writes. The watchlist is
-one whole opinion and a player dropped from the file should leave the table;
-grades are independent facts about independent players, and a batch that
-covers 25 of them says nothing about the other 175. So every file is an upsert
-over the players it names and nothing else, which is also what makes a single
-bad batch safe to re-run on its own.
+This does not clear before it writes. Grades are independent facts about
+independent players, and a batch that covers 25 of them says nothing about the
+other 175. So every file is an upsert over the players it names and nothing
+else, which is also what makes a single bad batch safe to re-run on its own.
 
 A file is rejected whole if any row in it is malformed. A batch is a unit of
 research, and a half-loaded one is harder to reason about than a rejected one.
@@ -29,7 +27,7 @@ import sqlite3
 import sys
 
 import db
-from scripts.load_watchlist import player_index, normalize
+from scripts.names import player_index, normalize
 
 GRADES_DIR = pathlib.Path("data/grades")
 

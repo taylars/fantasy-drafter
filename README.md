@@ -7,10 +7,8 @@ to track picks live during the draft.
 
 - `client/sleeper.py` — read-only Sleeper API client (players, drafts, leagues)
 - `db.py` + `scripts/` — SQLite cache and the loaders that fill it
-- `strategies` — the plan for each round, written by hand straight into the table
 - `player_grades` — researched context the projections don't carry
 - `docs/` — what the board should rank on, and the formula that does it
-- `watchlist.json` — players to mark out on the board, per league
 - `draft-board.html` — draft board, rendered from the database in the browser
 - the live button — polls the draft and re-prices the board while it runs
 - `value.py` — what each player is worth to us, given roster and picks left
@@ -23,7 +21,6 @@ to track picks live during the draft.
 - `migrations/` — schema changes as numbered `.sql`, applied in order
 - `bin/start` — build the cache if needed, then serve the board
 - `scripts/` — loaders that populate the cache, one concern each
-- `watchlist.json` — the players to flag, per league
 - `draft-board.html` — the draft board / best-available UI
 - `data/` — the SQLite database and cached player file (gitignored)
 
@@ -54,7 +51,6 @@ The loaders can also be run individually, in this order:
 | `scripts.load_drafts` | draft settings and every pick made so far |
 | `scripts.load_players` | the NFL player file, filtered to the fantasy positions |
 | `scripts.load_projections` | season ADP and projections, per player |
-| `scripts.load_watchlist` | `watchlist.json` — the watch/favorite tags |
 | `scripts.grade_queue` | writes the list of players still needing grades |
 | `scripts.load_grades` | researched grades from `data/grades/graded-*.json` |
 
@@ -83,17 +79,14 @@ its arguments through to `scripts.serve` (`--port`, `--no-open`).
 
 `draft-board.html` has no data in it. It opens `data/fantasy.db` in the browser
 with [sql.js](https://sql.js.org) and reads the board out of it — every player
-Sleeper publishes an ADP for from `players` / `player_projections`, the plan at
-each pick from `strategies`, the flagged players from `player_tags`, the roster
+Sleeper publishes an ADP for from `players` / `player_projections`, the roster
 slots from the league's own `roster_positions`. The HTML never needs touching.
 
 The board is one vertical list of every player with an ADP, best first, broken
 up wherever one of your own picks falls. Tapping a row opens that player's page
-on Sleeper in a new tab; holding a row watches him and tapping his star
-favorites him (see [Watchlists](#watchlists)). Tagging is the only thing on the
-page that writes — everything else is the cache's answer, not the board's, so
-there is no state here to get out of step with the draft. Nothing about the
-layout is written down anywhere:
+on Sleeper in a new tab. Everything on the page is the cache's answer rather
+than the board's, so there is no state here to get out of step with the draft.
+Nothing about the layout is written down anywhere:
 
 - **The order** is the league's own ADP column — `adp_ppr` for a PPR league,
   `adp_half_ppr` for a half-PPR one, and so on. Sleeper reports "not drafted"
@@ -106,10 +99,6 @@ layout is written down anywhere:
   2 / 3) rather than two. A break sits in front of the first player already
   going later than its first pick, which works because ADP is measured in pick
   numbers. A draft whose order hasn't been set yet gets no breaks.
-- **The plan** on each break is the `strategies` row for that round, if there
-  is one. When a merged turn's rounds say the same thing it's printed once;
-  when they disagree, each plan is printed under the round it belongs to.
-  Without any row the break still shows the picks and the rounds.
 - **Who's gone** is `draft_picks` for the selected draft, and nothing else. A
   player taken by somebody else is struck through; one taken under a tracked
   `user_id` is marked as yours instead and fills a roster slot. Re-run
@@ -118,23 +107,15 @@ layout is written down anywhere:
 The one cost of reading the database directly is that the page can't be opened
 from disk any more — browsers won't let a `file://` page fetch a local file.
 `scripts.serve` is a stdlib static server bound to localhost that exists for
-that reason, and `bin/start` is the way in. It serves one thing that isn't a
-file, `POST /api/tags`, which writes a single `player_tags` row:
-
-```
-POST /api/tags   {"league_id": "...", "player_id": "4866", "kind": "watch"}
-                 {"league_id": "...", "player_id": "4866", "kind": null}   # untag
-```
-
-sql.js only reads, so a tag made on the board has to go back to the server to
-outlive the tab. It writes the same row `load_watchlist` writes, and nothing
-else on the page posts anywhere.
+that reason, and `bin/start` is the way in. It also answers `GET /api/value`,
+which is where the numbers on the rows come from, and `POST /api/drafts`, which
+registers a pasted mock draft — sql.js only reads, so adding one has to go back
+to the server. Nothing else on the page posts anywhere.
 
 Two pickers at the top choose what's on show:
 
-- **League** — every league in the cache. The roster strip, the ADP column, the
-  scoring in the masthead, and the plans on the breaks all come from the league
-  that's selected.
+- **League** — every league in the cache. The roster strip, the ADP column, and
+  the scoring in the masthead all come from the league that's selected.
 - **Draft** — that league's own draft plus any mock seeded from it. This is the
   only thing that decides what's struck out, and the picks made under a tracked
   `user_id` are the only thing that fills the roster strip. Autopicks come
@@ -144,76 +125,6 @@ Two pickers at the top choose what's on show:
 
 Both pickers write to the address bar (`?league=<id>&draft=<id>`), so a board
 worth coming back to can be bookmarked.
-
-### Strategy
-
-`strategies` holds one row per league per round — a `plan` headline and a
-`note` behind it — and the board prints it on the break for that round:
-
-```sql
-INSERT INTO strategies (league_id, round, plan, note) VALUES
-  (?, 5, 'Elite TE or best WR',
-      'The drop after the top two tight ends is a cliff. If neither is there, '
-      'take the receiver and stream the position.')
-ON CONFLICT (league_id, round) DO UPDATE
-  SET plan = excluded.plan, note = excluded.note;
-```
-
-This is the one table with no loader behind it, and the only thing in the
-database that isn't a cache: nothing can refetch an opinion. Migrations don't
-drop data, so rows written here survive a rebuild of everything else — but
-deleting `data/fantasy.db` takes them with it.
-
-A round with no row is fine. The break still shows the pick number and the
-round; it just has nothing to say about them.
-
-### Watchlists
-
-Two tags per league, both in `player_tags`, and both only about emphasis — the
-player is on the list either way, at whatever ADP puts him:
-
-- **watch** — the row is highlighted, so it's visible while scrolling past.
-- **favorite** — the same highlight, plus a gold star at the end of the row.
-
-Being tagged at all is what the highlight says; the star picks the favorites
-back out of it.
-
-A player holds at most one tag per league, so favoriting a watched player
-promotes the row rather than adding a second one.
-
-Tags can be made from the file or from the board itself, since the ones worth
-making during a draft are the ones you'd never have written down beforehand:
-
-- **Hold a row** — watches an untagged player, and clears whatever tag a
-  tagged one has. A press that travels is a scroll, so the list still scrolls
-  normally.
-- **Tap the star** — favorites him, and un-favoriting drops him back to a
-  watch rather than off the list. Between the two gestures every state is
-  reachable, and nothing can be tagged into a state the other can't undo.
-- **W and F** do the same two things from the keyboard, on whichever row has
-  focus, for anyone tabbing through the list.
-
-Either way the row redraws first and the write follows; a write that fails puts
-the row back the way it was and says so. `load_watchlist` clears the league's
-tags before it writes, which makes `watchlist.json` the whole truth when it
-runs — so a tag made on the board is lost the next time the file is loaded
-against that league.
-
-Names in `watchlist.json` are resolved against the `players` table on name plus
-position — Sleeper stores "Brian Robinson", never "Brian Robinson Jr.", so both
-sides are normalized first. Team defenses match on the team abbreviation. A
-name that matches nothing, or matches two players, is reported and skipped
-rather than guessed at.
-
-```sql
--- everyone favorited, in ADP order
-SELECT p.full_name, p.position, p.team, pr.adp_half_ppr
-FROM player_tags g
-JOIN players p USING (player_id)
-LEFT JOIN player_projections pr ON pr.player_id = g.player_id AND pr.season = '2026'
-WHERE g.league_id = ? AND g.kind = 'favorite'
-ORDER BY pr.adp_half_ppr;
-```
 
 ### ADP and projections
 
@@ -332,11 +243,11 @@ half-loaded. `--dry-run` checks a file without writing. Loading is an upsert
 over the players a file names and nothing else, so one bad batch can be redone
 on its own.
 
-This is the third kind of table here. The loaders are caches — run one twice
-and nothing changes. `strategies` is hand-written and irreplaceable. Grades are
-reproducible but not deterministic: re-running the research gives a different
-answer, sometimes a better one. `sources` and `graded_at` are what make one
-auditable and let a stale one be spotted.
+Grades are the one thing here that isn't a plain cache. The loaders are caches
+— run one twice and nothing changes. Grades are reproducible but not
+deterministic: re-running the research gives a different answer, sometimes a
+better one. `sources` and `graded_at` are what make one auditable and let a
+stale one be spotted.
 
 ## What a player is worth
 

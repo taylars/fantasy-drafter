@@ -9,15 +9,15 @@ fetch a local file from a file:// page — so the board needs a server, even
 though it's still a static page. This is that server: the standard library's,
 rooted at the repo, and bound to localhost only.
 
-It serves two things that aren't files. POST /api/tags writes a single row of
-player_tags: tagging is the one opinion formed while looking at the board
-rather than before it, and sql.js in the page can only read. GET /api/value
-returns what each player is worth right now, and with ?refresh=1 pulls the
-draft's picks from Sleeper first — which is what the live button on the board
-polls every few seconds while a draft is running. That cadence is why requests
-are served on threads and why the Sleeper session is shared rather than rebuilt
-per request: a poll that has to queue behind another one is a board falling
-behind the draft it is meant to be tracking.
+It serves two things that aren't files. GET /api/value returns what each player
+is worth right now, and with ?refresh=1 pulls the draft's picks from Sleeper
+first — which is what the live button on the board polls every few seconds
+while a draft is running. That cadence is why requests are served on threads
+and why the Sleeper session is shared rather than rebuilt per request: a poll
+that has to queue behind another one is a board falling behind the draft it is
+meant to be tracking. POST /api/drafts adds a mock draft by id, which is the
+one thing the page cannot do for itself: sql.js can only read the copy of the
+database it downloaded.
 
 Value is computed here rather than in the page on purpose. The board already
 mirrors one thing from the database (`scoreStats`), and that duplication has a
@@ -49,17 +49,15 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 PAGE = "draft-board.html"
 DB_FILE = ROOT / "data" / "fantasy.db"
 
-TAGS_API = "/api/tags"
 VALUE_API = "/api/value"
 DRAFTS_API = "/api/drafts"
-KINDS = ("favorite", "watch")
 
 # How many players the value endpoint prices. The board shows every player with
 # an ADP, but the ones worth a number are the ones anywhere near being picked —
 # and past a couple of hundred the differences are under a point anyway.
 VALUE_LIMIT = 250
 
-# A tag is three short ids; anything larger than this is not one.
+# A draft registration is two short ids; anything larger than this is not one.
 MAX_BODY = 4096
 
 # How long the draft object is reused before it's fetched again. Sleeper has no
@@ -87,53 +85,6 @@ def sleeper_client() -> SleeperClient:
     if _sleeper is None:
         _sleeper = SleeperClient()
     return _sleeper
-
-
-def write_tag(payload: dict) -> dict:
-    """Tag one player in one league, or untag him when kind is null.
-
-    Mirrors what load_watchlist writes, so a tag made on the board and a tag
-    loaded from watchlist.json are the same row — and re-running the loader
-    still replaces this league's tags wholesale.
-    """
-    league_id = payload.get("league_id")
-    player_id = payload.get("player_id")
-    kind = payload.get("kind")
-
-    if not isinstance(league_id, str) or not isinstance(player_id, str):
-        raise ValueError("league_id and player_id are required")
-    if kind is not None and kind not in KINDS:
-        raise ValueError(f"kind must be null, {' or '.join(KINDS)}")
-
-    tagged_at = db.now()
-    conn = db.connect(DB_FILE)
-    try:
-        if kind is None:
-            conn.execute(
-                "DELETE FROM player_tags WHERE league_id = ? AND player_id = ?",
-                (league_id, player_id),
-            )
-        else:
-            db.upsert(
-                conn,
-                "player_tags",
-                {
-                    "league_id": league_id,
-                    "player_id": player_id,
-                    "kind": kind,
-                    "tagged_at": tagged_at,
-                },
-                keys=("league_id", "player_id"),
-            )
-        conn.commit()
-    except sqlite3.IntegrityError as exc:
-        # Foreign keys are on, so this is an id the cache doesn't know.
-        raise ValueError(f"unknown league or player: {exc}") from exc
-    finally:
-        conn.close()
-
-    return {"league_id": league_id, "player_id": player_id, "kind": kind,
-            "tagged_at": None if kind is None else tagged_at}
 
 
 def register_draft(payload: dict) -> dict:
@@ -319,7 +270,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
     def do_POST(self) -> None:
         path = self.path.split("?")[0]
-        if path not in (TAGS_API, DRAFTS_API):
+        if path != DRAFTS_API:
             self.send_error(404, "no such endpoint")
             return
         # Insisting on a json body is what keeps another page from posting
@@ -342,10 +293,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             payload = json.loads(self.rfile.read(length) or b"{}")
             if not isinstance(payload, dict):
                 raise ValueError("expected a json object")
-            if path == TAGS_API:
-                self.reply(200, write_tag(payload))
-            else:
-                self.reply(200, register_draft(payload))
+            self.reply(200, register_draft(payload))
         except json.JSONDecodeError:
             self.reply(400, {"error": "body isn't json"})
         except ValueError as exc:

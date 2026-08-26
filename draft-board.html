@@ -206,23 +206,7 @@
     font-family:var(--mono);font-size:11px;letter-spacing:.14em;
     text-transform:uppercase;color:var(--ink-soft);
   }
-  .brk-plan{
-    font-family:var(--display);font-weight:600;
-    font-size:clamp(18px,4.2vw,24px);line-height:1.1;
-    text-transform:uppercase;margin-top:2px;
-  }
   .picknum.multi{font-size:clamp(22px,4.6vw,32px);}
-  .brk-note{
-    font-size:13.5px;color:var(--ink-soft);
-    margin:9px 0 0;max-width:62ch;
-  }
-  /* A turn whose rounds disagree prints both plans, each said whose it is. */
-  .brk-split{margin-top:12px;}
-  .brk-split .brk-when{
-    font-family:var(--mono);font-size:10.5px;font-weight:600;
-    letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);
-  }
-  .brk-split .brk-plan{font-size:clamp(16px,3.6vw,20px);}
   .brk-rule{
     height:0;border-top:2px solid var(--ink);
     margin:12px 0 10px;
@@ -239,9 +223,8 @@
 
   /* ---------- the list ---------- */
   .list{display:flex;flex-direction:column;gap:4px;}
-  /* The row is the link — everything but the star, so there's no dead strip
-     to miss with a thumb. The star is the one thing that isn't the link,
-     because favoriting isn't opening. */
+  /* The whole row is the link, so there's no dead strip to miss with a
+     thumb. */
   .row{
     display:flex;align-items:center;gap:10px;
     position:relative;
@@ -251,8 +234,6 @@
     border-radius:2px;
     transition:opacity .18s ease,filter .18s ease,box-shadow .18s ease;
   }
-  /* Holding this is what watches a player, so a hold must not start selecting
-     his name or raise the callout menu on iOS. */
   .open{
     display:flex;align-items:center;gap:10px;align-self:stretch;
     flex:1;min-width:0;
@@ -261,22 +242,9 @@
     -webkit-touch-callout:none;
     -webkit-tap-highlight-color:transparent;
   }
-  /* The hold's own clock, drawn along the bottom edge so a press that's
-     nearly there looks different from one that just started. The 500ms is
-     HOLD_MS in the script. */
-  .row.pressing{box-shadow:1px 1px 0 var(--ink);}
-  .row.pressing::after{
-    content:"";position:absolute;left:0;bottom:-2px;height:3px;width:0;
-    background:var(--tape);pointer-events:none;
-    animation:hold 500ms linear forwards;
-  }
-  @keyframes hold{ from{width:0;} to{width:100%;} }
   /* Struck through is the draft's own doing: somebody else has him. */
   .row.gone{box-shadow:none;opacity:.4;filter:grayscale(1);}
   .row.mine{box-shadow:2px 2px 0 var(--tape),2px 2px 0 2px var(--ink);}
-  /* Being tagged at all is what the highlight says; the star picks the
-     favorites back out of it. */
-  .row.fav,.row.watch{background:#FFFBEC;}
 
   .row:hover{box-shadow:4px 4px 0 var(--ink);}
   .row.mine:hover{box-shadow:4px 4px 0 var(--tape),4px 4px 0 2px var(--ink);}
@@ -290,7 +258,6 @@
     border-right:1.5px solid var(--board-dark);
     color:var(--ink-soft);
   }
-  .row.fav .adp,.row.watch .adp{color:var(--ink);}
   .pos{
     font-family:var(--display);font-weight:700;font-size:13px;
     letter-spacing:.06em;color:#fff;
@@ -378,28 +345,7 @@
   .add-draft:active{transform:translate(1px,1px);box-shadow:1px 1px 0 var(--ink);}
   .add-draft:focus-visible{outline:3px solid var(--qb);outline-offset:2px;}
   .add-draft[disabled]{opacity:.5;cursor:default;}
-  /* Drawn on every row rather than only on favorites: the hollow star is how
-     the column says it can be tapped, and it keeps the rows in line down the
-     length of the list either way. Faint until it means something. */
-  .star{
-    flex:0 0 34px;align-self:stretch;
-    display:flex;align-items:center;justify-content:center;
-    color:var(--gold);font-size:17px;line-height:1;
-    background:none;border:0;padding:0;margin:0;font-family:inherit;
-    cursor:pointer;opacity:.2;
-    -webkit-tap-highlight-color:transparent;
-    transition:opacity .15s ease,transform .12s ease;
-  }
-  .row:hover .star{opacity:.45;}
-  .star.on{opacity:1;}
-  .star:hover,.star:focus-visible{opacity:1;}
-  .star:active{transform:scale(.85);}
-  /* A tap that lands should look like it landed. */
-  .star.bump{animation:bump .22s ease;}
-  @keyframes bump{ 40%{transform:scale(1.35);} 100%{transform:scale(1);} }
-
   .open:focus-visible{outline:3px solid var(--qb);outline-offset:-3px;}
-  .star:focus-visible{outline:3px solid var(--qb);outline-offset:-3px;}
 
   /* ---------- load / error state ---------- */
   .status{
@@ -417,8 +363,8 @@
     padding:1px 5px;border-radius:2px;white-space:nowrap;
   }
 
-  /* Says what a hold or a tap just did — the highlight changing is the real
-     feedback, this is the wording, and the one place a failed write shows. */
+  /* Says what adding a mock draft did, and the one place a failed write
+     shows. */
   .toast{
     position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
     background:var(--ink);color:#fff;
@@ -438,8 +384,6 @@
   @media (prefers-reduced-motion:reduce){
     .row{transition:none;}
     .live.on .dot{animation:none;}
-    .star{transition:none;}
-    .star.bump{animation:none;}
   }
   @media (max-width:520px){
     .field{flex:1 1 100%;}
@@ -447,7 +391,6 @@
     .adp{flex-basis:46px;padding:7px 6px;}
     .pts{display:none;}
     .val{min-width:44px;padding:7px 6px;font-size:11px;}
-    .star{flex-basis:28px;}
   }
 </style>
 </head>
@@ -457,8 +400,8 @@
   <header class="mast">
     <p class="eyebrow" id="eyebrow">&nbsp;</p>
     <h1 id="headline">Draft <em>board</em></h1>
-    <p class="sub">Everyone already drafted is struck out. Tap a name to open him on Sleeper,
-      hold it to watch him, tap his star to favorite.</p>
+    <p class="sub">Everyone already drafted is struck out. Tap a name to open him
+      on Sleeper.</p>
   </header>
 
   <div class="picker" id="picker" hidden>
@@ -496,9 +439,6 @@
     <span id="adp-legend"></span>
     <span>Break = one of your picks</span>
     <span>Tap a pick number to fold that stretch away</span>
-    <span>Yellow = on your watchlist</span>
-    <span>★ = favorite</span>
-    <span>Hold a row to watch / clear · W and F do the same from the keyboard</span>
     <span>Struck = drafted by someone else</span>
     <span>Gold edge = drafted by you</span>
     <span id="source"></span>
@@ -511,9 +451,8 @@
 <script>
 // Everything on this page comes out of the SQLite cache: the leagues and drafts
 // in the pickers, every player with an ADP from players / player_projections,
-// the plan at each pick from strategies, the roster slots from the league
-// itself. Nothing is hardcoded here, so re-running the loaders — or writing a
-// row into `strategies` — changes the board without touching this file.
+// the roster slots from the league itself. Nothing is hardcoded here, so
+// re-running the loaders changes the board without touching this file.
 //
 // sql.js reads the database file in the browser, which means the page has to be
 // served over http rather than opened from disk: `bin/start`.
@@ -530,17 +469,9 @@ const ADP_UNDRAFTED = 999;
 // on the same shape (.../ATL).
 const SLEEPER_PLAYER = "https://sleeper.com/nfl/players/";
 
-// Where a tag goes when one is made on the board. scripts/serve.py writes the
-// player_tags row the loaders write, so a tag made here and a tag loaded from
-// watchlist.json are the same thing.
-const TAGS_API = "api/tags";
+// Where a pasted mock draft goes. sql.js only reads, so registering one is the
+// server's job.
 const DRAFTS_API = "api/drafts";
-
-// How long a press has to last to count as a hold, and how far a finger may
-// drift before it's a scroll instead. HOLD_MS is also the length of the .row
-// .pressing animation in the stylesheet.
-const HOLD_MS = 500;
-const HOLD_SLOP = 10;
 
 const FLEXOK = ["RB","WR","TE"];
 // The positions worth counting on the roster strip, in the order they're said.
@@ -552,8 +483,7 @@ let LEAGUE = null;       // the league row on show
 let DRAFT = null;        // the draft row on show, or null
 let SLOTS = [];
 let PLAYERS = [];        // every player with an ADP, best first
-let BY_ID = new Map();   // player_id -> the row above, for tagging one in place
-let STRATEGY = new Map();// round -> {plan, note}
+let BY_ID = new Map();   // player_id -> the row above, for pricing one in place
 let TURNS = [];          // our own trips to the board, in order
 let COLLAPSED = new Set(); // turns whose stretch of the board is folded shut
 let ME = [];             // user_ids we track, for spotting our own picks
@@ -693,7 +623,8 @@ function scoreStats(stats, scoring){
 }
 
 // The whole list: everyone Sleeper publishes an ADP for, in ADP order. No
-// opinion is applied here — player_tags only decides how loudly a row is drawn.
+// opinion is applied here; what a player is worth to us arrives separately,
+// from /api/value.
 function loadPlayers(league){
   const scoring = league.scoring_settings ? JSON.parse(league.scoring_settings) : {};
   // The ADP column is chosen, not parameterized — sqlite won't bind an
@@ -702,27 +633,18 @@ function loadPlayers(league){
 
   const players = rows(
     "SELECT p.player_id, p.full_name, p.position, p.team, p.injury_status,"+
-    "       pr."+col+" AS adp, pr.stats AS proj, g.kind"+
+    "       pr."+col+" AS adp, pr.stats AS proj"+
     "  FROM player_projections pr"+
     "  JOIN players p ON p.player_id = pr.player_id"+
-    "  LEFT JOIN player_tags g"+
-    "    ON g.player_id = pr.player_id AND g.league_id = ?"+
     " WHERE pr.season = ? AND pr."+col+" IS NOT NULL AND pr."+col+" < ?"+
     " ORDER BY pr."+col+", p.full_name",
-    [league.league_id, league.season, ADP_UNDRAFTED]);
+    [league.season, ADP_UNDRAFTED]);
 
   players.forEach(pl => {
     pl.points = pl.proj ? scoreStats(JSON.parse(pl.proj), scoring) : null;
     delete pl.proj;
   });
   return players;
-}
-
-function loadStrategies(leagueId){
-  const map = new Map();
-  rows("SELECT round, plan, note FROM strategies WHERE league_id = ? ORDER BY round",
-       [leagueId]).forEach(s => map.set(s.round, s));
-  return map;
 }
 
 // What the draft already knows: who's off the board, and which of those are
@@ -788,22 +710,6 @@ function asTurns(picks){
   return turns;
 }
 
-// The plans across one turn, with neighbouring rounds that say the same thing
-// collapsed into one. Two rounds sharing a plan is the normal case for a snake
-// turn, and printing it twice is just noise.
-function turnPlans(turn){
-  const out = [];
-  turn.forEach(pick => {
-    const row = STRATEGY.get(pick.round);
-    const plan = (row && row.plan) || null;
-    const note = (row && row.note) || null;
-    const last = out[out.length - 1];
-    if(last && last.plan === plan && last.note === note) last.rounds.push(pick.round);
-    else out.push({ rounds:[pick.round], plan:plan, note:note });
-  });
-  return out.filter(entry => entry.plan || entry.note);
-}
-
 // "2.12" — the round and the seat within it, which is how a pick gets talked
 // about out loud.
 function slotLabel(pick){
@@ -863,8 +769,6 @@ function syncUrl(){
 /* ---------- rendering ---------- */
 
 function rowHtml(pl){
-  const kind = pl.kind || "";
-  const fav = kind === "favorite";
   const hurt = pl.injury_status
     ? ' · <span class="hurt">'+esc(pl.injury_status)+'</span>' : '';
 
@@ -874,21 +778,17 @@ function rowHtml(pl){
   const isMine = MINE.some(m => m.k === pl.player_id);
   const isGone = DRAFTED.has(pl.player_id) && !isMine;
 
-  const cls = ["row", kind && kind.replace("favorite","fav"),
-               isGone && "gone", isMine && "mine"].filter(Boolean).join(" ");
-  // A strikethrough says nothing out loud, and neither does a highlight, so
-  // both states go in the name.
+  const cls = ["row", isGone && "gone", isMine && "mine"].filter(Boolean).join(" ");
+  // A strikethrough says nothing out loud, so the state goes in the name.
   const label = [pl.full_name, pl.position + " " + (pl.team || "free agent"),
                  "ADP " + pl.adp.toFixed(1),
-                 isMine ? "drafted by you" : isGone ? "drafted" : null,
-                 fav ? "favorite" : kind ? "watching" : null]
+                 isMine ? "drafted by you" : isGone ? "drafted" : null]
                 .filter(Boolean).join(", ");
 
   return '<div class="'+cls+'" data-player="'+esc(pl.player_id)+'">'+
     '<a class="open" href="'+SLEEPER_PLAYER+encodeURIComponent(pl.player_id)+'"'+
       ' target="_blank" rel="noopener noreferrer"'+
-      ' aria-label="'+esc(label)+'. Open on Sleeper; hold to '+
-        (kind ? 'clear the tag' : 'watch')+'.">'+
+      ' aria-label="'+esc(label)+'. Open on Sleeper.">'+
       '<span class="adp">'+pl.adp.toFixed(1)+'</span>'+
       '<span class="pos '+esc(pl.position)+'">'+esc(pl.position)+'</span>'+
       '<span class="who"><span class="nm">'+esc(pl.full_name)+'</span>'+
@@ -896,31 +796,7 @@ function rowHtml(pl){
       '<span class="pts">'+(pl.points == null ? "" : pl.points.toFixed(0))+'</span>'+
       valueCell(pl.player_id)+
     '</a>'+
-    '<button type="button" class="star'+(fav ? " on" : "")+'"'+
-      ' aria-pressed="'+(fav ? "true" : "false")+'"'+
-      ' aria-label="Favorite '+esc(pl.full_name)+'">'+(fav ? "★" : "☆")+'</button>'+
   '</div>';
-}
-
-// One row, redrawn where it stands. Tagging changes a single player, and
-// rebuilding the whole list to say so would throw away the scroll position
-// mid-draft.
-function renderRow(pl, bump){
-  const old = document.querySelector('.row[data-player="'+CSS.escape(pl.player_id)+'"]');
-  if(!old) return null;
-
-  // Which part of the row had the keyboard, so a tap made with Enter doesn't
-  // drop focus back to the top of the page.
-  const focused = old.contains(document.activeElement)
-    ? (document.activeElement.closest(".star") ? ".star" : ".open") : null;
-
-  const holder = document.createElement("div");
-  holder.innerHTML = rowHtml(pl);
-  const row = holder.firstElementChild;
-  old.replaceWith(row);
-  if(focused) row.querySelector(focused).focus();
-  if(bump) row.querySelector(".star").classList.add("bump");
-  return row;
 }
 
 /* ---------- live ---------- */
@@ -1134,11 +1010,6 @@ function roundLabel(rounds){
 }
 
 function breakHtml(turn, hidden){
-  const plans = turnPlans(turn);
-  // One plan for the whole turn sits in the head, where a single pick's does.
-  // Two plans can't, so they drop below it and each names its own round.
-  const inHead = plans.length === 1 ? plans[0] : null;
-
   return '<div class="brk">'+
     '<div class="brk-head">'+
       '<button type="button" class="picknum'+(turn.length > 1 ? " multi" : "")+'"'+
@@ -1149,17 +1020,8 @@ function breakHtml(turn, hidden){
         '<div class="brk-round">'+esc(roundLabel(turn.map(p => p.round)))+
           ' · '+esc(turn.map(slotLabel).join(" · "))+
           '<span class="brk-count"> · '+hidden+' hidden</span></div>'+
-        (inHead && inHead.plan ? '<div class="brk-plan">'+esc(inHead.plan)+'</div>' : '')+
       '</div>'+
     '</div>'+
-    (inHead
-      ? (inHead.note ? '<p class="brk-note">'+esc(inHead.note)+'</p>' : '')
-      : plans.map(entry =>
-          '<div class="brk-split">'+
-            '<div class="brk-when">'+esc(roundLabel(entry.rounds))+'</div>'+
-            (entry.plan ? '<div class="brk-plan">'+esc(entry.plan)+'</div>' : '')+
-            (entry.note ? '<p class="brk-note">'+esc(entry.note)+'</p>' : '')+
-          '</div>').join(""))+
     '<div class="brk-rule"></div>'+
   '</div>';
 }
@@ -1295,18 +1157,13 @@ function renderMeta(){
                 "average draft position"].filter(Boolean).join(" ") +
     " · " + PLAYERS.length + " players";
 
-  const tagged = rows("SELECT max(tagged_at) AS at FROM player_tags WHERE league_id = ?",
-                      [LEAGUE.league_id])[0];
-  document.getElementById("source").textContent =
-    "From " + DB_URL + (tagged.at ? " · tagged " + tagged.at.slice(0,10) : "");
+  document.getElementById("source").textContent = "From " + DB_URL;
 }
 
-/* ---------- tagging ---------- */
+/* ---------- toast ---------- */
 
-// Two gestures, one column of state. Holding a row watches him, or clears
-// whatever tag he has; the star promotes a watch to a favorite and drops it
-// back. Between them every tag is reachable, and neither can strand a player
-// in a state the other gesture can't undo.
+// The one place a failed write shows: adding a mock draft is the only thing
+// the page asks the server to change.
 
 let toastTimer = null;
 
@@ -1317,37 +1174,6 @@ function toast(message, isError){
   el.hidden = false;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => { el.hidden = true; }, isError ? 5000 : 1800);
-}
-
-// The write the page can't do itself: sql.js reads a copy of the database in
-// memory, so the tag has to go back to the server to outlive the tab.
-async function saveTag(playerId, kind){
-  let res;
-  try {
-    res = await fetch(TAGS_API, {
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({ league_id:LEAGUE.league_id, player_id:playerId, kind:kind })
-    });
-  } catch(e){
-    throw new Error("couldn't reach the server — is bin/start still running?");
-  }
-  if(res.ok) return;
-
-  // A server that predates /api/tags answers the POST rather than the tag, and
-  // says so in a status rather than in json. The page is read fresh from disk
-  // on every reload and the server isn't, so this is what an old process
-  // still holding the port looks like from up here.
-  if(res.status === 501 || res.status === 404){
-    throw new Error("this server is too old to save tags — restart bin/start");
-  }
-
-  let message = "couldn't save the tag ("+res.status+")";
-  try {
-    const body = await res.json();
-    if(body && body.error) message = body.error;
-  } catch(e){ /* an error page rather than json; the status says enough */ }
-  throw new Error(message);
 }
 
 // Fetches the draft from Sleeper, caches it server-side, then re-reads the
@@ -1400,130 +1226,18 @@ async function onAddDraft(){
   }
 }
 
-const SAID = { favorite:"favorite", watch:"watching", "":"cleared" };
+/* ---------- gestures ---------- */
 
-// Drawn first and saved after: a tag is a snap judgement made while the clock
-// runs, and it shouldn't wait on a round trip to show. A write that fails puts
-// the row back the way it was and says so.
-async function setKind(pl, kind){
-  const was = pl.kind || null;
-  if(was === kind) return;
-
-  pl.kind = kind;
-  renderRow(pl, kind === "favorite");
-  toast(pl.full_name + " · " + SAID[kind || ""]);
-
-  try {
-    await saveTag(pl.player_id, kind);
-  } catch(err){
-    pl.kind = was;
-    renderRow(pl);
-    toast(pl.full_name + " · " + err.message, true);
-  }
-}
-
-function toggleWatch(id){
-  const pl = BY_ID.get(id);
-  if(pl) setKind(pl, pl.kind ? null : "watch");
-}
-
-function toggleFavorite(id){
-  const pl = BY_ID.get(id);
-  if(pl) setKind(pl, pl.kind === "favorite" ? "watch" : "favorite");
-}
-
-/* ---------- the hold ---------- */
-
-let hold = null;          // the press in progress, or null
-let heldThrough = false;  // a hold fired, so the click that follows isn't one
-
-function endHold(){
-  if(!hold) return;
-  clearTimeout(hold.timer);
-  hold.row.classList.remove("pressing");
-  hold = null;
-}
-
-function onPointerDown(e){
-  // A secondary button is a context menu, not a hold.
-  if(e.button) return;
-  const row = e.target.closest(".row");
-  // The star runs its own gesture; a press that starts there isn't a hold.
-  if(!row || e.target.closest(".star")) return;
-
-  endHold();
-  heldThrough = false;
-  row.classList.add("pressing");
-  hold = {
-    row: row,
-    id: row.dataset.player,
-    x: e.clientX, y: e.clientY,
-    touch: e.pointerType !== "mouse",
-    timer: setTimeout(() => {
-      const id = hold.id;
-      // Before the tag lands, so the class comes off the row being replaced.
-      endHold();
-      heldThrough = true;
-      if(navigator.vibrate) navigator.vibrate(12);
-      toggleWatch(id);
-    }, HOLD_MS)
-  };
-}
-
-// A finger that travels is scrolling the board, not holding a row.
-function onPointerMove(e){
-  if(!hold) return;
-  if(Math.abs(e.clientX - hold.x) > HOLD_SLOP ||
-     Math.abs(e.clientY - hold.y) > HOLD_SLOP) endHold();
-}
-
-// The click that follows a hold would open Sleeper on top of the tag we just
-// made, so it's swallowed — once.
+// The pick number is the only control on the board that isn't a link: pressing
+// it folds away the stretch of players between that turn and the next.
 function onClick(e){
   const num = e.target.closest(".picknum");
-  if(num){ toggleSection(num.closest(".sect")); return; }
-
-  const star = e.target.closest(".star");
-  if(star){
-    e.preventDefault();
-    toggleFavorite(star.closest(".row").dataset.player);
-    return;
-  }
-  if(heldThrough){
-    e.preventDefault();
-    heldThrough = false;
-  }
-}
-
-// Android raises the context menu on a long press, which would land on top of
-// our own. A right-click with a mouse is left alone.
-function onContextMenu(e){
-  if((hold && hold.touch) || heldThrough) e.preventDefault();
-}
-
-// The same two toggles for anyone who can't hold a row down: W watches, F
-// favorites, on whichever row has the keyboard.
-function onKeyDown(e){
-  if(e.metaKey || e.ctrlKey || e.altKey) return;
-  const row = e.target.closest && e.target.closest(".row");
-  if(!row) return;
-  const key = e.key.toLowerCase();
-  if(key !== "w" && key !== "f") return;
-  e.preventDefault();
-  (key === "w" ? toggleWatch : toggleFavorite)(row.dataset.player);
+  if(num) toggleSection(num.closest(".sect"));
 }
 
 function wireBoard(){
   const board = document.getElementById("board");
-  board.addEventListener("pointerdown", onPointerDown);
-  board.addEventListener("pointermove", onPointerMove);
-  board.addEventListener("pointerup", endHold);
-  board.addEventListener("pointercancel", endHold);
-  // A press dragged off the row, or a window that loses the pointer entirely.
-  board.addEventListener("pointerleave", endHold);
   board.addEventListener("click", onClick);
-  board.addEventListener("contextmenu", onContextMenu);
-  board.addEventListener("keydown", onKeyDown);
 
   const live = document.getElementById("live");
   live.addEventListener("click", () => setLive(!ARMED));
@@ -1572,7 +1286,6 @@ function showLeague(leagueId,leagues,wantedDraft){
   LEAGUE = leagues.find(l => l.league_id === leagueId) || leagues[0];
   PLAYERS = loadPlayers(LEAGUE);
   BY_ID = new Map(PLAYERS.map(pl => [pl.player_id, pl]));
-  STRATEGY = loadStrategies(LEAGUE.league_id);
   SLOTS = JSON.parse(LEAGUE.roster_positions || "[]");
 
   const drafts = loadDrafts(LEAGUE.league_id);

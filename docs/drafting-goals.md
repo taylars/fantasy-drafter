@@ -114,17 +114,16 @@ scale, that the value score reads the same way it reads a projection. The
 columns follow from what the formula consumes, so they're specified in
 [value-formula.md](value-formula.md) rather than here.
 
-`strategies` is not the place for these — that table is a notebook, one plan
-per round, written and read by a person. Grades are an input to a calculation.
+A notebook of hand-written plans is not the place for these — that is prose,
+written and read by a person. Grades are an input to a calculation.
 
 Filling it is a research job, and the obvious way to do it is to have AI do the
 reading: a skill that defines what each grade means and what a defensible
 answer looks like, then sub-agents fanned out over the top ~200 players by ADP,
 one batch each, writing rows back.
 
-That makes the grades a third kind of table. The loaders are caches — run one
-twice and nothing changes. `strategies` is hand-written and irreplaceable.
-Grades are reproducible but not deterministic: re-running the research gives a
-different answer, sometimes a better one. Hence `sources` and `graded_at` —
+That makes the grades a second kind of table. The loaders are caches — run one
+twice and nothing changes. Grades are reproducible but not deterministic:
+re-running the research gives a different answer, sometimes a better one. Hence `sources` and `graded_at` —
 enough to see where a grade came from and whether it's gone stale, since a
 depth chart in August is not the one from June.

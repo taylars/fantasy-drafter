@@ -1,0 +1,21 @@
+-- Strategy and the watchlist come off the board.
+--
+-- Both were hand-written opinions about one league, kept in the database
+-- alongside the cache: `strategies` a plan per round, `player_tags` a set of
+-- favorites and watches. They earned their place when the board was a personal
+-- tool with one league in it and a file to edit next to it.
+--
+-- They do not survive the board becoming something anyone can open with their
+-- own username. Neither can be derived from Sleeper, so a stranger's board
+-- would show the empty half of a feature that only ever had content because
+-- someone maintained a json file in this repo by hand.
+--
+-- What they added is better said by what is already computed. The plan for a
+-- round is `value.plans`, which reads the same search the board ranks on
+-- rather than a note written before the draft started; the reason to mark a
+-- player out is his value at the pick we are on, which is on his row already.
+--
+-- Dropped rather than emptied: an empty table is a feature waiting to come
+-- back, and these are not.
+DROP TABLE IF EXISTS player_tags;
+DROP TABLE IF EXISTS strategies;

@@ -15,7 +15,7 @@ import sys
 import db
 from scripts import (
     init_db, load_drafts, load_leagues, load_players,
-    load_projections, load_users, load_watchlist,
+    load_projections, load_users,
 )
 
 
@@ -37,10 +37,6 @@ def main() -> None:
         steps.append(("load_players", load_players.main, []))
     # Projections key off the players table, so they follow it.
     steps.append(("load_projections", load_projections.main, season_args))
-    # Last: it resolves the watchlist's player names against the players
-    # table, so it needs both the leagues and the player file already loaded.
-    if load_watchlist.WATCHLIST_PATH.exists():
-        steps.append(("load_watchlist", load_watchlist.main, []))
 
     for name, run, argv in steps:
         print(f"\n== {name}")
@@ -51,7 +47,7 @@ def main() -> None:
     conn = db.connect()
     print("\n== summary")
     tables = ("users", "leagues", "user_leagues", "rosters", "drafts", "draft_picks",
-              "players", "player_projections", "strategies", "player_tags")
+              "players", "player_projections", "player_grades")
     for table in tables:
         count = conn.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
         print(f"  {table:<14} {count:>6}")
