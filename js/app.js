@@ -15,7 +15,7 @@
 
 import { SleeperClient } from "./sleeper.js";
 import { IndexedDbCache } from "./cache-idb.js";
-import { buildPool, draftState, draftShape, scoringType, adpKey } from "./pool.js";
+import { buildPool, draftState, draftShape, draftFormat, adpKey } from "./pool.js";
 import { ourPicks } from "./value.js";
 
 const GRADES_URL = "data/grades.json";
@@ -292,7 +292,7 @@ function buildBoard() {
   if (!PLAYERS.length) {
     board.innerHTML = '<p class="status"><b>No ADP for ' + esc(LEAGUE.name) + " yet.</b><br>" +
       "The list is every player Sleeper publishes an average draft position for, in " +
-      "<code>" + esc(adpKey(scoringType(LEAGUE))) + "</code>. Sleeper may not have " +
+      "<code>" + esc(adpKey(draftFormat(LEAGUE, DRAFT))) + "</code>. Sleeper may not have " +
       "published a set for this season yet.</p>";
     return;
   }
@@ -392,9 +392,15 @@ function renderMeta() {
   const first = TURNS.length ? slotLabel(TURNS[0][0]) : null;
   $("headline").innerHTML = first ? "Board from the <em>" + first + "</em>" : "Draft <em>board</em>";
 
-  const format = SCORING[scoringType(LEAGUE)] || scoringType(LEAGUE);
+  // Both of these describe the board being priced, not the league it was
+  // opened under — a 10-team standard mock run from a 12-team half PPR league
+  // is a 10-team standard board, and saying otherwise labels the ADP column
+  // with a format it wasn't read from.
+  const scoring = draftFormat(LEAGUE, DRAFT);
+  const format = SCORING[scoring] || scoring;
+  const teams = (DRAFT && DRAFT.teams) || LEAGUE.total_rosters || null;
   $("eyebrow").textContent = [
-    LEAGUE.total_rosters ? LEAGUE.total_rosters + "-Team" : null,
+    teams ? teams + "-Team" : null,
     format,
     title(DRAFT && DRAFT.type),
     DRAFT && DRAFT.rounds ? DRAFT.rounds + " Rounds" : null,
@@ -402,7 +408,7 @@ function renderMeta() {
   document.title = "Draft Board — " + LEAGUE.name;
 
   $("adp-legend").textContent = "ADP = " +
-    [LEAGUE.total_rosters ? LEAGUE.total_rosters + "-team" : null, format,
+    [teams ? teams + "-team" : null, format,
      "average draft position"].filter(Boolean).join(" ") +
     " · " + PLAYERS.length + " players";
 
@@ -781,6 +787,13 @@ async function showDraft(draftId) {
   showWhen();
 
   DRAFT = DRAFTS.find((d) => d.draft_id === draftId) || DRAFTS[0] || null;
+
+  // The pool is priced per draft, not per league, because the draft picks the
+  // ADP column — so switching drafts rebuilds it. It is the same projections
+  // either way; only which adp_* is read off them changes.
+  PLAYERS = buildPool(PROJECTIONS, GRADES, LEAGUE, DRAFT);
+  BY_ID = new Map(PLAYERS.map((pl) => [pl.player_id, pl]));
+
   TURNS = asTurns(myPicks());
   loadCollapsed();
 
@@ -809,8 +822,6 @@ async function showLeague(leagueId, wantedDraft) {
   LEAGUE = LEAGUES.find((l) => l.league_id === leagueId) || LEAGUES[0];
   loadFavorites();
   SLOTS = LEAGUE.roster_positions ?? [];
-  PLAYERS = buildPool(PROJECTIONS, GRADES, LEAGUE);
-  BY_ID = new Map(PLAYERS.map((pl) => [pl.player_id, pl]));
 
   const listed = await sleeper.getLeagueDrafts(LEAGUE.league_id);
   DRAFTS = listed.map(draftShape);

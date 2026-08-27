@@ -18,7 +18,7 @@
 import { readFile } from "node:fs/promises";
 import { SleeperClient } from "../js/sleeper.js";
 import { FileCache } from "../js/cache-fs.js";
-import { buildPool, draftState, draftShape, scoringType } from "../js/pool.js";
+import { buildPool, draftState, draftShape, draftFormat } from "../js/pool.js";
 import { situation, board, plans } from "../js/value.js";
 
 const GRADES = "data/grades.json";
@@ -65,7 +65,7 @@ async function main() {
   const projections = await sleeper.getProjections(season);
   const picks = await sleeper.getDraftPicks(draft.draft_id);
 
-  const pool = buildPool(projections, grades, league);
+  const pool = buildPool(projections, grades, league, draft);
   const userIds = new Set([user.user_id]);
   const { gone, ours, atPick } = draftState(picks, userIds);
   const sit = situation({ pool, slots: league.roster_positions ?? [], draft, gone, ours, atPick, userIds });
@@ -84,7 +84,7 @@ async function main() {
     return;
   }
 
-  console.log(`${league.name} (${league.scoring_type ?? scoringType(league)})`);
+  console.log(`${league.name} (${draftFormat(league, draft)})`);
   console.log(`  our picks: ${sit.upcoming.slice(0, 6).join(", ")}${sit.upcoming.length > 6 ? " ..." : ""}`);
   console.log(`  roster:    ${sit.roster.map((p) => p.name).join(", ") || "empty"}`);
 

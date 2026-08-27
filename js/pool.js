@@ -39,14 +39,30 @@ export function adpKey(scoringType) {
  * The league object has no scoring_type field — only the draft object does, and
  * a league can be read without one — so it is inferred from the points given
  * for a reception. A 2QB league is not detectable this way and reads as
- * whatever its receptions say, which costs it the `adp_2qb` column; the fix is
- * the draft's own scoring_type when there is a draft to ask.
+ * whatever its receptions say, which costs it the `adp_2qb` column. That is
+ * what draftFormat below is for: when there is a draft, it has already been
+ * told the answer this function has to guess at.
  */
 export function scoringType(league) {
   const rec = league.scoring_settings?.rec;
   if (rec == null) return null;
   if (rec >= 1) return "ppr";
   return rec > 0 ? "half_ppr" : "std";
+}
+
+/* Which format's ADP a board prices against: the draft's, when there is one.
+ *
+ * The draft on screen is the authority and the league is only the fallback. A
+ * mock started cold belongs to no league and can be standard scoring while the
+ * league it was opened under is half PPR, and in that room the standard column
+ * is the one every other seat is reading. Pricing against the league there puts
+ * a number on the board that matches nothing anyone else can see.
+ *
+ * `league.scoring_type` sits between the two because Sleeper has never sent it
+ * on a league object; it is here for the day that changes, not for today.
+ */
+export function draftFormat(league, draft) {
+  return draft?.scoring_type ?? league.scoring_type ?? scoringType(league);
 }
 
 /* A healthy starting quarterback is unusually durable. Grade notes can still
@@ -103,9 +119,9 @@ export function statLine(stats) {
  * still in the pool; he just runs on his position's average availability, which
  * is what `graded` on the row is warning about.
  */
-export function buildPool(projections, grades, league) {
+export function buildPool(projections, grades, league, draft = null) {
   const scoring = league.scoring_settings ?? {};
-  const key = adpKey(league.scoring_type ?? scoringType(league));
+  const key = adpKey(draftFormat(league, draft));
   const pool = [];
 
   for (const record of projections) {
@@ -169,6 +185,9 @@ export function draftShape(draft) {
     league_id: draft.league_id ?? null,
     type: draft.type,
     status: draft.status,
+    // Sleeper keeps the draft's scoring format down in metadata, and it is the
+    // only place a mock's format is written down at all.
+    scoring_type: draft.metadata?.scoring_type ?? null,
     teams: settings.teams,
     rounds: settings.rounds,
     reversal_round: settings.reversal_round ?? 0,

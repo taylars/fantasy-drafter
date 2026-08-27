@@ -95,9 +95,13 @@ One vertical list of every player with an ADP, best first, broken wherever one
 of your own picks falls. Tapping a row opens that player on Sleeper. Nothing
 about the layout is written down anywhere:
 
-- **The order** is the league's own ADP format — `adp_ppr` for a PPR league,
-  `adp_half_ppr` for a half-PPR one. Sleeper reports "not drafted" as an ADP of
-  999 rather than a null, so that value is filtered out by value.
+- **The order** is the ADP format of the draft on screen — `adp_std` in a
+  standard mock, `adp_half_ppr` in a half-PPR league. The draft is asked first
+  because a mock started cold belongs to no league and can be scored
+  differently from the league you opened it under; the league's own
+  `scoring_settings` are the fallback for a board with no draft yet. Sleeper
+  reports "not drafted" as an ADP of 999 rather than a null, so that value is
+  filtered out by value.
 - **The breaks** are derived from the draft. Its `draft_order` says which slot
   is yours, and the slot plus `teams`, `rounds` and `type` gives every pick you
   own. Consecutive pick numbers are one trip to the board, so a snake turn
