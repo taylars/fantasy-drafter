@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "node bin/dev",
     "board": "node bin/board.mjs",
+    "backtest": "node bin/backtest.mjs",
+    "backtest:fixture": "node bin/backtest-fixture.mjs",
     "fixture": "node bin/fixture.mjs",
     "grades": "node bin/grades.mjs",
     "test": "node bin/test"
