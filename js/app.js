@@ -441,7 +441,7 @@ async function pollOnce(refresh) {
 
     const { gone, ours, atPick } = draftState(picks, new Set([USER.user_id]));
     const result = await ask("price", {
-      gone: [...gone], ours: [...ours], atPick, draft: DRAFT, limit: 250,
+      gone: [...gone], ours: [...ours], atPick, draft: DRAFT,
     });
     if (seq !== POLL_SEQ || !DRAFT || DRAFT.draft_id !== draftId) return;
 
