@@ -283,8 +283,11 @@
   .pos{
     font-family:var(--display);font-weight:700;font-size:13px;
     letter-spacing:.06em;color:#fff;
-    padding:0 7px;align-self:stretch;
-    display:flex;align-items:center;flex-shrink:0;
+    align-self:stretch;
+    /* Fixed width, sized for the widest label (DEF), so the color blocks line
+       up down the list instead of ragging in and out by position. */
+    flex:0 0 38px;
+    display:flex;align-items:center;justify-content:center;
   }
   .pos.QB{background:var(--qb);} .pos.RB{background:var(--rb);}
   .pos.WR{background:var(--wr);} .pos.TE{background:var(--te);}
