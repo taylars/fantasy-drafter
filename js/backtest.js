@@ -345,10 +345,9 @@ export function gradeRuns(runs) {
                     + 0.15 * normalizedPlayoffs + 0.15 * normalizedChampionships;
   const score = 50 + 50 * performance;
   const averagePoints = hero.reduce((sum, r) => sum + r.total, 0) / hero.length;
-  // Spread of the seasons behind that mean, reported as the error on the mean.
-  // Season totals are the least noisy thing measured here and still scatter by
-  // ~90 points one team to the next, so a change worth keeping has to move the
-  // average by more than a couple of these.
+  // Descriptive standard error across simulated seat/seed totals. These reuse
+  // the same NFL season and are not independent seasonal observations. Compare
+  // strategy changes with paired runs and inspect room/seat concentration too.
   const variance = hero.length > 1
     ? hero.reduce((sum, r) => sum + (r.total - averagePoints) ** 2, 0) / (hero.length - 1) : 0;
   return {
