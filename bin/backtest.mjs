@@ -17,7 +17,12 @@ const matrix = process.argv.includes("--matrix");
 const seedArg = process.argv.find(arg => arg.startsWith('--seed='));
 const seed = seedArg ? Number(seedArg.split('=')[1]) : 1;
 if (!Number.isSafeInteger(seed)) throw new Error('--seed must be an integer');
-const results = matrix ? runMatrix(fixture, { ahead, seed }) : runBacktest(fixture, { ahead, seed });
+// Several rooms instead of one. Twelve seats against a single scripted room is
+// too few seasons to read a change off; --seeds=1,2,3,4 pools them.
+const seedsArg = process.argv.find(arg => arg.startsWith('--seeds='));
+const seeds = seedsArg ? seedsArg.split('=')[1].split(',').map(Number) : [seed];
+if (seeds.some(s => !Number.isSafeInteger(s))) throw new Error('--seeds must be integers');
+const results = matrix ? runMatrix(fixture, { ahead, seed }) : runBacktest(fixture, { ahead, seed, seeds });
 
 if (json) {
   const compact = Object.fromEntries(Object.entries(results).map(([name, value]) => [name,
@@ -28,10 +33,10 @@ if (json) {
     ? `2025 historical matrix — team counts × draft types × rosters × scoring × opponents`
     : `2025 historical backtest — 12-team half-PPR snake, 12 draft slots, Weeks 1–17`);
   console.log(`Archived projection caveat: ${fixture.caveat}`);
-  console.log(`Opponent policy: scripted ADP, seed ${seed}`);
+  console.log(`Opponent policy: scripted ADP, seed${seeds.length > 1 ? 's' : ''} ${seeds.join(',')}`);
   for (const [name, { grade }] of Object.entries(results)) {
     console.log(`\n${name.toUpperCase()}  ${grade.letter} (${grade.score})`);
-    console.log(`  points ${grade.averagePoints}  finish ${grade.averageFinish}`);
+    console.log(`  points ${grade.averagePoints} ±${grade.pointsStandardError} (n=${grade.samples})  finish ${grade.averageFinish}`);
     console.log(`  points percentile ${grade.pointsPercentile}%  all-play ${grade.allPlayWinRate}%  weekly highs ${grade.weeklyHighScoreRate}%`);
     console.log(`  playoffs ${grade.playoffRate}%  championships ${grade.championshipRate}%`);
     console.log(`  bench-drafted contribution ${grade.benchContribution} points across ${grade.benchStarts} starts`);

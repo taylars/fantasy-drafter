@@ -345,10 +345,18 @@ export function gradeRuns(runs) {
                     + 0.15 * normalizedPlayoffs + 0.15 * normalizedChampionships;
   const score = 50 + 50 * performance;
   const averagePoints = hero.reduce((sum, r) => sum + r.total, 0) / hero.length;
+  // Spread of the seasons behind that mean, reported as the error on the mean.
+  // Season totals are the least noisy thing measured here and still scatter by
+  // ~90 points one team to the next, so a change worth keeping has to move the
+  // average by more than a couple of these.
+  const variance = hero.length > 1
+    ? hero.reduce((sum, r) => sum + (r.total - averagePoints) ** 2, 0) / (hero.length - 1) : 0;
   return {
     score: Math.round(score * 10) / 10,
     letter: letter(score),
     averagePoints: Math.round(averagePoints * 10) / 10,
+    pointsStandardError: Math.round(Math.sqrt(variance / hero.length) * 10) / 10,
+    samples: hero.length,
     averageFinish: Math.round(hero.reduce((sum, r) => sum + r.rank, 0) / hero.length * 100) / 100,
     pointsPercentile: Math.round(pointsPercentile * 1000) / 10,
     allPlayWinRate: Math.round(allPlay * 1000) / 10,
@@ -370,17 +378,30 @@ function runTeams(result) {
   return result._teams;
 }
 
+/* Grade every seat, over one seed or several.
+ *
+ * One seed is twelve drafts against one scripted room, and that is not enough
+ * to judge a change by: across seeds 1..6 the same board scores anywhere from
+ * 66.4 to 74.2, because a twelfth of a championship is worth four points of
+ * grade on its own. Seed 1 sits near the bottom of that range, so the default
+ * run flattered ADP by about five points for no reason but the draw.
+ *
+ * Pooling seats across several rooms is the fix. `pointsStandardError` is
+ * reported alongside so a change can be read against the noise it has to clear
+ * rather than against the last number someone happened to see.
+ */
 export function runBacktest(fixture, options = {}) {
   const teams = options.teams ?? 12;
   const strategies = options.strategies ?? ["board", "adp"];
+  const seeds = options.seeds ?? [options.seed ?? 1];
   const output = {};
   for (const strategy of strategies) {
     const runs = [];
-    for (let heroSeat = 1; heroSeat <= teams; heroSeat++) {
-      const simulation = simulateDraft(fixture, { ...options, teams, heroSeat, heroStrategy: strategy });
+    for (const seed of seeds) for (let heroSeat = 1; heroSeat <= teams; heroSeat++) {
+      const simulation = simulateDraft(fixture, { ...options, seed, teams, heroSeat, heroStrategy: strategy });
       const results = scoreSeason(fixture, simulation, options);
       for (const result of results) Object.defineProperty(result, "_teams", { value: teams });
-      runs.push({ heroSeat, simulation, results });
+      runs.push({ heroSeat, seed, simulation, results });
     }
     output[strategy] = { grade: gradeRuns(runs), runs };
   }
