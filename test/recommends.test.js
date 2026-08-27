@@ -6,6 +6,12 @@
  * tuning would be deleted within a week. It is to pin down the orderings that
  * have to survive the tuning: a strictly better player has to be taken over the
  * man he is better than, and a strictly worse one must not be.
+ *
+ * Most of those claims are about the shortlist rather than about first place.
+ * `recommends` asks whether the board is pointing at a player at all, which is
+ * how a recommendation is actually used and is not sensitive to a tiebreak
+ * between rows a point apart. `pick` is for the few claims that really are
+ * about the top of the board, and this file has one of each.
  */
 
 import { test } from "node:test";
@@ -32,7 +38,7 @@ test("a player strictly better than the best on the board is the recommendation"
   assert.equal(after.rank(best), 2);
 });
 
-test("a player strictly worse than the best on the board is not the recommendation", () => {
+test("a player strictly worse than the best on the board does not take the top of it", () => {
   const before = scenario();
   const best = before.pick;
 
@@ -47,4 +53,7 @@ test("a player strictly worse than the best on the board is not the recommendati
   assert.ok(after.rank(nearly) > after.rank(best),
     `planted player ranked ${after.rank(nearly)}, ${best.name} ${after.rank(best)}`);
   assert.ok(after.value(nearly) < after.value(best));
+  // Still worth recommending, though — ten points off the best back in the
+  // draft is a fine player, and a shortlist that dropped him would be wrong.
+  assert.ok(after.recommends(nearly), `top three was ${after.top().join(", ")}`);
 });

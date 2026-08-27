@@ -336,14 +336,22 @@ const draft = scenario({
   plant: [player({ name: "Ringer Reynolds", position: "TE",
                    adp: 40, points: 210 })],
 });
-assert.equal(draft.pick.name, "Ringer Reynolds");
+assert.ok(draft.recommends("Ringer Reynolds"));
 ```
 
-`pick` is the recommendation, `rank` and `value` say where anyone else landed,
-and `top()` prints the head of the board so a failure says what it got instead.
-Planted players are built by `player()` or by `like()`, which copies a real one
-and moves a single number — that is how "just better than the best man on the
-board" gets written without restating his whole line.
+A recommendation is the top three, not the top one. That is how the answer gets
+used — you are picking off a shortlist while the clock runs — and the first
+three rows are routinely a point or two apart, so which of them lands first
+turns on a tiebreak rather than on anything a strategy has an opinion about.
+`recommends` asks whether the board is pointing at a player at all; `picks()`
+is the shortlist itself; `pick` is there for the few claims that really are
+about the top of the board.
+
+`rank` and `value` say where anyone else landed, and `top()` prints the
+shortlist so a failure says what it got instead. Planted players are built by
+`player()` or by `like()`, which copies a real one and moves a single number —
+that is how "just better than the best man on the board" gets written without
+restating his whole line.
 
 What these should not do is pin the current numbers down. Values move whenever
 the formula is tuned, and a suite that failed on every tuning would be deleted

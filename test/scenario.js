@@ -22,6 +22,16 @@ import { pool, slots, teams, rounds } from "./fixture.js";
 
 const US = "us";
 
+/* How many players a recommendation is.
+ *
+ * Three, because that is how the answer is used: you are picking off a
+ * shortlist while the clock runs, and the board's job is to have the right
+ * player on it. One would be a claim about the tiebreak between rows that are
+ * a point apart; five would be most of a round's worth of names and would stop
+ * being a claim at all.
+ */
+export const RECOMMENDED = 3;
+
 /* A plain snake draft with us in one seat.
  *
  * Synthesised rather than snapshotted. A real draft's order is a map of other
@@ -102,9 +112,26 @@ export function scenario({
     sit,
     ranked,
     atPick,
-    /* Who the board says to take. The recommendation is the top of the same
-     * ranking the page shows, not a second calculation. */
+    /* Who the board says to take: the top three, not the top one.
+     *
+     * A recommendation is a shortlist in practice. The first three rows are
+     * routinely within a point or two of each other — below the starters a
+     * whole block of players prices identically — so which of them lands first
+     * turns on a tiebreak rather than on anything a strategy has an opinion
+     * about. Asserting the head of the list pins down noise; asserting the
+     * shortlist pins down the claim, which is that the board is pointing at
+     * this player at all.
+     *
+     * `pick` is still here for the cases where the claim really is about the
+     * top of the board — a strictly better player has to come first, not
+     * merely be mentioned. */
+    picks(n = RECOMMENDED) { return ranked.slice(0, n).map((row) => row.player); },
     get pick() { return ranked[0].player; },
+    /* Whether the board is recommending this player at all. */
+    recommends(who, n = RECOMMENDED) {
+      const id = resolve(who, index).player_id;
+      return ranked.slice(0, n).some((row) => row.player.player_id === id);
+    },
     /* The ranked row for a player: value, gain, option, cost. Null when he is
      * off the board entirely — gone, or at a position the plan has closed. */
     row(who) { return rows.get(resolve(who, index).player_id) ?? null; },
@@ -117,8 +144,10 @@ export function scenario({
     /* What he is worth to us here, in season points against the best line
      * available. Null when he is not on the board. */
     value(who) { return this.row(who)?.value ?? null; },
-    /* The top of the board, for the message on a failed assertion. */
-    top(n = 5) {
+    /* The head of the board as readable text, for the message on a failed
+     * assertion: a test that says only "expected true" is a test you have to
+     * re-run by hand to learn anything from. */
+    top(n = RECOMMENDED) {
       return ranked.slice(0, n).map((row) =>
         `${row.player.name} (${row.player.position}, ${row.value.toFixed(1)})`);
     },
