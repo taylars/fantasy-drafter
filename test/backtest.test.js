@@ -6,10 +6,15 @@
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { DEFAULT_SLOTS, matrixConfigurations, runBacktest, simulateDraft, weeklyLineup } from "../js/backtest.js";
+import { DEFAULT_SLOTS, historicalFixture, matrixConfigurations, runBacktest, simulateDraft, weeklyLineup } from "../js/backtest.js";
 
-const fixture = JSON.parse(readFileSync(
-  new URL("./fixtures/backtest-2025.json", import.meta.url), "utf8"));
+const history = new URL("../data/historical/2025/", import.meta.url);
+const historicalDraft = JSON.parse(readFileSync(new URL("draft.json", history), "utf8"));
+const historicalWeeks = Array.from({ length: 17 }, (_, i) => JSON.parse(readFileSync(
+  new URL(`weeks/week-${String(i + 1).padStart(2, "0")}.json`, history), "utf8")));
+const fixture = historicalFixture(historicalDraft, historicalWeeks);
+const draft2026 = JSON.parse(readFileSync(
+  new URL("../data/historical/2026/draft.json", import.meta.url), "utf8"));
 
 test("the 2025 fixture is a complete frozen regular-season sample", () => {
   assert.equal(fixture.season, "2025");
@@ -22,6 +27,15 @@ test("the 2025 fixture is a complete frozen regular-season sample", () => {
       assert.ok(Number.isFinite(player.projected[format]), `${player.name} ${format}`);
     }
   }
+});
+
+test("grades stay attached only to the season in which they were researched", () => {
+  assert.ok(historicalDraft.players.every((player) => player.grade === null));
+  assert.equal(draft2026.season, "2026");
+  assert.equal(draft2026.players.length, 300);
+  assert.equal(draft2026.players.filter((player) => player.grade !== null).length, 195);
+  assert.ok(draft2026.players.filter((player) => player.grade).every((player) =>
+    player.grade.graded_at?.startsWith("2026-") || player.grade.sources?.length));
 });
 
 test("the exhaustive matrix covers every requested environment combination", () => {

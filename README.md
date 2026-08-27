@@ -303,7 +303,9 @@ The behavior-level test is a [2025 historical backtest](docs/backtest-2025.md):
 complete simulated drafts are scored against actual Weeks 1–17 results. Run the
 quick 12-team comparison with `npm run backtest`, or the full team-count × draft
 format × roster × scoring × opponent matrix with `npm run backtest -- --matrix`.
-The historical inputs are frozen under `test/fixtures/`; tests never fetch.
+The historical inputs are frozen under `data/historical/<season>/`: one
+`draft.json` plus a separate JSON file for every completed week. Tests never
+fetch.
 
 The thing worth testing here is not that the arithmetic runs — it is that the
 board recommends the right player. So a test is an argument about ordering:

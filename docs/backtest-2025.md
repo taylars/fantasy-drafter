@@ -66,8 +66,10 @@ does not run the exhaustive matrix on every commit.
 
 ## Data boundary and limitations
 
-The committed fixture contains 300 players, three ADP columns, three season
-projection totals, and actual weekly points under all three scoring formats.
+`data/historical/2025/draft.json` contains 300 players, three ADP columns, and
+three season projection totals. `weeks/week-01.json` through `week-17.json`
+hold actual weekly points under all three scoring formats, so any week can be
+corrected independently.
 Draft strategies receive only identity, position, ADP, projection, and neutral
 availability. Actual weekly points are passed only to the season scorer.
 

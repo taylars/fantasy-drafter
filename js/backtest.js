@@ -12,6 +12,22 @@ export const DEFAULT_SLOTS = [
   "BN", "BN", "BN", "BN", "BN",
 ];
 
+export function historicalFixture(draft, weeks) {
+  const ordered = weeks.slice().sort((a, b) => a.week - b.week);
+  return {
+    season: draft.season,
+    weeks: ordered.length,
+    caveat: draft.caveat,
+    players: draft.players.map((player) => ({
+      ...player,
+      actual: Object.fromEntries(draft.formats.map((format) => [
+        format,
+        ordered.map((week) => week.points[player.player_id]?.[format] ?? 0),
+      ])),
+    })),
+  };
+}
+
 const FLEXABLE = new Set(["RB", "WR", "TE"]);
 const POSITION_CAP = { QB: 2, RB: 8, WR: 8, TE: 3, K: 1, DEF: 1 };
 

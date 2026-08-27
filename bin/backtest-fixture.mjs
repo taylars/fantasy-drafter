@@ -6,13 +6,13 @@
  * metadata and player count, and commit the result.
  */
 
-import { writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { SleeperClient, POSITIONS } from "../js/sleeper.js";
 import { buildPool, scoreStats, statLine } from "../js/pool.js";
 
 const SEASON = "2025";
 const WEEKS = 17;
-const OUT = new URL("../test/fixtures/backtest-2025.json", import.meta.url);
+const OUT = new URL(`../data/historical/${SEASON}/`, import.meta.url);
 const PROJECTIONS = `https://api.sleeper.app/projections/nfl/${SEASON}`;
 const STATS = `https://api.sleeper.app/v1/stats/nfl/regular/${SEASON}/{week}`;
 
@@ -49,17 +49,6 @@ const pool = buildPool(projections, {}, league, draft)
 const weeklyRaw = await Promise.all(Array.from({ length: WEEKS }, (_, i) =>
   sleeper.get(`/stats/nfl/regular/${SEASON}/${i + 1}`)));
 
-const weekly = {};
-for (const player of pool) {
-  weekly[player.player_id] = Object.fromEntries(Object.entries(formats).map(([format, scoring]) => [
-    format,
-    weeklyRaw.map((week) => {
-      const stats = week?.[player.player_id];
-      return stats ? scoreStats(statLine(stats), scoring) : 0;
-    }),
-  ]));
-}
-
 const projectionRecords = new Map(projections.map((r) => [r.player_id, r]));
 const players = pool.map((p) => {
   const record = projectionRecords.get(p.player_id);
@@ -76,21 +65,42 @@ const players = pool.map((p) => {
     },
     projected: Object.fromEntries(Object.entries(formats).map(([format, scoring]) =>
       [format, scoreStats(line, scoring)])),
-    actual: weekly[p.player_id],
+    grade: null,
     projection_modified: record?.last_modified ?? record?.updated_at ?? null,
   };
 });
 
-const fixture = {
-  generated: new Date().toISOString(),
+const captured = new Date().toISOString();
+const draftFixture = {
+  captured,
   season: SEASON,
-  weeks: WEEKS,
   caveat: "Sleeper archived 2025 projections fetched after the season; modification timestamps are retained because this is not a provable August snapshot.",
-  sources: { projections: PROJECTIONS, weekly_stats: STATS },
-  format: "half_ppr",
+  source: PROJECTIONS,
+  grades: "No 2025 grades were created; every player grade is null.",
+  formats: Object.keys(formats),
   scoring: formats,
   players,
 };
 
-await writeFile(OUT, `${JSON.stringify(fixture)}\n`);
-console.log(`wrote ${players.length} players × ${WEEKS} weeks to ${OUT.pathname}`);
+await mkdir(new URL("weeks/", OUT), { recursive: true });
+await writeFile(new URL("draft.json", OUT), `${JSON.stringify(draftFixture)}\n`);
+
+for (let index = 0; index < WEEKS; index++) {
+  const week = index + 1;
+  const points = {};
+  for (const player of pool) {
+    const stats = weeklyRaw[index]?.[player.player_id];
+    points[player.player_id] = Object.fromEntries(Object.entries(formats).map(([format, scoring]) =>
+      [format, stats ? scoreStats(statLine(stats), scoring) : 0]));
+  }
+  const fixture = {
+    captured,
+    season: SEASON,
+    week,
+    source: STATS.replace("{week}", String(week)),
+    points,
+  };
+  await writeFile(new URL(`weeks/week-${String(week).padStart(2, "0")}.json`, OUT),
+    `${JSON.stringify(fixture)}\n`);
+}
+console.log(`wrote ${players.length} draft records and ${WEEKS} weekly files to ${OUT.pathname}`);

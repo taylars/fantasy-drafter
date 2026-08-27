@@ -9,6 +9,8 @@
     "board": "node bin/board.mjs",
     "backtest": "node bin/backtest.mjs",
     "backtest:fixture": "node bin/backtest-fixture.mjs",
+    "historical:draft": "node bin/historical-draft.mjs",
+    "historical:week": "node bin/historical-week.mjs",
     "fixture": "node bin/fixture.mjs",
     "grades": "node bin/grades.mjs",
     "test": "node bin/test"

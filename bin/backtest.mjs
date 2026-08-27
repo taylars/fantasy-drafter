@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 
 import { readFile } from "node:fs/promises";
-import { runBacktest, runMatrix } from "../js/backtest.js";
+import { historicalFixture, runBacktest, runMatrix } from "../js/backtest.js";
 
-const fixture = JSON.parse(await readFile(
-  new URL("../test/fixtures/backtest-2025.json", import.meta.url), "utf8"));
+const history = new URL("../data/historical/2025/", import.meta.url);
+const draft = JSON.parse(await readFile(new URL("draft.json", history), "utf8"));
+const weeks = await Promise.all(Array.from({ length: 17 }, (_, i) => readFile(
+  new URL(`weeks/week-${String(i + 1).padStart(2, "0")}.json`, history), "utf8").then(JSON.parse)));
+const fixture = historicalFixture(draft, weeks);
 const json = process.argv.includes("--json");
 const aheadArg = process.argv.find((arg) => arg.startsWith("--ahead="));
 const ahead = aheadArg ? Number(aheadArg.split("=")[1]) : 2;
