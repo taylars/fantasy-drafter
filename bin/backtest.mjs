@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
 import { readFile } from "node:fs/promises";
+import { loadLocalGrades } from "./lib/grades.mjs";
 import { historicalFixture, runBacktest, runMatrix } from "../js/backtest.js";
 
 const history = new URL("../data/historical/2025/", import.meta.url);
 const draft = JSON.parse(await readFile(new URL("draft.json", history), "utf8"));
 const weeks = await Promise.all(Array.from({ length: 17 }, (_, i) => readFile(
   new URL(`weeks/week-${String(i + 1).padStart(2, "0")}.json`, history), "utf8").then(JSON.parse)));
-const fixture = historicalFixture(draft, weeks);
+const fixture = historicalFixture(draft, weeks, await loadLocalGrades(draft.season));
 const json = process.argv.includes("--json");
 const aheadArg = process.argv.find((arg) => arg.startsWith("--ahead="));
 const ahead = aheadArg ? Number(aheadArg.split("=")[1]) : 2;

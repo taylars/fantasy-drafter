@@ -21,12 +21,12 @@
  * numbers, and the tests run offline.
  */
 
-import { readFile, writeFile } from "node:fs/promises";
+import { writeFile } from "node:fs/promises";
+import { loadLocalGrades } from "./lib/grades.mjs";
 import { SleeperClient } from "../js/sleeper.js";
 import { FileCache } from "../js/cache-fs.js";
 import { buildPool, draftShape, draftFormat } from "../js/pool.js";
 
-const GRADES = "data/grades.json";
 const OUT = "test/fixtures/pool.json";
 
 function parseArgs(argv) {
@@ -58,7 +58,7 @@ async function main() {
   }
 
   const sleeper = new SleeperClient({ cache: new FileCache() });
-  const { grades } = JSON.parse(await readFile(GRADES, "utf8"));
+  const { grades, season: gradeSeason } = await loadLocalGrades();
 
   const user = await sleeper.getUser(args.user);
   if (!user) { console.error(`no such Sleeper user: ${args.user}`); process.exit(1); }
@@ -75,6 +75,7 @@ async function main() {
   const fixture = {
     generated: new Date().toISOString().slice(0, 10),
     season: String(season),
+    grades_season: gradeSeason,
     league: league.name,
     format: draftFormat(league, draft),
     // The starting lineup the tests price against. Teams and rounds decide the

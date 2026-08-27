@@ -90,11 +90,10 @@ export function scoringFor(league, draft) {
   return rec == null || rec === scoring.rec ? scoring : { ...scoring, rec };
 }
 
-/* A healthy starting quarterback is unusually durable. Grade notes can still
- * explain why a projection is lower, but historical injuries should not make a
- * current QB1 a projected 13-game player unless the feed says he is presently
- * injured. Backups are deliberately excluded: their low expected games describe
- * role, not durability.
+/* For an UNGRADED healthy starting quarterback, use a durable fallback. Grades
+ * are authoritative when present, including historical injury discounts.
+ * This fallback never overrides a researched expected-games value. Backups
+ * are excluded from the ungraded starter heuristic.
  *
  * Who is a starter comes from the projection itself rather than a depth chart.
  * Sleeper projects pass attempts for 77 quarterbacks and the split is not
@@ -171,6 +170,7 @@ export function buildPool(projections, grades, league, draft = null) {
       : SEASON_GAMES * (DEFAULT_AVAILABILITY[position] ?? 0.85);
 
     const healthyStartingQb =
+      !graded &&
       position === "QB" &&
       (stats.pass_att ?? 0) >= QB_STARTER_PASS_ATT &&
       expectedGames >= 10.0 &&

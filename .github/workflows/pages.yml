@@ -37,13 +37,9 @@ jobs:
         with:
           node-version-file: .node-version
 
-      # The grades are the one thing the board ships rather than fetches, and
-      # they are derived from data/grades/graded-*.json. Rebuilding here means a
-      # graded batch that was committed without running the build still reaches
-      # the board, and that a malformed one fails the deploy rather than
-      # shipping quietly.
-      - name: Check the grades build
-        run: node bin/grades.mjs build --check
+      # Validate the canonical season files offline; there is no grade build.
+      - name: Check historical grades
+        run: node bin/grades.mjs check --all
 
       # The board is only worth publishing if it still recommends the right
       # player. The suite is offline — a frozen pool and no dependencies — so

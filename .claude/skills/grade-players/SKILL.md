@@ -1,6 +1,6 @@
 ---
 name: grade-players
-description: Research and grade NFL players on the four context factors the draft value formula consumes — offense quality, role security, expected games played, and upside. Use when filling or refreshing data/grades.json, grading a batch from data/grades/queue-*.json, or when asked to research players for the draft board.
+description: Research and grade NFL players on the four context factors the draft value formula consumes — offense quality, role security, expected games played, and upside. Use when researching or updating a season's grades.json under data/historical for the draft board.
 ---
 
 # Grading players
@@ -19,32 +19,22 @@ you from spending equal effort on all four.
 
 ## The job
 
-1. Read a queue file: `data/grades/queue-NN.json`. It holds ~25 players with
-   their `player_id`, name, position, team, age, years of experience, injury
-   status, and depth-chart order. The `team` field can be stale after an
-   offseason move — if your research says he has changed teams, grade the team
-   he is actually on and say so in the note.
-2. Research each one. Grade the four factors.
-3. Write `data/grades/graded-NN.json` — same number as the queue file.
-4. Validate: `node bin/grades.mjs build --check data/grades/graded-NN.json`
-5. Report which players you were unsure about and why.
+1. Read `data/historical/index.json` and select the newest numeric year for live
+   research, or the explicitly requested year for historical research.
+2. Run `node bin/grades.mjs queue --season YEAR --regrade` for the archived
+   top-200 ADP cohort. The queue is printed, not stored. Verify teams at the
+   grading date; archived identity data can be stale.
+3. Research the four factors below and edit
+   `data/historical/YEAR/grades.json` directly under `grades[player_id]`.
+   Do not create batch grade files or embed grades into `draft.json`.
+4. Run `node bin/grades.mjs check --all` and report uncertainties.
 
-Do not edit the queue file, and do not edit `data/grades.json` — it is built
-from the graded files by `node bin/grades.mjs build`, so an edit there is
-overwritten the next time anyone runs it. The graded files are the source of
-truth; `data/grades.json` is what the board downloads.
-
-If there is no queue to work from, make one: `node bin/grades.mjs queue`.
-
-To see what a grade did to the board, run it:
-
-```bash
-node bin/grades.mjs build          # merge every batch into data/grades.json
-node bin/board.mjs --user <name>   # the board those grades produce
-```
-
-That loop is the reason to care about `exp_games` most: it scales a player's
-points linearly, where the other three move them a few percent.
+For historical research, honor the document's cutoff in every search and
+source. Store source publication/update dates, historical `as_of`, and the
+real `graded_at` date. Reject post-cutoff sources and mutable live widgets.
+Published dates do not establish archival immutability. Never use outcomes to
+choose grades or overwrite another season's grades. A default is an explicit
+assumption, not proof that a player is healthy.
 
 ## The four grades
 
@@ -180,39 +170,13 @@ copy; grade on what you can verify.
 
 ## Output
 
-`data/grades/graded-NN.json`, matching its queue file:
+The canonical document has `season` and a `grades` object keyed by the exact
+player ID. Each entry contains `name`, `position`, `team`, `offense`,
+`position_security`, `exp_games`, `upside`, `note`, `sources`, and
+`graded_at`. Preserve existing season metadata and unrelated players.
+For cutoff-constrained historical data, follow the existing dated-source,
+`as_of`, `offense_source`, and `evidence_status` schema.
 
-```json
-{
-  "season": "2026",
-  "batch": 3,
-  "players": [
-    {
-      "player_id": "4034",
-      "name": "Christian McCaffrey",
-      "pos": "RB",
-      "offense": 1,
-      "position_security": 1,
-      "exp_games": 13.5,
-      "upside": 0,
-      "note": "Top-10 offense behind a solid line; missed 8 games in 2024 and 3 in 2025, so durability is the whole question. No upside beyond the projection at 30.",
-      "sources": ["https://example.com/depth-chart", "https://example.com/injury-report"]
-    }
-  ]
-}
-```
-
-Keep `player_id` exactly as the queue gives it — that is what the build keys
-on, and a player_id that isn't in Sleeper's projections is rejected rather than
-guessed at. The `note` is one line explaining the grades to a person reading the
-board later; make it say *why*, not restate the numbers.
-
-Then validate, and fix anything it reports:
-
-```bash
-node bin/grades.mjs build --check data/grades/graded-03.json
-```
-
-A file is rejected whole if any row in it is malformed — a batch is a unit of
-research, and a half-loaded one is harder to reason about than a rejected one.
-Every other batch still builds, so one bad file is re-run on its own.
+The note explains the evidence and independent assumptions, not just the numbers.
+Live consumers load only the newest year; historical consumers explicitly load
+their own year. Validate with `node bin/grades.mjs check --season YEAR`.

@@ -6,6 +6,7 @@
  */
 
 import { board, situation, DEFAULT_AVAILABILITY } from "./value.js";
+import { validateGrades } from "./grades.js";
 import { scriptedChoice, missingStarters, STYLES } from "./draft-policy.js";
 
 export const DEFAULT_SLOTS = [
@@ -13,7 +14,8 @@ export const DEFAULT_SLOTS = [
   "BN", "BN", "BN", "BN", "BN",
 ];
 
-export function historicalFixture(draft, weeks) {
+export function historicalFixture(draft, weeks, gradeDocument) {
+  const { grades } = validateGrades(gradeDocument, draft.season);
   const ordered = weeks.slice().sort((a, b) => a.week - b.week);
   for (const week of ordered) {
     if (!week.projections || !week.injured || !week.weekly_players) {
@@ -22,6 +24,7 @@ export function historicalFixture(draft, weeks) {
   }
   const enrich = (player) => ({
     ...player,
+    grade: grades[player.player_id] ?? null,
     actual: Object.fromEntries(draft.formats.map((format) => [format,
       ordered.map((week) => week.points[player.player_id]?.[format] ?? 0)])),
     weeklyProjected: Object.fromEntries(draft.formats.map((format) => [format,

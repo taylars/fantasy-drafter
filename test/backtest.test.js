@@ -12,9 +12,11 @@ import { parseCsv, injuryDesignation } from '../js/historical-week.js';
 
 const history = new URL("../data/historical/2025/", import.meta.url);
 const historicalDraft = JSON.parse(readFileSync(new URL("draft.json", history), "utf8"));
+const grades2025 = JSON.parse(readFileSync(new URL("grades.json", history), "utf8"));
+const grades2026 = JSON.parse(readFileSync(new URL("../2026/grades.json", history), "utf8"));
 const historicalWeeks = Array.from({ length: 17 }, (_, i) => JSON.parse(readFileSync(
   new URL(`weeks/week-${String(i + 1).padStart(2, "0")}.json`, history), "utf8")));
-const fixture = historicalFixture(historicalDraft, historicalWeeks);
+const fixture = historicalFixture(historicalDraft, historicalWeeks, grades2025);
 const draft2026 = JSON.parse(readFileSync(
   new URL("../data/historical/2026/draft.json", import.meta.url), "utf8"));
 
@@ -33,7 +35,7 @@ test("the 2025 fixture is a complete frozen regular-season sample", () => {
 });
 
 test("grades stay attached only to the season in which they were researched", () => {
-  const graded = historicalDraft.players.filter((player) => player.grade !== null);
+  const graded = fixture.players.filter((player) => player.grade !== null);
   assert.equal(graded.length, 200);
   const wanted = historicalDraft.players.filter((p) => !["K", "DEF"].includes(p.position))
     .sort((a, b) => Math.min(...Object.values(a.adp)) - Math.min(...Object.values(b.adp))).slice(0, 200);
@@ -53,9 +55,10 @@ test("grades stay attached only to the season in which they were researched", ()
   assert.equal(offense.size, 32);
   assert.equal(draft2026.season, "2026");
   assert.equal(draft2026.players.length, 300);
-  assert.equal(draft2026.players.filter((player) => player.grade !== null).length, 195);
-  assert.ok(draft2026.players.filter((player) => player.grade).every((player) =>
-    player.grade.graded_at?.startsWith("2026-") || player.grade.sources?.length));
+  assert.equal(Object.keys(grades2026.grades).length, 200);
+  assert.ok(draft2026.players.every((player) => !("grade" in player)));
+  assert.throws(() => historicalFixture(historicalDraft, historicalWeeks, grades2026), /season mismatch/);
+  assert.throws(() => historicalFixture(historicalDraft, historicalWeeks), /season mismatch/);
 });
 
 test("draft strategies consume only season grades, never actuals or current injury status", () => {
@@ -168,7 +171,7 @@ test('weekly inputs never leak to draft strategies and missing archives fail exp
   for (const key of ['weeklyProjected', 'actual', 'injured', 'scheduled']) assert.ok(!(key in player));
   assert.ok(fixture.replacementPlayers.length > 0);
   assert.equal(strategyPool(fixture.players, 'ppr').length, 300);
-  assert.throws(() => historicalFixture(historicalDraft, [{ week: 1, points: {} }]), /Missing weekly lineup inputs/);
+  assert.throws(() => historicalFixture(historicalDraft, [{ week: 1, points: {} }], grades2025), /Missing weekly lineup inputs/);
 });
 
 test('historical injury mapping excludes suspension, retirement and questionable status', () => {

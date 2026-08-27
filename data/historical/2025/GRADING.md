@@ -1,4 +1,30 @@
-# Batches 02/03 source-support audit
+# Reconstructed 2025 grades
+
+The sole editable grade source is `data/historical/2025/grades.json`.
+It includes all 200 graded players, notes, dated sources, evidence status,
+cutoff, and the team-offense normalization method. Draft inputs live separately
+in `draft.json`; the backtest explicitly joins this season's grades.
+Validate with `npm run grades -- check --season 2025`.
+
+Research used sources dated before August 30, 2025. This is retrospective
+reconstruction, not an immutable archived snapshot. Search date filters are
+imperfect; article bodies and displayed dates were checked and suspect evolving
+sources removed. Some factor estimates, notably 15 expected games, remain
+explicit defaults even for a researched player. Numeric grades are judgments.
+The underlying ADP/projections were fetched after the season and retain their
+provenance caveat; do not certify the dataset as hindsight-free.
+
+The cohort is the top 200 QB/RB/WR/TE players by minimum standard, half-PPR,
+or PPR ADP in the existing archive. Normalized offense uses a dated preseason
+offensive-efficiency forecast as a scoring-environment proxy, with rubric rank
+bands. All players on the same cutoff-date team receive the same score.
+No grades were tuned to backtest outcomes.
+
+Research batches and duplicate grade stores were consolidated into the canonical
+file. The original batch versions remain recoverable in Git history.
+
+## Middle-batch audit record
+
 
 Cutoff: before August 30, 2025. No 2025 regular-season outcomes were used.
 

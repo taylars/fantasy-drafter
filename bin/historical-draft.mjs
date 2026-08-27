@@ -21,13 +21,8 @@ function value(flag, fallback) {
 
 const season = String(value("season", "2026"));
 const out = new URL(`../data/historical/${season}/`, import.meta.url);
-const gradesFile = new URL("../data/grades.json", import.meta.url);
 const scoringSource = new URL("../data/historical/2025/draft.json", import.meta.url);
 const { scoring } = JSON.parse(await readFile(scoringSource, "utf8"));
-const gradeDocument = JSON.parse(await readFile(gradesFile, "utf8"));
-if (String(gradeDocument.season) !== season) {
-  throw new Error(`data/grades.json is for ${gradeDocument.season}, not ${season}`);
-}
 
 const source = `https://api.sleeper.app/projections/nfl/${season}`;
 const records = await new SleeperClient({ timeout: 30_000, retries: 3 }).getProjections(season);
@@ -55,7 +50,6 @@ const players = draftable.map((record) => {
     projected: Object.fromEntries(Object.entries(scoring).map(([format, settings]) =>
       [format, scoreStats(line, settings)])),
     projection: line,
-    grade: gradeDocument.grades[record.player_id] ?? null,
     projection_modified: record.last_modified ?? record.updated_at ?? null,
   };
 });
@@ -65,8 +59,7 @@ const fixture = {
   captured,
   season,
   source,
-  grades_source: "data/grades.json",
-  grades_captured: captured,
+  grades_source: `data/historical/${season}/grades.json`,
   formats: Object.keys(scoring),
   scoring,
   players,
@@ -74,4 +67,4 @@ const fixture = {
 
 await mkdir(new URL("weeks/", out), { recursive: true });
 await writeFile(new URL("draft.json", out), `${JSON.stringify(fixture)}\n`);
-console.log(`wrote ${players.length} players (${players.filter((p) => p.grade).length} graded) to ${new URL("draft.json", out).pathname}`);
+console.log(`wrote ${players.length} draft inputs to ${new URL("draft.json", out).pathname}; season grades are managed separately`);

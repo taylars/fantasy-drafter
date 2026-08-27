@@ -15,13 +15,11 @@
  * repeatedly costs nothing after the first call.
  */
 
-import { readFile } from "node:fs/promises";
+import { loadLocalGrades } from "./lib/grades.mjs";
 import { SleeperClient } from "../js/sleeper.js";
 import { FileCache } from "../js/cache-fs.js";
 import { buildPool, draftState, draftShape, draftFormat } from "../js/pool.js";
 import { situation, board, plans } from "../js/value.js";
-
-const GRADES = "data/grades.json";
 
 function parseArgs(argv) {
   const args = { top: 15 };
@@ -42,7 +40,7 @@ async function main() {
   }
 
   const sleeper = new SleeperClient({ cache: new FileCache() });
-  const { grades, season: gradeSeason } = JSON.parse(await readFile(GRADES, "utf8"));
+  const { grades, season: gradeSeason } = await loadLocalGrades();
 
   const user = await sleeper.getUser(args.user);
   if (!user) { console.error(`no such Sleeper user: ${args.user}`); process.exit(1); }

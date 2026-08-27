@@ -6,7 +6,7 @@
  * listing. Nothing is hardcoded, nothing is loaded beforehand, and there is no
  * server — the page talks to Sleeper directly and prices the board itself.
  *
- * The one exception is data/grades.json: the researched context no projection
+ * The one exception is the newest historical season's grades: the context no projection
  * carries — how good the offense is, how secure the role is, how many games he
  * will actually play, and how much room sits above the mean case. That is the
  * only opinion the board ships, and it is why the value column is worth more
@@ -17,8 +17,7 @@ import { SleeperClient } from "./sleeper.js";
 import { IndexedDbCache } from "./cache-idb.js";
 import { buildPool, draftState, draftShape, draftFormat, adpKey } from "./pool.js";
 import { ourPicks } from "./value.js";
-
-const GRADES_URL = "data/grades.json";
+import { loadGrades } from "./grades.js";
 
 // Sleeper's own player page, which is the thing worth reading when a name on
 // the list needs a second look. Team defenses key on the abbreviation and work
@@ -907,12 +906,6 @@ async function signIn(username, wanted = {}) {
     showStart(err.message || "Sleeper didn't answer. Try again in a moment.");
     startBusy(false);
   }
-}
-
-async function loadGrades() {
-  const res = await fetch(GRADES_URL);
-  if (!res.ok) throw new Error(`couldn't load the grades (${res.status})`);
-  return res.json();
 }
 
 /* ---------- boot ---------- */

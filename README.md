@@ -33,9 +33,9 @@ the same-origin policy, and a `file://` page has no origin to share. Opening
 | `js/worker.js` | the formula, off the main thread |
 | `js/app.js` | the page: start screen, pickers, rendering, live polling |
 | `js/cache-idb.js` · `js/cache-fs.js` | the response cache, one per environment |
-| `data/grades.json` | the researched grades — the only data shipped |
+| `data/historical/<year>/grades.json` | canonical researched grades, one file per season |
 | `bin/board.mjs` | the board on the command line |
-| `bin/grades.mjs` | what needs grading, and building `data/grades.json` |
+| `bin/grades.mjs` | offline grade validation and research queue |
 | `bin/fixture.mjs` | freezing today's pool as the test fixture |
 | `scripts/start.mjs` | the local static server behind `npm start` |
 | `test/` | what the board should recommend, against a frozen pool |
@@ -263,38 +263,33 @@ questions.
 
 ## Grades
 
-`data/grades.json` holds the four things a projection can't tell us: how good
-the offense is, how secure the role is, how many games he'll actually play, and
-how much room sits above the mean case. Nothing in Sleeper's API answers any of
-them, so they're researched rather than fetched — and they are the only data the
-board ships rather than reads from Sleeper.
+`data/historical/<year>/grades.json` is the only source of truth for grades.
+Edit these files directly; there is no batch merger or generated grade copy.
+Each file contains `{season, grades: {player_id: {...}}}`, with name, position,
+team, offense, position_security, exp_games, upside, note, sources, and graded_at.
+Historical cutoff/evidence metadata stays in the same document.
+
+The app, CLI board, and fixture generator select the greatest numeric season in
+`data/historical/index.json` (currently 2026). They never merge in older grades,
+including for a player missing from the latest year. A missing or malformed newest
+file is an error, not a fallback. URLs are relative for GitHub Pages project paths.
+Historical backtests explicitly load their own season instead; 2025 must never
+receive 2026 grades. Draft snapshots store ADP/projections and a grade-file reference,
+not another copy of the grades.
 
 ```bash
-node bin/grades.mjs queue         # who needs grading, in batches of 25
+npm run grades -- check --all         # validate all canonical files offline
+npm run grades -- queue              # print ungraded top-200 snapshot players
+npm run grades -- queue --regrade    # print the full research cohort
+npm run grades -- check --season 2025
 ```
 
-That writes `data/grades/queue-NN.json` — the top 200 by ADP, skipping kickers
-and defenses, whose value is flat across the whole draft. Research fills in a
-`graded-NN.json` beside each one (the `grade-players` skill in `.claude/skills`
-says how, and is written to be run a batch at a time, in parallel), and:
-
-```bash
-node bin/grades.mjs build         # graded-*.json -> data/grades.json
-node bin/grades.mjs build --check # validate without writing
-```
-
-The `graded-*.json` files are the source of truth and `data/grades.json` is
-derived from them, so it can be rebuilt at any time and should never be edited
-by hand. Files are validated whole: a batch with a grade out of range, an
-unknown player, or no sources is rejected entirely and reported rather than
-half-loaded, and every other batch still builds — so one bad file is re-run on
-its own.
-
-Grades are the one thing here that isn't a plain fetch. Everything else is a
-cache: ask twice and nothing changes. Grades are reproducible but not
-deterministic — re-running the research gives a different answer, sometimes a
-better one. `sources` and `graded_at` are what make one auditable and let a
-stale one be spotted; a depth chart in August is not the one from June.
+To add a year, create its historical draft and grades files and register the year
+in `data/historical/index.json`. The validation step detects an out-of-date index.
+The grading rubric is in `.claude/skills/grade-players/SKILL.md`. Retrospective
+2025 evidence limitations are documented in `data/historical/2025/GRADING.md`.
+Researched expected-games values are used exactly; the healthy-QB floor applies
+only when no grade exists.
 
 ## Tests
 
@@ -373,8 +368,8 @@ workflow in `.github/workflows/pages.yml` uploads the checkout and publishes it.
 Two things this depends on, both easy to break later:
 
 - **Paths must stay relative.** A project site lives at
-  `<user>.github.io/<repo>/`, so `data/grades.json` resolves and
-  `/data/grades.json` would 404.
+  `<user>.github.io/<repo>/`, so `data/historical/index.json` resolves and
+  `/data/historical/index.json` would 404.
 - **`.nojekyll` must stay.** Without it Pages runs Jekyll, which silently drops
   files and directories beginning with `_`.
 
