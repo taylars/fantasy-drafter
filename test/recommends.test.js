@@ -18,6 +18,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { scenario } from "./scenario.js";
 import { like } from "./fixture.js";
+import { adjusted, optionValue } from "../js/value.js";
 
 test("a player strictly better than the best on the board is the recommendation", () => {
   const before = scenario();
@@ -56,4 +57,14 @@ test("a player strictly worse than the best on the board does not take the top o
   // Still worth recommending, though — ten points off the best back in the
   // draft is a fine player, and a shortlist that dropped him would be wrong.
   assert.ok(after.recommends(nearly), `top three was ${after.top().join(", ")}`);
+});
+
+test("bench upside has no independent value below the waiver projection", () => {
+  const player = { position: "WR", points: 100, upside: 2, offense: 0,
+    position_security: 0, availability: 0.85 };
+  const wire = { WR: adjusted({ ...player }) + 1 };
+  assert.equal(optionValue({ ...player }, [], [], wire, true), 0);
+  assert.ok(optionValue({ ...player, points: 200 }, [], [], wire, true) > 0);
+  assert.equal(optionValue({ ...player, points: 200 }, [], [], wire, false), 0);
+  assert.equal(optionValue({ ...player, position: "QB", points: 200 }, [], [], {}, true), 0);
 });

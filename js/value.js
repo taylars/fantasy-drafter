@@ -71,14 +71,11 @@ export const DEFAULT_AVAILABILITY = { QB: 0.88, RB: 0.79, WR: 0.85, TE: 0.82, K:
 // that is 3.5% light is 3.5% light in the first round as well.
 const UPSIDE_WEIGHT = 0.0175;
 
-// A bench player has option value even when the mean projection does not crack
-// today's best lineup. Upside is the reason to spend a late pick on that
-// outcome: +1 is worth 10 season points and +2 is worth 20. A small share of
-// above-wire production breaks ties between players with the same upside. This
-// term applies only after the roster can already field every starting slot, so
-// it cannot inflate a player being drafted to fill the lineup.
+// A small share of projected production above the wire gives useful bench
+// players option value even when they do not improve the current lineup.
+// Upside grades already affect adjusted(); a separate flat grade bonus can
+// dominate late picks even for players with no above-wire projection.
 const BENCH_OPTION_WEIGHT = 0.02;
-const BENCH_UPSIDE_POINTS = 10.0;
 
 // ADP is a mean and players go in a range around it. Sleeper publishes no
 // spread, so this is assumed, and it is the least evidenced number in the file:
@@ -296,8 +293,7 @@ function lineupFilled(roster, slots) {
 export function optionValue(player, roster, slots, base, filled = null) {
   const isFilled = filled ?? lineupFilled(roster, slots);
   if (!FLEXABLE.has(player.position) || !isFilled) return 0;
-  const surplus = Math.max(0, adjusted(player) - (base[player.position] ?? 0));
-  return BENCH_UPSIDE_POINTS * Math.max(0, player.upside) + BENCH_OPTION_WEIGHT * surplus;
+  return BENCH_OPTION_WEIGHT * Math.max(0, adjusted(player) - (base[player.position] ?? 0));
 }
 
 /* Value added by a draft pick: lineup production plus bench option. */
