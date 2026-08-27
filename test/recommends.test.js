@@ -1,0 +1,50 @@
+/* What the board should recommend, and what it should not.
+ *
+ * Each test plants a player the answer is already known for and checks where
+ * the ranking puts him. The point is not to pin the current numbers down —
+ * they move whenever the formula is tuned, and a test that failed on every
+ * tuning would be deleted within a week. It is to pin down the orderings that
+ * have to survive the tuning: a strictly better player has to be taken over the
+ * man he is better than, and a strictly worse one must not be.
+ */
+
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { scenario } from "./scenario.js";
+import { like } from "./fixture.js";
+
+test("a player strictly better than the best on the board is the recommendation", () => {
+  const before = scenario();
+  const best = before.pick;
+
+  // The same man, ten points better. Same position, same ADP, same grades, so
+  // the projection is the only thing that could move him — which is what makes
+  // the assertion about the ranking rather than about anything else.
+  const ringer = like(best, { name: "Ringer Reynolds", points: best.points + 10 });
+  const after = scenario({ plant: [ringer] });
+
+  assert.equal(after.pick.name, "Ringer Reynolds",
+    `expected the planted player first, got ${after.top().join(", ")}`);
+  assert.ok(after.value(ringer) > before.value(best),
+    `planted ${after.value(ringer).toFixed(1)}, the man he beats was ${before.value(best).toFixed(1)}`);
+  // And he has not simply displaced the board: the man he was copied from is
+  // still there, one place down, rather than having been pushed off it.
+  assert.equal(after.rank(best), 2);
+});
+
+test("a player strictly worse than the best on the board is not the recommendation", () => {
+  const before = scenario();
+  const best = before.pick;
+
+  const nearly = like(best, { name: "Nearly Nolan", points: best.points - 10 });
+  const after = scenario({ plant: [nearly] });
+
+  assert.equal(after.pick.name, best.name,
+    `expected ${best.name} to hold the top, got ${after.top().join(", ")}`);
+  // Below the man he was copied from, and not necessarily second: the players
+  // in between him and the top are real, and where he lands among them is the
+  // formula's business rather than this test's.
+  assert.ok(after.rank(nearly) > after.rank(best),
+    `planted player ranked ${after.rank(nearly)}, ${best.name} ${after.rank(best)}`);
+  assert.ok(after.value(nearly) < after.value(best));
+});

@@ -7,7 +7,9 @@
   "scripts": {
     "dev": "node bin/dev",
     "board": "node bin/board.mjs",
-    "grades": "node bin/grades.mjs"
+    "fixture": "node bin/fixture.mjs",
+    "grades": "node bin/grades.mjs",
+    "test": "node bin/test"
   },
   "engines": {
     "node": ">=22"

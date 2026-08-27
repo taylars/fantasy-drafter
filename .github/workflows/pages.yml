@@ -45,6 +45,13 @@ jobs:
       - name: Check the grades build
         run: node bin/grades.mjs build --check
 
+      # The board is only worth publishing if it still recommends the right
+      # player. The suite is offline — a frozen pool and no dependencies — so
+      # this is a few seconds, and a formula change that broke an ordering
+      # fails here rather than in a draft.
+      - name: Test the recommendations
+        run: node bin/test
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3

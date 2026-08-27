@@ -1,0 +1,108 @@
+#!/usr/bin/env node
+/* Run the recommendation tests.
+ *
+ *     bin/test                        # everything
+ *     bin/test recommends             # just that file
+ *     bin/test "strictly better"      # just the tests whose names match
+ *     bin/test --watch                # rerun on save
+ *
+ * Node's own test runner, with the discovery done here rather than left to a
+ * glob in package.json. A quoted glob is expanded by whichever of the shell and
+ * node gets to it first, which is a difference between machines and not one
+ * worth debugging on the morning of a draft; a list of files this script read
+ * off disk is the same list everywhere.
+ *
+ * The tests need no server, no network and no dependencies — the pool they run
+ * against is frozen in test/fixtures/pool.json — so this is only ever a few
+ * hundred milliseconds, and there is no reason not to run it before a commit.
+ */
+
+import { spawn } from "node:child_process";
+import { readFileSync, readdirSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const TESTS = path.join(ROOT, "test");
+const SUFFIX = ".test.js";
+
+/* Every test file, in a stable order.
+ *
+ * `test/` also holds the harness — fixture.js and scenario.js — which are
+ * modules the tests import rather than tests themselves. Handing those to the
+ * runner makes it load and report them as empty test files, so the suffix is
+ * what separates the two.
+ */
+function testFiles() {
+  return readdirSync(TESTS, { recursive: true })
+    .filter((name) => name.endsWith(SUFFIX))
+    .sort()
+    .map((name) => path.join(TESTS, name));
+}
+
+/* Sort the arguments into flags for the runner, files, and name patterns.
+ *
+ * A bare word is whichever of the two it turns out to be: `bin/test recommends`
+ * means the file when there is one and the test names when there isn't. That is
+ * the way the word is meant either way, and asking which was intended would be
+ * asking about our directory layout rather than about the tests.
+ */
+function plan(args, files) {
+  const flags = args.filter((arg) => arg.startsWith("-"));
+  const chosen = [], patterns = [];
+
+  for (const word of args.filter((arg) => !arg.startsWith("-"))) {
+    const matches = files.filter((file) => path.basename(file, SUFFIX).includes(word)
+                                        || file.endsWith(word));
+    if (matches.length) chosen.push(...matches);
+    else patterns.push(word);
+  }
+
+  for (const pattern of patterns) flags.push("--test-name-pattern", pattern);
+  return [flags, chosen.length ? [...new Set(chosen)] : files, patterns];
+}
+
+/* Refuse a name filter that can't match anything.
+ *
+ * Node reports a run filtered down to no tests as a pass, so a mistyped
+ * `bin/test recomends` is a green suite that ran nothing — the one outcome a
+ * test command must never produce. The check is against the files' text rather
+ * than their test names, which is enough because a title here is a literal in
+ * the source: a pattern absent from the source cannot match a name in it. A
+ * test titled by an interpolated string would be a false alarm, and the day
+ * someone writes one this should learn to read titles properly.
+ */
+function unmatched(patterns, files) {
+  const source = files.map((file) => readFileSync(file, "utf8")).join("\n");
+  return patterns.filter((pattern) => {
+    try {
+      return !new RegExp(pattern).test(source);
+    } catch {
+      return true; // not a regex, so not a name pattern the runner could use
+    }
+  });
+}
+
+const files = testFiles();
+if (!files.length) {
+  console.error(`no ${SUFFIX} files under ${path.relative(process.cwd(), TESTS)}`);
+  process.exit(1);
+}
+
+const [flags, run, patterns] = plan(process.argv.slice(2), files);
+
+const missing = unmatched(patterns, run);
+if (missing.length) {
+  console.error(`no test file or test name matches ${missing.map((p) => JSON.stringify(p)).join(", ")}`);
+  console.error(`  files: ${files.map((f) => path.relative(ROOT, f)).join(", ")}`);
+  process.exit(1);
+}
+
+// Relative to the repo so the runner's output is readable from any directory,
+// and cwd is the repo for the same reason it is in every other bin/ script:
+// what a test reports should not depend on where it was started from.
+const child = spawn(process.execPath,
+  ["--test", ...flags, ...run.map((file) => path.relative(ROOT, file))],
+  { cwd: ROOT, stdio: "inherit" });
+
+child.on("exit", (code, signal) => process.exit(signal ? 1 : code));

@@ -36,7 +36,10 @@ the same-origin policy, and a `file://` page has no origin to share. Opening
 | `data/grades.json` | the researched grades — the only data shipped |
 | `bin/board.mjs` | the board on the command line |
 | `bin/grades.mjs` | what needs grading, and building `data/grades.json` |
+| `bin/fixture.mjs` | freezing today's pool as the test fixture |
+| `bin/test` | the test runner |
 | `bin/dev` | the local static server |
+| `test/` | what the board should recommend, against a frozen pool |
 
 Everything is plain ES modules with no build step and no dependencies. `js/`
 runs unchanged in a browser and under Node, which is what lets the command-line
@@ -293,6 +296,60 @@ cache: ask twice and nothing changes. Grades are reproducible but not
 deterministic — re-running the research gives a different answer, sometimes a
 better one. `sources` and `graded_at` are what make one auditable and let a
 stale one be spotted; a depth chart in August is not the one from June.
+
+## Tests
+
+The thing worth testing here is not that the arithmetic runs — it is that the
+board recommends the right player. So a test is an argument about ordering:
+plant a player whose answer is already known, and check where the ranking puts
+him.
+
+```bash
+bin/test                      # everything
+bin/test recommends           # just that file
+bin/test "strictly better"    # just the tests whose names match
+bin/test --watch              # rerun on save
+```
+
+`npm test` is the same thing. A bare word is a file when there is one and a
+test name when there isn't; a word that is neither is an error rather than a
+green run of nothing, which is what Node's own runner would report.
+
+The suite runs against `test/fixtures/pool.json` — a real pool, priced under a
+real league, written down on a day that has passed. Sleeper's ADP and
+projections move daily and grades move whenever someone researches a batch, so
+a test that fetched either would pass or fail for reasons that have nothing to
+do with the formula. Regenerating the fixture is deliberately a thing you do
+by hand:
+
+```bash
+node bin/fixture.mjs --user <sleeper username>
+```
+
+`test/scenario.js` is where a situation gets built. It takes the seat, the
+players already gone, the roster we hold, and anything the test wants to plant,
+and hands back the board:
+
+```js
+const draft = scenario({
+  roster: ["Jahmyr Gibbs"],
+  plant: [player({ name: "Ringer Reynolds", position: "TE",
+                   adp: 40, points: 210 })],
+});
+assert.equal(draft.pick.name, "Ringer Reynolds");
+```
+
+`pick` is the recommendation, `rank` and `value` say where anyone else landed,
+and `top()` prints the head of the board so a failure says what it got instead.
+Planted players are built by `player()` or by `like()`, which copies a real one
+and moves a single number — that is how "just better than the best man on the
+board" gets written without restating his whole line.
+
+What these should not do is pin the current numbers down. Values move whenever
+the formula is tuned, and a suite that failed on every tuning would be deleted
+within a week. The claims worth writing are the ones that have to survive it: a
+strictly better player is taken over the man he is better than, a strictly worse
+one is not, and a position the roster has already filled stops being the answer.
 
 ## Deploying
 
