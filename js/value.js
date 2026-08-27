@@ -133,6 +133,39 @@ export function adjusted(player) {
  * is over, which is what the wire actually offers — for a running back that is
  * a hundred points worse than the last starter, and assuming otherwise makes a
  * receiver-only draft look optimal when it isn't.
+ *
+ * The last starter looks too generous for a streamable position, and the board
+ * duly takes a kicker in round 10 where ADP waits until 12. It credits the best
+ * kicker +22.3 and the best defense +13.0 from an empty roster, which is a lot
+ * for a pick that could be a fourth receiver. That was measured rather than
+ * argued: the streamable rung was swept from the last starter up to the best
+ * player at the position — the level that collapses the surplus to zero and
+ * leaves `mustFill` alone to decide — over seeds 1-8, paired seat for seat.
+ *
+ *   rung, as a share of        K round  DEF round   points vs
+ *   last starter -> best                             the last starter
+ *   0%  (the last starter)        9.6      10.7      —  (1896.4 ±9.5)
+ *   40%                          10.0      11.1       -1.4 ±1.2
+ *   70%                          10.6      11.6      -32.0 ±3.5
+ *   85%                          11.8      12.8      -46.8 ±3.8
+ *   100% (the best kicker)       14.0      15.0      -20.2 ±3.9
+ *
+ * Every rung loses, and pushing the other way — below the last starter, taking
+ * K and DEF earlier still — also loses (-2.0 ±0.8). This is a peak, not a slope.
+ *
+ * The reason is that the freed picks buy nothing. At the -32 rung the roster mix
+ * moves by under a tenth of a player everywhere and the entire loss is K and DEF
+ * scoring less; at the -20 rung the picks go into a second and third quarterback
+ * (QB 1.00 -> 2.63 per roster) worth less than the depth back they displace.
+ * There is no round-10 receiver waiting to be freed. Kicker alone, delayed to
+ * round 12, costs -60.1 ±4.2.
+ *
+ * Read this as one season, though. The 2025 projections rank kickers at
+ * Spearman 0.29 over a 17-man pool and defenses at 0.29 over 26 — weak enough
+ * that the true correlation could be near zero, and the board's kicker edge
+ * (176.6 against ADP's 134.0) leans on the projection having correctly put the
+ * season's best kicker first. The rung is right for this data; it is the number
+ * here most likely to be luck, and a second season should re-run this sweep.
  */
 export function baselines(pool, teams, rounds) {
   const drafted = teams * rounds;
