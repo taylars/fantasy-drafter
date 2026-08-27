@@ -5,7 +5,7 @@
  * handed to a strategy. That separation is the backtest's most important rule.
  */
 
-import { board, situation, DEFAULT_AVAILABILITY } from "./value.js";
+import { board, situation, DEFAULT_AVAILABILITY, PLAN_AHEAD, BOARD_LIMIT } from "./value.js";
 import { validateGrades } from "./grades.js";
 import { scriptedChoice, missingStarters, STYLES } from "./draft-policy.js";
 
@@ -92,7 +92,7 @@ export function simulateDraft(fixture, {
   slots = DEFAULT_SLOTS,
   type = "snake",
   reversalRound = 0,
-  ahead = 2,
+  ahead = PLAN_AHEAD,
   format = "half_ppr",
   opponentStyle = "adp",
   seed = 1,
@@ -127,7 +127,7 @@ export function simulateDraft(fixture, {
         atPick: i + 1,
         userIds: new Set([userId]),
       });
-      chosen = board(sit, { ahead, limit: pool.length }).ranked.find(row =>
+      chosen = board(sit, { ahead, limit: BOARD_LIMIT }).ranked.find(row =>
         missingStarters([...roster, row.player], slots) <= picksLeft - 1)?.player;
     } else {
       const style = seat + 1 === heroSeat ? 'adp' : opponentStyle === "mixed"
@@ -420,7 +420,7 @@ function groupedGrades(runs, key) {
   return Object.fromEntries([...groups].map(([value, group]) => [value, gradeRuns(group)]));
 }
 
-export function runMatrix(fixture, { ahead = 2, seed = 1 } = {}) {
+export function runMatrix(fixture, { ahead = PLAN_AHEAD, seed = 1 } = {}) {
   const configs = matrixConfigurations();
   const output = {};
   for (const strategy of ["board", "adp"]) {

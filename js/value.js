@@ -96,6 +96,14 @@ const ADP_SPREAD_FLOOR = 4.0;
 export const PLAN_AHEAD = 4;
 const PLAN_POSITIONS = ["RB", "WR", "TE", "QB", "K", "DEF"];
 
+// How many candidates, by ADP, the board prices. Exported because every caller
+// that ranks a real draft — the page, the CLI, the backtest — has to use the
+// same number or they are not measuring the same board. They drifted once:
+// the backtest planned two picks ahead against the whole pool while the page
+// planned four against the top 250, and the backtest's grade was reporting a
+// strategy nothing in production ran.
+export const BOARD_LIMIT = 250;
+
 /* Season points if he played every week, corrected for context.
  *
  * Deliberately *not* scaled by availability. The games he misses are priced
@@ -601,7 +609,7 @@ function outlook(sit, candidates, gains, ahead) {
  * `plans` remains a separate, best-case path explorer. It is useful to explain
  * upside, but it does not participate in the recommendation score.
  */
-export function board(sit, { limit = 200, ahead = PLAN_AHEAD } = {}) {
+export function board(sit, { limit = BOARD_LIMIT, ahead = PLAN_AHEAD } = {}) {
   const forced = mustFill(sit.roster, sit.slots, sit.upcoming.length);
   const open = new Set(planPositions(sit.roster, sit.slots));
   const pickable = sit.available.filter((p) => forced.size ? forced.has(p.position) : open.has(p.position));

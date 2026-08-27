@@ -12,7 +12,7 @@
  * the picks.
  */
 
-import { situation, board } from "./value.js";
+import { situation, board, BOARD_LIMIT } from "./value.js";
 
 let state = null;   // {pool, slots, draft, userIds}
 
@@ -43,7 +43,7 @@ self.onmessage = ({ data }) => {
         atPick: payload.atPick,
         userIds: state.userIds,
       });
-      const { ranked, upcoming } = board(sit, { limit: payload.limit ?? 250 });
+      const { ranked, upcoming } = board(sit, { limit: payload.limit ?? BOARD_LIMIT });
 
       // Only what the page draws. The Player objects carry a memoised
       // `_adjusted` and everything the formula needed; sending them back whole
