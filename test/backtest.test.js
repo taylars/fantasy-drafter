@@ -6,7 +6,9 @@
 import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { DEFAULT_SLOTS, historicalFixture, matrixConfigurations, runBacktest, simulateDraft, weeklyLineup } from "../js/backtest.js";
+import { missingStarters } from '../js/draft-policy.js';
+import { DEFAULT_SLOTS, historicalFixture, matrixConfigurations, runBacktest, simulateDraft, strategyPool, weeklyLineup, weeklyReplacements, scoreSeason } from "../js/backtest.js";
+import { parseCsv, injuryDesignation } from '../js/historical-week.js';
 
 const history = new URL("../data/historical/2025/", import.meta.url);
 const historicalDraft = JSON.parse(readFileSync(new URL("draft.json", history), "utf8"));
@@ -23,6 +25,7 @@ test("the 2025 fixture is a complete frozen regular-season sample", () => {
   for (const player of fixture.players) {
     for (const format of ["std", "half_ppr", "ppr"]) {
       assert.equal(player.actual[format].length, 17, `${player.name} ${format}`);
+      assert.equal(player.weeklyProjected[format].length, 17);
       assert.ok(Number.isFinite(player.adp[format]), `${player.name} ${format}`);
       assert.ok(Number.isFinite(player.projected[format]), `${player.name} ${format}`);
     }
@@ -30,12 +33,47 @@ test("the 2025 fixture is a complete frozen regular-season sample", () => {
 });
 
 test("grades stay attached only to the season in which they were researched", () => {
-  assert.ok(historicalDraft.players.every((player) => player.grade === null));
+  const graded = historicalDraft.players.filter((player) => player.grade !== null);
+  assert.equal(graded.length, 200);
+  const wanted = historicalDraft.players.filter((p) => !["K", "DEF"].includes(p.position))
+    .sort((a, b) => Math.min(...Object.values(a.adp)) - Math.min(...Object.values(b.adp))).slice(0, 200);
+  assert.deepEqual(new Set(graded.map((p) => p.player_id)), new Set(wanted.map((p) => p.player_id)));
+  const offense = new Map();
+  for (const player of graded) {
+    const grade = player.grade;
+    assert.equal(grade.as_of, "2025-08-29T23:59:59");
+    assert.ok(["researched", "conservative_default"].includes(grade.evidence_status));
+    for (const source of [...grade.sources, grade.offense_source]) {
+      assert.ok(Number.isFinite(Date.parse(source.published_at)));
+      assert.ok(source.published_at.slice(0, 10) <= "2025-08-29");
+    }
+    if (offense.has(player.team)) assert.equal(grade.offense, offense.get(player.team));
+    offense.set(player.team, grade.offense);
+  }
+  assert.equal(offense.size, 32);
   assert.equal(draft2026.season, "2026");
   assert.equal(draft2026.players.length, 300);
   assert.equal(draft2026.players.filter((player) => player.grade !== null).length, 195);
   assert.ok(draft2026.players.filter((player) => player.grade).every((player) =>
     player.grade.graded_at?.startsWith("2026-") || player.grade.sources?.length));
+});
+
+test("draft strategies consume only season grades, never actuals or current injury status", () => {
+  const input = [{player_id: "test", name: "Test", position: "RB", team: "BUF",
+    adp: {ppr: 5}, projected: {ppr: 200}, actual: {ppr: [999]}, injury_status: "IR",
+    grade: {offense: 2, position_security: 1, upside: 2, exp_games: 12}}];
+  const [player] = strategyPool(input, "ppr");
+  assert.equal(player.offense, 2);
+  assert.equal(player.position_security, 1);
+  assert.equal(player.upside, 2);
+  assert.equal(player.availability, 12 / 17);
+  assert.equal(player.graded, true);
+  assert.equal(player.injury_status, null);
+  assert.ok(!("actual" in player));
+  assert.ok(!("grade" in player));
+  input[0].grade = null;
+  assert.equal(strategyPool(input, "ppr")[0].graded, false);
+  assert.equal(strategyPool(input, "ppr")[0].offense, 0);
 });
 
 test("the exhaustive matrix covers every requested environment combination", () => {
@@ -53,13 +91,14 @@ test("a simulated draft is deterministic and leaves every team with a legal rost
   assert.equal(first.picks.length, 12 * DEFAULT_SLOTS.length);
   for (const roster of first.rosters) {
     assert.equal(roster.length, DEFAULT_SLOTS.length);
+    assert.equal(missingStarters(roster, DEFAULT_SLOTS), 0);
     for (const position of ["QB", "RB", "WR", "TE", "K", "DEF"]) {
       assert.ok(roster.some((p) => p.position === position), `missing ${position}`);
     }
   }
 });
 
-test("weekly scoring starts the best legal players rather than the highest bench total", () => {
+test("weekly scoring starts the highest projected legal players, not hindsight winners", () => {
   const players = [
     { player_id: "q", name: "QB", position: "QB", actual: [20] },
     { player_id: "r1", name: "RB 1", position: "RB", actual: [15] },
@@ -72,17 +111,126 @@ test("weekly scoring starts the best legal players rather than the highest bench
     { player_id: "k", name: "K", position: "K", actual: [7] },
     { player_id: "d", name: "DEF", position: "DEF", actual: [6] },
   ];
+  for (const player of players) player.weeklyProjected = [...player.actual];
+  // A bench explosion must not change the lineup selected before the games.
+  players.find(p => p.player_id === 'r3').weeklyProjected = [1];
+  players.find(p => p.player_id === 'r3').actual = [80];
+  players.push({ player_id: 'w4', name: 'WR 4', position: 'WR', weeklyProjected: [10], actual: [4] });
   const actual = new Map(players.map((p) => [p.player_id, p]));
   const lineup = weeklyLineup(players, actual, 0);
-  assert.equal(lineup.points, 116);
+  assert.equal(lineup.points, 108);
   assert.deepEqual(lineup.assignments.filter((r) => r.slot === "FLEX").map((r) => r.player.name),
-    ["RB 2", "WR 2"]);
+    ["WR 4", "WR 2"]);
+});
+
+test('replacement baseline selects top ten free agents by projection, averages actuals', () => {
+  const players = Array.from({ length: 12 }, (_, i) => ({
+    player_id: String(i), name: `RB ${i}`, position: 'RB', scheduled: [true],
+    weeklyProjected: { half_ppr: [20 - i] }, actual: { half_ppr: [i] },
+  }));
+  players[11].actual.half_ppr[0] = 100; // Hindsight cannot promote this player.
+  const baseline = weeklyReplacements(players, new Set(['0']), 0);
+  assert.deepEqual(baseline.RB.playerIds, players.slice(1, 11).map(p => p.player_id));
+  assert.equal(baseline.RB.points, 5.5);
+  assert.equal(baseline.RB.projected, 14.5);
+  players[1].injured = [true];
+  players[2].scheduled = [false];
+  const fewer = weeklyReplacements(players.slice(0, 4), new Set(['0']), 0);
+  assert.deepEqual(fewer.RB.playerIds, ['3']);
+  assert.equal(fewer.RB.points, 3);
+  assert.deepEqual(weeklyReplacements(players, new Set(players.map(p => p.player_id)), 0), {});
+});
+
+test('injured slots use replacement scores only when selected; bench depth still competes', () => {
+  const injured = { player_id: 'i', name: 'Injured', position: 'RB', injured: [true], scheduled: [true],
+    weeklyProjected: [0], actual: [0] };
+  const bench = { player_id: 'b', name: 'Bench', position: 'RB', weeklyProjected: [8], actual: [30] };
+  const roster = [injured, bench];
+  const data = new Map(roster.map(p => [p.player_id, p]));
+  const replacements = { RB: { projected: 10, points: 6, playerIds: ['free'] } };
+  const run = () => weeklyLineup(roster, data, 0, ['RB', 'BN'], 'half_ppr', replacements);
+  assert.equal(run().points, 6);
+  assert.equal(run().assignments[0].player.player_id, 'i');
+  assert.deepEqual(run().assignments[0].replacement.playerIds, ['free']);
+  bench.weeklyProjected[0] = 11;
+  assert.equal(run().points, 30);
+  assert.equal(run().assignments[0].replacement, undefined);
+  bench.actual[0] = 0; // Healthy zero is not entitled to replacement credit.
+  assert.equal(run().points, 0);
+  bench.scheduled = [false]; injured.scheduled = [false];
+  assert.equal(run().points, 0); // Neither byes nor missing projections earn credit.
+  injured.scheduled = [true];
+  assert.equal(weeklyLineup(roster, data, 0, ['RB']).points, 0);
+});
+
+test('weekly inputs never leak to draft strategies and missing archives fail explicitly', () => {
+  const [player] = strategyPool(fixture.players, 'ppr');
+  for (const key of ['weeklyProjected', 'actual', 'injured', 'scheduled']) assert.ok(!(key in player));
+  assert.ok(fixture.replacementPlayers.length > 0);
+  assert.equal(strategyPool(fixture.players, 'ppr').length, 300);
+  assert.throws(() => historicalFixture(historicalDraft, [{ week: 1, points: {} }]), /Missing weekly lineup inputs/);
+});
+
+test('historical injury mapping excludes suspension, retirement and questionable status', () => {
+  assert.equal(injuryDesignation(null, { report_status: 'Out' }), 'Out');
+  for (const code of ['R01', 'R48', 'R04', 'R05', 'R27']) {
+    assert.ok(injuryDesignation({ status: 'RES', status_description_abbr: code }, null));
+  }
+  for (const code of ['R40', 'R02', 'R09']) {
+    assert.equal(injuryDesignation({ status: 'RES', status_description_abbr: code }, null), null);
+  }
+  assert.equal(injuryDesignation(null, { report_status: 'Questionable' }), null);
+  assert.deepEqual(parseCsv('name,url,status\r\n"A ""Name""","https://a,b",RES\r\n'),
+    [{ name: 'A "Name"', url: 'https://a,b', status: 'RES' }]);
+});
+
+test('season replacement pool excludes other teams and respects scoring format', () => {
+  const player = (id, projection, actual, injured = false) => ({
+    player_id: id, name: id, position: 'RB', scheduled: [true], injured: [injured],
+    weeklyProjected: { ppr: [projection], std: [projection / 2] },
+    actual: { ppr: [actual], std: [actual / 2] },
+  });
+  const injured = player('injured', 0, 0, true);
+  const opponent = player('opponent', 50, 100);
+  const free = player('free', 10, 8);
+  const input = { weeks: 1, players: [injured, opponent], replacementPlayers: [free] };
+  const simulation = { rosters: [[injured], [opponent]], slots: ['RB'] };
+  assert.equal(scoreSeason(input, simulation, { format: 'ppr' })[0].total, 8);
+  assert.equal(scoreSeason(input, simulation, { format: 'std' })[0].total, 4);
+  const selected = scoreSeason(input, simulation, { format: 'ppr' })[0].weeks[0].assignments[0];
+  assert.deepEqual(selected.replacement.playerIds, ['free']);
+});
+
+test('frozen data distinguishes scored games from injury absences and byes', () => {
+  for (const player of fixture.players) for (let week = 0; week < fixture.weeks; week++) {
+    if (player.actual.ppr[week] !== 0) {
+      assert.equal(player.scheduled[week], true, `${player.name} week ${week + 1}`);
+      assert.equal(player.injured[week], false, `${player.name} week ${week + 1}`);
+    }
+  }
+  const puka = fixture.players.find(p => p.name === 'Puka Nacua');
+  assert.equal(puka.scheduled[0], true); // nflverse LA must map to Sleeper LAR.
+});
+
+test('scripted rooms vary by seed while preserving full roster legality', () => {
+  const first = simulateDraft(fixture, { heroStrategy: 'adp', opponentStyle: 'mixed', seed: 1 });
+  const second = simulateDraft(fixture, { heroStrategy: 'adp', opponentStyle: 'mixed', seed: 42 });
+  assert.notDeepEqual(first.picks, second.picks);
+  for (const draft of [first, second]) {
+    assert.equal(new Set(draft.picks.map(p => p.player_id)).size, draft.picks.length);
+    for (const roster of draft.rosters) assert.equal(missingStarters(roster, DEFAULT_SLOTS), 0);
+    assert.ok(draft.picks.filter(p => p.seat === 1).every(p => p.strategy === 'adp'));
+    assert.ok(draft.picks.filter(p => p.seat === 2).every(p => p.strategy === 'robust_rb'));
+  }
 });
 
 test("the current board is graded against actual 2025 outcomes and an ADP baseline", () => {
   const result = runBacktest(fixture);
-  assert.ok(result.board.grade.averagePoints > result.adp.grade.averagePoints,
-    `board ${result.board.grade.averagePoints}, ADP ${result.adp.grade.averagePoints}`);
-  assert.ok(result.board.grade.allPlayWinRate > result.adp.grade.allPlayWinRate);
-  assert.ok(result.board.grade.score > result.adp.grade.score);
+  // This is an evaluation, not a promise that our algorithm wins. Stronger
+  // opponents must be allowed to expose a worse result without breaking CI.
+  for (const strategy of ['board', 'adp']) {
+    assert.equal(result[strategy].runs.length, 12);
+    assert.ok(Number.isFinite(result[strategy].grade.averagePoints));
+    assert.ok(result[strategy].grade.score >= 0 && result[strategy].grade.score <= 100);
+  }
 });

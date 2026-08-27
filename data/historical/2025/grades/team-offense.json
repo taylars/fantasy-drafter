@@ -1,0 +1,11 @@
+{
+  "season": "2025",
+  "cutoff": "2025-08-29T23:59:59",
+  "method": "Deterministic proxy for expected scoring environment: preseason offensive-efficiency forecast rank 1-3 => +2, 4-10 => +1, 11-22 => 0, 23-29 => -1, 30-32 => -2. Not observed 2025 scoring. Replaces batch offense_raw judgments for every player on the same cutoff-date team.",
+  "source": {
+    "title": "Ranking Every NFL Offense for 2025",
+    "url": "https://www.theringer.com/2025/08/19/nfl/ranking-every-nfl-offense-2025-buffalo-bills-baltimore-ravens-49ers",
+    "published_at": "2025-08-19T10:20:00Z"
+  },
+  "ranked_teams": ["BUF", "BAL", "SF", "GB", "CIN", "DET", "PHI", "KC", "WAS", "DAL", "LAR", "TB", "ARI", "HOU", "DEN", "LV", "MIN", "LAC", "ATL", "JAX", "NE", "CHI", "MIA", "SEA", "CAR", "PIT", "IND", "NYJ", "CLE", "NYG", "TEN", "NO"]
+}

@@ -12,7 +12,10 @@ const json = process.argv.includes("--json");
 const aheadArg = process.argv.find((arg) => arg.startsWith("--ahead="));
 const ahead = aheadArg ? Number(aheadArg.split("=")[1]) : 2;
 const matrix = process.argv.includes("--matrix");
-const results = matrix ? runMatrix(fixture, { ahead }) : runBacktest(fixture, { ahead });
+const seedArg = process.argv.find(arg => arg.startsWith('--seed='));
+const seed = seedArg ? Number(seedArg.split('=')[1]) : 1;
+if (!Number.isSafeInteger(seed)) throw new Error('--seed must be an integer');
+const results = matrix ? runMatrix(fixture, { ahead, seed }) : runBacktest(fixture, { ahead, seed });
 
 if (json) {
   const compact = Object.fromEntries(Object.entries(results).map(([name, value]) => [name,
@@ -23,6 +26,7 @@ if (json) {
     ? `2025 historical matrix — team counts × draft types × rosters × scoring × opponents`
     : `2025 historical backtest — 12-team half-PPR snake, 12 draft slots, Weeks 1–17`);
   console.log(`Archived projection caveat: ${fixture.caveat}`);
+  console.log(`Opponent policy: scripted ADP, seed ${seed}`);
   for (const [name, { grade }] of Object.entries(results)) {
     console.log(`\n${name.toUpperCase()}  ${grade.letter} (${grade.score})`);
     console.log(`  points ${grade.averagePoints}  finish ${grade.averageFinish}`);

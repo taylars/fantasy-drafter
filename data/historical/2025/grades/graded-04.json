@@ -1,0 +1,997 @@
+{
+  "season": 2025,
+  "batch": 4,
+  "cutoff": "2025-08-29T23:59:59",
+  "players": [
+    {
+      "player_id": "8132",
+      "name": "Tyler Allgeier",
+      "pos": "RB",
+      "team_as_of_cutoff": "ATL",
+      "offense_raw": 0,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Listed behind Robinson on Atlanta's dated preseason chart; modest contingent upside, not an assumed takeover.",
+      "sources": [
+        {
+          "url": "https://www.atlantafalcons.com/news/depth-chart-preseason-detroit-lions",
+          "published_at": "2025-08-06",
+          "title": "Falcons first preseason depth chart released"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12522",
+      "name": "Cam Ward",
+      "pos": "QB",
+      "team_as_of_cutoff": "TEN",
+      "offense_raw": -2,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Listed starting quarterback in the August chart; rookie development supplies modest upside, not proven job permanence.",
+      "sources": [
+        {
+          "url": "https://www.tennesseetitans.com/news/dnp-20-things-that-caught-my-eye-on-the-first-unofficial-depth-chart-for-titans-in-2025",
+          "published_at": "2025-08-04",
+          "title": "20 Things That Caught My Eye on the First Unofficial Depth Chart for Titans in 2025"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "9508",
+      "name": "Tyjae Spears",
+      "pos": "RB",
+      "team_as_of_cutoff": "TEN",
+      "offense_raw": -2,
+      "position_security": 0,
+      "exp_games": 12,
+      "upside": 0,
+      "note": "August 26 injured-reserve/designated-return placement materially reduces estimated availability; role and upside otherwise left neutral.",
+      "sources": [
+        {
+          "url": "https://www.tennesseetitans.com/news/titans-part-ways-with-20-players-ahead-of-today-s-deadline-while-placing-rb-tyjae-spears-on-injured-reserve-designated-for-return",
+          "published_at": "2025-08-26",
+          "title": "Titans Part Ways With 20 Players, Place Tyjae Spears on Injured Reserve Designated for Return"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "7670",
+      "name": "Joshua Palmer",
+      "pos": "WR",
+      "team_as_of_cutoff": "BUF",
+      "offense_raw": 2,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Confirmed among Buffalo's six rostered receivers. The announcement does not establish target hierarchy; no role or upside premium.",
+      "sources": [
+        {
+          "url": "https://www.buffalobills.com/news/bills-roster-2025-full-53-man-roster-announced",
+          "published_at": "2025-08-26",
+          "title": "Bills roster 2025: Full 53-man roster announced"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "3214",
+      "name": "Hunter Henry",
+      "pos": "TE",
+      "team_as_of_cutoff": "NE",
+      "offense_raw": -1,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Established Maye connection and potential touchdown rebound support modest upside; ample opportunity anticipated despite added receivers.",
+      "sources": [
+        {
+          "url": "https://www.fantasypros.com/2025/08/fantasy-football-sleepers-experts-love/amp/",
+          "published_at": "2025-08-28T07:21:00-04:00",
+          "title": "Fantasy Football Sleepers Experts Love to Draft (2025)"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12509",
+      "name": "Tre' Harris",
+      "pos": "WR",
+      "team_as_of_cutoff": "LAC",
+      "offense_raw": 0,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Preseason analysis highlights outstanding college receiving efficiency; modest rookie upside without assuming an immediate starting role.",
+      "sources": [
+        {
+          "url": "https://www.fantasypros.com/nfl/notes/399362/tre-harris-2025-outlook.php",
+          "published_at": "2025-08-06T09:55:00-04:00",
+          "title": "Tre' Harris Fantasy Football Outlook (2025) - Andrew Erickson"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12535",
+      "name": "Isaac TeSlaa",
+      "pos": "WR",
+      "team_as_of_cutoff": "DET",
+      "offense_raw": 2,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Team report anticipates early contributions after a strong rookie camp; developmental upside without projecting a secure starting job.",
+      "sources": [
+        {
+          "url": "https://www.detroitlions.com/news/notebook-rookie-wide-receivers-continue-to-impress-teslaa-meeks",
+          "published_at": "2025-08-16",
+          "title": "NOTEBOOK: Rookie wide receivers continue to impress"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "8210",
+      "name": "Chig Okonkwo",
+      "pos": "TE",
+      "team_as_of_cutoff": "TEN",
+      "offense_raw": -2,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Listed as starting tight end on the August 4 team chart; no separate projection-beating upside assumed.",
+      "sources": [
+        {
+          "url": "https://www.tennesseetitans.com/news/dnp-20-things-that-caught-my-eye-on-the-first-unofficial-depth-chart-for-titans-in-2025",
+          "published_at": "2025-08-04",
+          "title": "20 Things That Caught My Eye on the First Unofficial Depth Chart for Titans in 2025"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12541",
+      "name": "Dont'e Thornton",
+      "pos": "WR",
+      "team_as_of_cutoff": "LV",
+      "offense_raw": -1,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Pre-cutoff analysis describes first-team work but developmental route limitations and competition; modest upside, uncertain role permanence.",
+      "sources": [
+        {
+          "url": "https://dknetwork.draftkings.com/2025/08/25/should-you-draft-raiders-wide-receivers-donte-thornton-jr-and-jack-bech-in-fantasy-football/",
+          "published_at": "2025-08-25",
+          "title": "Should you draft Dont'e Thornton Jr. and Jack Bech in fantasy football?"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "4098",
+      "name": "Kareem Hunt",
+      "pos": "RB",
+      "team_as_of_cutoff": "KC",
+      "offense_raw": 1,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "August depth-chart snapshot lists Hunt behind Pacheco; modest contingent upside, with the starter's workload not assumed.",
+      "sources": [
+        {
+          "url": "https://www.arrowheadpride.com/2025/8/4/24480794/chiefs-depth-chart-8-things-that-matter-in-initial-release",
+          "published_at": "2025-08-04T18:30:00Z",
+          "title": "8 things that matter in the Chiefs' initial depth chart"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11626",
+      "name": "Xavier Legette",
+      "pos": "WR",
+      "team_as_of_cutoff": "CAR",
+      "offense_raw": -1,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Canales identified growth potential in his young receiving group, including Legette; modest second-year upside, no guaranteed target share.",
+      "sources": [
+        {
+          "url": "https://www.panthers.com/news/bryce-young-young-offense-running-it-back-with-familiar-faces",
+          "published_at": "2025-04-02",
+          "title": "Bryce Young, young offense running it back with familiar faces"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12474",
+      "name": "Woody Marks",
+      "pos": "RB",
+      "team_as_of_cutoff": "HOU",
+      "offense_raw": 0,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 2,
+      "note": "Receiving background and uncertain backfield availability offered a larger passing-down role path, with veteran competition limiting security.",
+      "sources": [
+        {
+          "url": "https://www.fantasypros.com/2025/08/consensus-fantasy-football-sleepers-from-50-experts-2025/amp/",
+          "published_at": "2025-08-20T12:20:00-04:00",
+          "title": "Consensus Fantasy Football Sleepers from 50+ Experts (2025)"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "9229",
+      "name": "Anthony Richardson",
+      "pos": "QB",
+      "team_as_of_cutoff": "IND",
+      "offense_raw": -1,
+      "position_security": -2,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Confirmed backup after losing the quarterback competition. Availability stays at 15 because bench status is not an injury.",
+      "sources": [
+        {
+          "url": "https://www.colts.com/news/anthony-richardson-sr-backup-quarterback-daniel-jones-competition-colts-shane-steichen-chris-ballard",
+          "published_at": "2025-08-19",
+          "title": "How Anthony Richardson Sr. is approaching role as Colts' backup quarterback"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "10444",
+      "name": "Cedric Tillman",
+      "pos": "WR",
+      "team_as_of_cutoff": "CLE",
+      "offense_raw": -2,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "August analysis reported him healthy after the prior concussion and identified renewed receiving opportunity; modest breakout upside.",
+      "sources": [
+        {
+          "url": "https://www.fantasypros.com/2025/08/fantasy-football-sleepers-experts-love/amp/",
+          "published_at": "2025-08-28T07:21:00-04:00",
+          "title": "Fantasy Football Sleepers Experts Love to Draft (2025)"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12476",
+      "name": "Devin Neal",
+      "pos": "RB",
+      "team_as_of_cutoff": "NO",
+      "offense_raw": -2,
+      "position_security": 0,
+      "exp_games": 14,
+      "upside": 0,
+      "note": "Hamstring injury interrupted camp; returned for the preseason finale. Small availability discount, no unsupported offensive-role premium.",
+      "sources": [
+        {
+          "url": "https://www.neworleanssaints.com/news/saints-training-camp-2025-news-tyler-shough-spencer-rattler-rashid-shaheed-key-takeaways-day-11-august-5",
+          "published_at": "2025-08-05",
+          "title": "Saints Training Camp 2025: Key Takeaways from Tuesday, August 5"
+        },
+        {
+          "url": "https://www.neworleanssaints.com/news/morning-break-rookie-rb-devin-neal-makes-most-of-preseason-debut-new-orleans-news-headlines-8-25-2025",
+          "published_at": "2025-08-25",
+          "title": "Morning Break: Rookie RB Devin Neal makes most of preseason debut"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "7523",
+      "name": "Trevor Lawrence",
+      "pos": "QB",
+      "team_as_of_cutoff": "JAX",
+      "offense_raw": -1,
+      "position_security": 2,
+      "exp_games": 14,
+      "upside": 1,
+      "note": "Prior shoulder surgery and concussion warrant an availability discount; new coach and receiving addition support modest rebound upside.",
+      "sources": [
+        {
+          "url": "https://www.fantasypros.com/2025/08/fantasy-football-sleepers-experts-love/amp/",
+          "published_at": "2025-08-28T07:21:00-04:00",
+          "title": "Fantasy Football Sleepers Experts Love to Draft (2025)"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11559",
+      "name": "Michael Penix",
+      "pos": "QB",
+      "team_as_of_cutoff": "ATL",
+      "offense_raw": 0,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Listed ahead of Cousins in Atlanta's preseason chart; modest development upside for the young starting quarterback.",
+      "sources": [
+        {
+          "url": "https://www.atlantafalcons.com/news/depth-chart-preseason-detroit-lions",
+          "published_at": "2025-08-06",
+          "title": "Falcons first preseason depth chart released"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "8131",
+      "name": "Isaiah Likely",
+      "pos": "TE",
+      "team_as_of_cutoff": "BAL",
+      "offense_raw": 2,
+      "position_security": 0,
+      "exp_games": 13,
+      "upside": 0,
+      "note": "July foot-fracture report projected roughly six weeks of recovery with Week 1 uncertain; availability discounted, no unsupported upside premium.",
+      "sources": [
+        {
+          "url": "https://www.baltimoreravens.com/news/isaiah-likely-foot-fracture-injury-training-camp-marlon-humphrey",
+          "published_at": "2025-07-30",
+          "title": "Late for Work: Isaiah Likely Reportedly Suffered Foot Fracture, Could Return for Week 1"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11577",
+      "name": "Will Shipley",
+      "pos": "RB",
+      "team_as_of_cutoff": "PHI",
+      "offense_raw": 1,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Team reports identify change-of-pace and receiving potential behind Barkley, with Dillon also present; modest developmental upside and limited security.",
+      "sources": [
+        {
+          "url": "https://www.philadelphiaeagles.com/news/spadaro-young-eagles-who-could-make-an-impact-in-2025",
+          "published_at": "2025-08-03",
+          "title": "Spadaro: Young Eagles who could make an impact in 2025"
+        },
+        {
+          "url": "https://www.philadelphiaeagles.com/news/eagles-training-camp-notebook-jalen-hurts-is-heating-up",
+          "published_at": "2025-08-05",
+          "title": "Eagles Training Camp Notebook: Jalen Hurts is heating up"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "8142",
+      "name": "Alec Pierce",
+      "pos": "WR",
+      "team_as_of_cutoff": "IND",
+      "offense_raw": -1,
+      "position_security": 1,
+      "exp_games": 14,
+      "upside": 0,
+      "note": "Listed ahead of Adonai Mitchell on the August chart; reported groin absence prompts a modest availability discount.",
+      "sources": [
+        {
+          "url": "https://www.colts.com/news/colts-release-unofficial-depth-chart-for-preseason-week-3-game-vs-cincinnati-bengals",
+          "published_at": "2025-08-19",
+          "title": "Colts release unofficial depth chart for preseason Week 3 game vs. Cincinnati Bengals"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "5848",
+      "name": "Marquise Brown",
+      "pos": "WR",
+      "team_as_of_cutoff": "KC",
+      "offense_raw": 1,
+      "position_security": 0,
+      "exp_games": 14,
+      "upside": 0,
+      "note": "Returned to practice August 17-18 after foot/ankle trouble; modest availability discount, no unverified role or upside premium.",
+      "sources": [
+        {
+          "url": "https://www.fantasypros.com/nfl/news/535165/marquise-brown-footankle-back-practice.php",
+          "published_at": "2025-08-18T15:41:00-04:00",
+          "title": "Marquise Brown (foot/ankle) back at practice"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "5001",
+      "name": "Dalton Schultz",
+      "pos": "TE",
+      "team_as_of_cutoff": "HOU",
+      "offense_raw": 0,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "August report identifies Schultz as the expected starter and cites Ryans' positive camp assessment; no separate upside premium.",
+      "sources": [
+        {
+          "url": "https://www.si.com/nfl/texans/onsi/news/demeco-ryans-praises-houston-texans-standout-weapon-training-camp",
+          "published_at": "2025-08-02",
+          "title": "DeMeco Ryans Praises Texans' Standout Weapon in Training Camp"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11581",
+      "name": "MarShawn Lloyd",
+      "pos": "RB",
+      "team_as_of_cutoff": "GB",
+      "offense_raw": 1,
+      "position_security": 0,
+      "exp_games": 12,
+      "upside": 0,
+      "note": "August 26 injured-reserve/designated-return transaction lowers estimated availability; no presumed role expansion.",
+      "sources": [
+        {
+          "url": "https://www.packers.com/news/packers-announce-roster-moves-aug-26-2025",
+          "published_at": "2025-08-26",
+          "title": "Packers announce roster moves | Aug. 26, 2025"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "9480",
+      "name": "Brenton Strange",
+      "pos": "TE",
+      "team_as_of_cutoff": "JAX",
+      "offense_raw": -1,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 2,
+      "note": "Team report identifies him as the new top tight end with an expanding receiving role: a clear larger-opportunity path.",
+      "sources": [
+        {
+          "url": "https://www.jaguars.com/news/k000336-te-brenton-strange-stepping-up-in-a-big-way-for-2025-jaguars",
+          "published_at": "2025-08-06",
+          "title": "TE Brenton Strange Stepping Up in a Big Way for 2025 Jaguars"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12487",
+      "name": "Terrance Ferguson",
+      "pos": "TE",
+      "team_as_of_cutoff": "LAR",
+      "offense_raw": 1,
+      "position_security": -1,
+      "exp_games": 14,
+      "upside": 1,
+      "note": "Returned for the preseason finale after a groin setback; rookie receiving flashes support modest upside amid four rostered tight ends.",
+      "sources": [
+        {
+          "url": "https://www.therams.com/news/matthew-stafford-back-injury-update-returns-to-practice-preseason-2025-terrance-ferguson-groin",
+          "published_at": "2025-08-18",
+          "title": "Matthew Stafford returns to practice; Terrance Ferguson also returns"
+        },
+        {
+          "url": "https://www.therams.com/news/rams-53-man-roster-takeaways-experience-depth-2025-squad",
+          "published_at": "2025-08-26",
+          "title": "53-Man Roster Takeaways: Experience & depth define the 2025 squad"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12547",
+      "name": "Kyle Williams",
+      "pos": "WR",
+      "team_as_of_cutoff": "NE",
+      "offense_raw": -1,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Team film review identified separation and speed in his preseason debut; modest rookie upside without assuming a starting role.",
+      "sources": [
+        {
+          "url": "https://www.patriots.com/news/after-further-review-breaking-down-qb-drake-maye-lt-will-campbell-and-25-more-takeaways-from-the-patriots-win-over-the-commanders",
+          "published_at": "2025-08-09",
+          "title": "After Further Review: Breaking Down QB Drake Maye, LT Will Campbell and 25 More Takeaways From the Patriots Win Over the Commanders"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11651",
+      "name": "Isaac Guerendo",
+      "pos": "RB",
+      "team_as_of_cutoff": "SF",
+      "offense_raw": 1,
+      "position_security": 0,
+      "exp_games": 14,
+      "upside": 0,
+      "note": "August report identified a shoulder injury amid backfield reinforcements; modest availability discount without assuming a depth-chart rank.",
+      "sources": [
+        {
+          "url": "https://www.bignewsnetwork.com/news/278500784/49ers-signing-rb-jeff-wilson-jr-to-bolster-backfield",
+          "published_at": "2025-08-11",
+          "title": "49ers signing RB Jeff Wilson Jr. to bolster backfield"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "9501",
+      "name": "DeMario Douglas",
+      "pos": "WR",
+      "team_as_of_cutoff": "NE",
+      "offense_raw": -1,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Prior connection with Maye supports modest improvement potential if the quarterback develops; no guaranteed target-share increase.",
+      "sources": [
+        {
+          "url": "https://www.fantasypros.com/2025/08/fantasy-football-sleepers-experts-love/amp/",
+          "published_at": "2025-08-28T07:21:00-04:00",
+          "title": "Fantasy Football Sleepers Experts Love to Draft (2025)"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12536",
+      "name": "Jaylin Noel",
+      "pos": "WR",
+      "team_as_of_cutoff": "HOU",
+      "offense_raw": 0,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Preseason report places him behind Kirk but cites Stroud's praise and potential playing time; modest developmental upside.",
+      "sources": [
+        {
+          "url": "https://www.rotoballer.com/player-news/jaylin-noel-builds-momentum-through-preseason/1674536",
+          "published_at": "2025-08-24T15:49:00-04:00",
+          "title": "Jaylin Noel Builds Momentum Through Preseason"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12505",
+      "name": "Jalen Royals",
+      "pos": "WR",
+      "team_as_of_cutoff": "KC",
+      "offense_raw": 1,
+      "position_security": 0,
+      "exp_games": 14,
+      "upside": 0,
+      "note": "August 29 reporting said Reid considered a Week 1 appearance unlikely because of a knee injury; availability discounted.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/nfl-news-roundup-latest-league-updates-from-friday-aug-29",
+          "published_at": "2025-08-29",
+          "title": "NFL news roundup: Chiefs rookie WR Jalen Royals (knee) unlikely to play Week 1 vs. Chargers"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "421",
+      "name": "Matthew Stafford",
+      "pos": "QB",
+      "team_as_of_cutoff": "LAR",
+      "offense_raw": 1,
+      "position_security": 2,
+      "exp_games": 13,
+      "upside": 0,
+      "note": "Returned August 18 after camp-long back trouble, with coaches maintaining a day-to-day approach; material availability discount.",
+      "sources": [
+        {
+          "url": "https://www.therams.com/news/matthew-stafford-back-injury-update-returns-to-practice-preseason-2025-terrance-ferguson-groin",
+          "published_at": "2025-08-18",
+          "title": "Matthew Stafford returns to practice; Terrance Ferguson also returns"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "7021",
+      "name": "Rico Dowdle",
+      "pos": "RB",
+      "team_as_of_cutoff": "CAR",
+      "offense_raw": -1,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Team discussion pairs the new arrival with established starter Hubbard; competition limits security, with modest opportunity upside.",
+      "sources": [
+        {
+          "url": "https://www.panthers.com/news/bryce-young-young-offense-running-it-back-with-familiar-faces",
+          "published_at": "2025-04-02",
+          "title": "Bryce Young, young offense running it back with familiar faces"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12467",
+      "name": "Jordan James",
+      "pos": "RB",
+      "team_as_of_cutoff": "SF",
+      "offense_raw": 1,
+      "position_security": 0,
+      "exp_games": 14,
+      "upside": 0,
+      "note": "August report identified a broken finger while the team reinforced its backfield; modest availability discount, unclear role.",
+      "sources": [
+        {
+          "url": "https://www.bignewsnetwork.com/news/278500784/49ers-signing-rb-jeff-wilson-jr-to-bolster-backfield",
+          "published_at": "2025-08-11",
+          "title": "49ers signing RB Jeff Wilson Jr. to bolster backfield"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "10232",
+      "name": "Michael Wilson",
+      "pos": "WR",
+      "team_as_of_cutoff": "ARI",
+      "offense_raw": 0,
+      "position_security": 0,
+      "exp_games": 14,
+      "upside": 0,
+      "note": "Team reported an August 1 practice concussion. Availability discounted; no claim that early-camp standing guaranteed the season role.",
+      "sources": [
+        {
+          "url": "https://www.azcardinals.com/news/can-t-shy-away-from-james-conner-trey-benson-duo-and-red-white-practice-aftermath",
+          "published_at": "2025-08-02",
+          "title": "Can't Shy Away From James Conner-Trey Benson Duo, And Red-White Practice Aftermath"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "2505",
+      "name": "Darren Waller",
+      "pos": "TE",
+      "team_as_of_cutoff": "MIA",
+      "offense_raw": 0,
+      "position_security": 0,
+      "exp_games": 14,
+      "upside": 1,
+      "note": "Activated from PUP August 20. Preseason analysis identified an opening after Jonnu Smith's departure; modest upside with return uncertainty.",
+      "sources": [
+        {
+          "url": "https://www.miamidolphins.com/news/practice-19-2025-miami-dolphins-training-camp-notebook",
+          "published_at": "2025-08-20",
+          "title": "Practice 19: 2025 Miami Dolphins Training Camp Notebook"
+        },
+        {
+          "url": "https://www.fantasypros.com/2025/08/consensus-fantasy-football-sleepers-from-50-experts-2025/amp/",
+          "published_at": "2025-08-20T12:20:00-04:00",
+          "title": "Consensus Fantasy Football Sleepers from 50+ Experts (2025)"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11600",
+      "name": "Ja'Tavion Sanders",
+      "pos": "TE",
+      "team_as_of_cutoff": "CAR",
+      "offense_raw": -1,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Team highlighted second-year development within the young receiving group; modest upside without assuming sole tight-end duties.",
+      "sources": [
+        {
+          "url": "https://www.panthers.com/news/bryce-young-young-offense-running-it-back-with-familiar-faces",
+          "published_at": "2025-04-02",
+          "title": "Bryce Young, young offense running it back with familiar faces"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "6768",
+      "name": "Tua Tagovailoa",
+      "pos": "QB",
+      "team_as_of_cutoff": "MIA",
+      "offense_raw": 0,
+      "position_security": 1,
+      "exp_games": 13,
+      "upside": 0,
+      "note": "Prior concussion and hip absences support a 13-game availability estimate; no upside premium.",
+      "sources": [
+        {
+          "url": "https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/tua-tagovailoa-i-wont-put-myself-in-situations-where-im-not-available-for-my-team",
+          "published_at": "2025-07-29",
+          "title": "Tua Tagovailoa: I won't put myself in situations where I'm not available for my team"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "8121",
+      "name": "Romeo Doubs",
+      "pos": "WR",
+      "team_as_of_cutoff": "GB",
+      "offense_raw": 1,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Preseason analysis cited prior target-earning success but new receiving competition; modest upside without entrenched-role credit.",
+      "sources": [
+        {
+          "url": "https://www.fantasypros.com/2025/08/consensus-fantasy-football-sleepers-from-50-experts-2025/amp/",
+          "published_at": "2025-08-20T12:20:00-04:00",
+          "title": "Consensus Fantasy Football Sleepers from 50+ Experts (2025)"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11569",
+      "name": "Jarquez Hunter",
+      "pos": "RB",
+      "team_as_of_cutoff": "LAR",
+      "offense_raw": 1,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Team described the rookie as RB3 behind Williams and Corum; modest developmental upside, contingent workload.",
+      "sources": [
+        {
+          "url": "https://www.therams.com/news/blake-corum-and-jarquez-hunter-welcome-beneficial-live-game-reps-in-preseason",
+          "published_at": "2025-08-14",
+          "title": "Blake Corum and Jarquez Hunter welcome beneficial live game reps in preseason"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12499",
+      "name": "Elic Ayomanor",
+      "pos": "WR",
+      "team_as_of_cutoff": "TEN",
+      "offense_raw": -2,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Moved from reserve listing to a preseason-finale start; modest developmental upside, not proof of a permanent regular-season starting role.",
+      "sources": [
+        {
+          "url": "https://www.tennesseetitans.com/news/dnp-20-things-that-caught-my-eye-on-the-first-unofficial-depth-chart-for-titans-in-2025",
+          "published_at": "2025-08-04",
+          "title": "20 Things That Caught My Eye on the First Unofficial Depth Chart for Titans in 2025"
+        },
+        {
+          "url": "https://www.tennesseetitans.com/news/titans-vikings-preseason-week-3-postgame-notes",
+          "published_at": "2025-08-22",
+          "title": "Titans-Vikings Preseason Week 3 Postgame Notes"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "1234",
+      "name": "Russell Wilson",
+      "pos": "QB",
+      "team_as_of_cutoff": "NYG",
+      "offense_raw": -2,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Daboll reaffirmed Wilson as starter while developing Dart; competition prevents an entrenched-role premium.",
+      "sources": [
+        {
+          "url": "https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/brian-daboll-reiterates-russell-wilson-is-starting-after-strong-game-from-jaxson-dart",
+          "published_at": "2025-08-17",
+          "title": "Brian Daboll reiterates Russell Wilson is starting after strong game from Jaxson Dart"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "9511",
+      "name": "Keaton Mitchell",
+      "pos": "RB",
+      "team_as_of_cutoff": "BAL",
+      "offense_raw": 2,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Preseason analysis identified contingent opportunity behind Henry; modest upside, not an assumed lead role.",
+      "sources": [
+        {
+          "url": "https://www.fantasypros.com/2025/08/consensus-fantasy-football-sleepers-from-50-experts-2025/amp/",
+          "published_at": "2025-08-20T12:20:00-04:00",
+          "title": "Consensus Fantasy Football Sleepers from 50+ Experts (2025)"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "6826",
+      "name": "Cole Kmet",
+      "pos": "TE",
+      "team_as_of_cutoff": "CHI",
+      "offense_raw": 0,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Preseason reporting described work alongside Loveland; competition limits role permanence, with no independent upside premium.",
+      "sources": [
+        {
+          "url": "https://sports.yahoo.com/article/cole-kmet-says-inconsistencies-held-184326081.html",
+          "published_at": "2025-08-28",
+          "title": "Cole Kmet says inconsistencies held Bears offense back in preseason"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11625",
+      "name": "Adonai Mitchell",
+      "pos": "WR",
+      "team_as_of_cutoff": "IND",
+      "offense_raw": -1,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Listed behind Pierce on the dated August chart. Availability is not reduced for backup status; no unsupported breakout premium.",
+      "sources": [
+        {
+          "url": "https://www.colts.com/news/colts-release-unofficial-depth-chart-for-preseason-week-3-game-vs-cincinnati-bengals",
+          "published_at": "2025-08-19",
+          "title": "Colts release unofficial depth chart for preseason Week 3 game vs. Cincinnati Bengals"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "8126",
+      "name": "Wan'Dale Robinson",
+      "pos": "WR",
+      "team_as_of_cutoff": "NYG",
+      "offense_raw": -2,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Prior-season team reporting documents a reliable receiving role; August practice confirms continued involvement, without assuming target growth.",
+      "sources": [
+        {
+          "url": "https://www.giants.com/news/wandale-robinson-stats-malik-nabers-philadelphia-eagles-nfl-week-18-injury-report",
+          "published_at": "2025-01-03",
+          "title": "Notebook: Wan'Dale Robinson, Malik Nabers form record-setting duo"
+        },
+        {
+          "url": "https://www.giants.com/news/training-camp-highlights-wandale-robinson-catch-malik-nabers-russell-wilson",
+          "published_at": "2025-08-03",
+          "title": "Touchdowns, takeaways & top plays from practice No. 9"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12498",
+      "name": "Mason Taylor",
+      "pos": "TE",
+      "team_as_of_cutoff": "NYJ",
+      "offense_raw": -1,
+      "position_security": 0,
+      "exp_games": 14,
+      "upside": 1,
+      "note": "Early-August ankle injury followed by return to August 12 joint practice warrants a modest availability discount; rookie progress supports modest upside.",
+      "sources": [
+        {
+          "url": "https://www.newyorkjets.com/news/jets-rookie-mason-taylor-training-camp-practice-08-02-2025",
+          "published_at": "2025-08-02",
+          "title": "Jets rookie Mason Taylor training camp practice"
+        },
+        {
+          "url": "https://jetsxfactor.com/2025/08/05/ny-jets-mason-taylor-injury-tuesday/",
+          "published_at": "2025-08-05",
+          "title": "NY Jets TE Mason Taylor injury update from Tuesday"
+        },
+        {
+          "url": "https://www.newyorkjets.com/news/jets-giants-joint-practice-roundup-mason-taylor-justin-fields-08-12-2025",
+          "published_at": "2025-08-12",
+          "title": "Jets-Giants Joint Practice Roundup (8/12)"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11439",
+      "name": "Jaleel McLaughlin",
+      "pos": "RB",
+      "team_as_of_cutoff": "DEN",
+      "offense_raw": 1,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Dated report flags Dobbins and Harvey competition despite McLaughlin's unofficial RB2 listing; no presumed workload growth.",
+      "sources": [
+        {
+          "url": "https://www.fantasypros.com/nfl/news/533444/rj-harvey-named-rb5-on-broncos-unofficial-depth-chart.php",
+          "published_at": "2025-08-06T14:13:00-04:00",
+          "title": "RJ Harvey named RB5 on Broncos' unofficial depth chart"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "9228",
+      "name": "Bryce Young",
+      "pos": "QB",
+      "team_as_of_cutoff": "CAR",
+      "offense_raw": -1,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Team report describes continuity and new offensive wrinkles around Young; modest development upside and positive starting-role security.",
+      "sources": [
+        {
+          "url": "https://www.panthers.com/news/bryce-young-ready-to-build-off-last-year-s-success-with-offense-s-new-wrinkles",
+          "published_at": "2025-05-27",
+          "title": "Bryce Young ready to build off last year's success with offense's new wrinkles"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11586",
+      "name": "Blake Corum",
+      "pos": "RB",
+      "team_as_of_cutoff": "LAR",
+      "offense_raw": 1,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Team described Corum as RB2 with Hunter behind him; modest contingent upside, not a projected takeover.",
+      "sources": [
+        {
+          "url": "https://www.therams.com/news/blake-corum-and-jarquez-hunter-welcome-beneficial-live-game-reps-in-preseason",
+          "published_at": "2025-08-14",
+          "title": "Blake Corum and Jarquez Hunter welcome beneficial live game reps in preseason"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "9486",
+      "name": "Dontayvion Wicks",
+      "pos": "WR",
+      "team_as_of_cutoff": "GB",
+      "offense_raw": 1,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "June profile highlights drop problems and added receiver competition, but prior rookie success supports modest rebound upside.",
+      "sources": [
+        {
+          "url": "https://www.forbes.com/sites/robreischel/2025/06/24/the-most-important-packers-no-29---dontayvion-wicks/",
+          "published_at": "2025-06-24T08:35:00-04:00",
+          "title": "The Most Important Packers: No. 29 — Dontayvion Wicks"
+        }
+      ],
+      "evidence_status": "researched"
+    }
+  ]
+}

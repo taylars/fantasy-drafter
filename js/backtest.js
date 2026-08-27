@@ -5,7 +5,8 @@
  * handed to a strategy. That separation is the backtest's most important rule.
  */
 
-import { board, mustFill, situation, DEFAULT_AVAILABILITY } from "./value.js";
+import { board, situation, DEFAULT_AVAILABILITY } from "./value.js";
+import { scriptedChoice, missingStarters, STYLES } from "./draft-policy.js";
 
 export const DEFAULT_SLOTS = [
   "QB", "RB", "RB", "WR", "WR", "TE", "FLEX", "FLEX", "K", "DEF",
@@ -14,22 +15,36 @@ export const DEFAULT_SLOTS = [
 
 export function historicalFixture(draft, weeks) {
   const ordered = weeks.slice().sort((a, b) => a.week - b.week);
+  for (const week of ordered) {
+    if (!week.projections || !week.injured || !week.weekly_players) {
+      throw new Error(`Missing weekly lineup inputs for week ${week.week}; run historical-week-inputs.mjs`);
+    }
+  }
+  const enrich = (player) => ({
+    ...player,
+    actual: Object.fromEntries(draft.formats.map((format) => [format,
+      ordered.map((week) => week.points[player.player_id]?.[format] ?? 0)])),
+    weeklyProjected: Object.fromEntries(draft.formats.map((format) => [format,
+      ordered.map((week) => week.projections[player.player_id]?.points?.[format] ?? null)])),
+    injured: ordered.map((week) => Boolean(week.injured[player.player_id])),
+    scheduled: ordered.map((week) => week.projections[player.player_id]?.scheduled ?? false),
+  });
+  const draftedIds = new Set(draft.players.map(p => p.player_id));
+  const extras = new Map();
+  for (const week of ordered) for (const [player_id, player] of Object.entries(week.weekly_players)) {
+    if (!draftedIds.has(player_id)) extras.set(player_id, { ...player, player_id });
+  }
   return {
     season: draft.season,
     weeks: ordered.length,
     caveat: draft.caveat,
-    players: draft.players.map((player) => ({
-      ...player,
-      actual: Object.fromEntries(draft.formats.map((format) => [
-        format,
-        ordered.map((week) => week.points[player.player_id]?.[format] ?? 0),
-      ])),
-    })),
+    players: draft.players.map(enrich),
+    // Expanded free agents are for replacement scoring only, never drafting.
+    replacementPlayers: [...extras.values()].map(enrich),
   };
 }
 
 const FLEXABLE = new Set(["RB", "WR", "TE"]);
-const POSITION_CAP = { QB: 2, RB: 8, WR: 8, TE: 3, K: 1, DEF: 1 };
 
 export function draftOrder({ teams, rounds, type = "snake", reversalRound = 0 }) {
   const order = [];
@@ -50,11 +65,7 @@ function draftShape({ teams, rounds, type, reversalRound }) {
   return { teams, rounds, type, reversal_round: reversalRound, draft_order };
 }
 
-function count(roster, position) {
-  return roster.filter((p) => p.position === position).length;
-}
-
-function strategyPool(players, format) {
+export function strategyPool(players, format) {
   return players.map((p) => ({
     player_id: p.player_id,
     name: p.name,
@@ -63,11 +74,11 @@ function strategyPool(players, format) {
     injury_status: null,
     adp: typeof p.adp === "number" ? p.adp : p.adp[format],
     points: typeof p.projected === "number" ? p.projected : p.projected[format],
-    availability: DEFAULT_AVAILABILITY[p.position] ?? 0.85,
-    offense: 0,
-    position_security: 0,
-    upside: 0,
-    graded: false,
+    availability: p.grade ? p.grade.exp_games / 17 : DEFAULT_AVAILABILITY[p.position] ?? 0.85,
+    offense: p.grade?.offense ?? 0,
+    position_security: p.grade?.position_security ?? 0,
+    upside: p.grade?.upside ?? 0,
+    graded: Boolean(p.grade),
   }));
 }
 
@@ -81,7 +92,9 @@ export function simulateDraft(fixture, {
   ahead = 2,
   format = "half_ppr",
   opponentStyle = "adp",
+  seed = 1,
 } = {}) {
+  if (!['board', 'adp'].includes(heroStrategy)) throw new Error(`unknown hero strategy: ${heroStrategy}`);
   const rounds = slots.length;
   const draft = draftShape({ teams, rounds, type, reversalRound });
   const order = draftOrder({ teams, rounds, type, reversalRound });
@@ -111,11 +124,14 @@ export function simulateDraft(fixture, {
         atPick: i + 1,
         userIds: new Set([userId]),
       });
-      chosen = board(sit, { ahead, limit: pool.length }).ranked[0]?.player;
+      chosen = board(sit, { ahead, limit: pool.length }).ranked.find(row =>
+        missingStarters([...roster, row.player], slots) <= picksLeft - 1)?.player;
     } else {
-      const style = opponentStyle === "mixed"
-        ? ["adp", "robust_rb", "zero_rb", "late_qb"][seat % 4] : opponentStyle;
-      chosen = styledChoice(available, roster, slots, picksLeft, style, Math.floor(i / teams) + 1);
+      const style = seat + 1 === heroSeat ? 'adp' : opponentStyle === "mixed"
+        ? STYLES[seat % STYLES.length] : opponentStyle;
+      chosen = scriptedChoice(available, roster, slots, {
+        teams, style, seed, seat: seat + 1, round: Math.floor(i / teams) + 1,
+      });
     }
 
     if (!chosen) throw new Error(`no legal player at pick ${i + 1}, seat ${seat + 1}`);
@@ -125,45 +141,37 @@ export function simulateDraft(fixture, {
     roster.push(chosen);
     gone.add(chosen.player_id);
     picks.push({ pick: i + 1, seat: seat + 1, player_id: chosen.player_id, name: chosen.name,
-                 position: chosen.position, strategy: seat + 1 === heroSeat ? heroStrategy : "adp" });
+                 position: chosen.position, strategy: seat + 1 === heroSeat ? heroStrategy
+                   : opponentStyle === 'mixed' ? STYLES[seat % STYLES.length] : opponentStyle });
   }
 
   return { teams, slots, rosters, picks };
 }
 
-function styledChoice(available, roster, slots, picksLeft, style, round) {
-  const legal = available.filter((p) => {
-    const forced = mustFill(roster, slots, picksLeft);
-    return (!forced.size || forced.has(p.position)) &&
-      count(roster, p.position) < (POSITION_CAP[p.position] ?? Infinity);
-  });
-  if (style === "robust_rb" && round <= 3 && count(roster, "RB") < 2) {
-    return legal.find((p) => p.position === "RB") ?? legal[0];
-  }
-  if (style === "zero_rb" && round <= 4) {
-    return legal.find((p) => p.position !== "RB") ?? legal[0];
-  }
-  if (style === "late_qb" && round <= 8) {
-    return legal.find((p) => p.position !== "QB") ?? legal[0];
-  }
-  return legal[0];
-}
-
-/* Best legal weekly lineup. Exact slots are settled first; FLEX receives the
- * highest-scoring eligible leftovers. Every required slot is present because
- * the draft enforces legality, but zero is used defensively for a missing one.
+/* Rank by weekly projections, then reveal actual results. Injured roster
+ * players represent a same-position replacement baseline, not a free bonus.
  */
-export function weeklyLineup(roster, actualById, week, slots = DEFAULT_SLOTS, format = "half_ppr") {
+export function weeklyLineup(roster, actualById, week, slots = DEFAULT_SLOTS, format = "half_ppr", replacements = {}) {
   const unused = new Set(roster.map((p) => p.player_id));
   const assignments = [];
-  const points = (p) => {
-    const actual = actualById.get(p.player_id)?.actual;
-    const weeks = Array.isArray(actual) ? actual : actual?.[format];
-    return weeks?.[week] ?? 0;
+  const data = p => actualById.get(p.player_id);
+  const value = (p, field) => {
+    const values = data(p)?.[field];
+    return (Array.isArray(values) ? values : values?.[format])?.[week];
+  };
+  const replaced = p => data(p)?.injured?.[week] && data(p)?.scheduled?.[week] !== false;
+  const projected = p => replaced(p) ? (replacements[p.position]?.projected ?? -Infinity)
+    : data(p)?.scheduled?.[week] === false ? -Infinity : value(p, 'weeklyProjected') ?? -Infinity;
+  const points = p => replaced(p) ? (replacements[p.position]?.points ?? 0) : value(p, 'actual') ?? 0;
+  const assignment = (slot, player) => {
+    const replacement = player && replaced(player) ? replacements[player.position] : null;
+    return { slot, player, points: player ? points(player) : 0,
+      projected: player ? projected(player) : null,
+      ...(replacement ? { replacement } : {}) };
   };
   const take = (eligible) => {
-    const candidates = roster.filter((p) => unused.has(p.player_id) && eligible(p));
-    candidates.sort((a, b) => points(b) - points(a) || a.name.localeCompare(b.name));
+    const candidates = roster.filter((p) => unused.has(p.player_id) && eligible(p) && Number.isFinite(projected(p)));
+    candidates.sort((a, b) => projected(b) - projected(a) || a.name.localeCompare(b.name));
     const chosen = candidates[0] ?? null;
     if (chosen) unused.delete(chosen.player_id);
     return chosen;
@@ -172,12 +180,12 @@ export function weeklyLineup(roster, actualById, week, slots = DEFAULT_SLOTS, fo
   for (const slot of slots) {
     if (slot === "BN" || slot === "FLEX") continue;
     const player = take((p) => p.position === slot);
-    assignments.push({ slot, player, points: player ? points(player) : 0 });
+    assignments.push(assignment(slot, player));
   }
   for (const slot of slots) {
     if (slot !== "FLEX") continue;
     const player = take((p) => FLEXABLE.has(p.position));
-    assignments.push({ slot, player, points: player ? points(player) : 0 });
+    assignments.push(assignment(slot, player));
   }
 
   return {
@@ -186,13 +194,37 @@ export function weeklyLineup(roster, actualById, week, slots = DEFAULT_SLOTS, fo
   };
 }
 
+export function weeklyReplacements(players, draftedIds, week, format = 'half_ppr') {
+  const positions = {};
+  for (const player of players) {
+    const projection = player.weeklyProjected?.[format]?.[week];
+    if (draftedIds.has(player.player_id) || player.injured?.[week] ||
+        player.scheduled?.[week] === false || !Number.isFinite(projection) || projection <= 0) continue;
+    (positions[player.position] ??= []).push(player);
+  }
+  return Object.fromEntries(Object.entries(positions).map(([position, candidates]) => {
+    candidates.sort((a, b) => b.weeklyProjected[format][week] - a.weeklyProjected[format][week]
+      || a.name.localeCompare(b.name));
+    const top = candidates.slice(0, 10);
+    return [position, {
+      projected: top.reduce((sum, p) => sum + p.weeklyProjected[format][week], 0) / top.length,
+      points: top.reduce((sum, p) => sum + (p.actual?.[format]?.[week] ?? 0), 0) / top.length,
+      playerIds: top.map(p => p.player_id),
+    }];
+  }));
+}
+
 export function scoreSeason(fixture, simulation, { format = "half_ppr" } = {}) {
   const actualById = new Map(fixture.players.map((p) => [p.player_id, p]));
+  const draftedIds = new Set(simulation.rosters.flat().map(p => p.player_id));
+  const replacementPool = [...fixture.players, ...(fixture.replacementPlayers ?? [])];
+  const replacements = Array.from({ length: fixture.weeks }, (_, week) =>
+    weeklyReplacements(replacementPool, draftedIds, week, format));
   const results = simulation.rosters.map((roster, seat) => ({
     seat: seat + 1,
     roster,
     weeks: Array.from({ length: fixture.weeks }, (_, week) =>
-      weeklyLineup(roster, actualById, week, simulation.slots, format)),
+      weeklyLineup(roster, actualById, week, simulation.slots, format, replacements[week])),
   }));
 
   for (const result of results) {
@@ -217,7 +249,7 @@ export function scoreSeason(fixture, simulation, { format = "half_ppr" } = {}) {
     for (const week of result.weeks) for (const row of week.assignments) {
       const position = row.player?.position ?? row.slot;
       result.positionPoints[position] = (result.positionPoints[position] ?? 0) + row.points;
-      if (row.player && benchDrafted.has(row.player.player_id)) {
+      if (row.player && !row.replacement && benchDrafted.has(row.player.player_id)) {
         result.benchContribution += row.points;
         result.benchStarts++;
       }
@@ -385,13 +417,13 @@ function groupedGrades(runs, key) {
   return Object.fromEntries([...groups].map(([value, group]) => [value, gradeRuns(group)]));
 }
 
-export function runMatrix(fixture, { ahead = 2 } = {}) {
+export function runMatrix(fixture, { ahead = 2, seed = 1 } = {}) {
   const configs = matrixConfigurations();
   const output = {};
   for (const strategy of ["board", "adp"]) {
     const runs = [];
     for (const config of configs) for (let heroSeat = 1; heroSeat <= config.teams; heroSeat++) {
-      const simulation = simulateDraft(fixture, { ...config, ahead, heroSeat, heroStrategy: strategy });
+      const simulation = simulateDraft(fixture, { ...config, ahead, seed, heroSeat, heroStrategy: strategy });
       const results = scoreSeason(fixture, simulation, config);
       for (const result of results) Object.defineProperty(result, "_teams", { value: config.teams });
       runs.push({ heroSeat, simulation, results, config });

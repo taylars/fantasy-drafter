@@ -1,0 +1,962 @@
+{
+  "season": "2025",
+  "batch": 3,
+  "cutoff": "2025-08-29T23:59:59",
+  "players": [
+    {
+      "player_id": "12481",
+      "name": "Cam Skattebo",
+      "pos": "RB",
+      "team_as_of_cutoff": "NYG",
+      "offense_raw": -2,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 2,
+      "note": "Preseason analysis expected goal-line work and a plausible route past Tracy; not a secure starting role. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://www.nfl.com/news/fantasy-football-2025-top-10-rb-values",
+          "published_at": "2025-07-28",
+          "title": "Fantasy football 2025: Top 10 RB values"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12517",
+      "name": "Colston Loveland",
+      "pos": "TE",
+      "team_as_of_cutoff": "CHI",
+      "offense_raw": 0,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Shoulder surgery reportedly was not hindering him, but Chicago's target competition limited rookie role certainty. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://www.nfl.com/news/fantasy-football-2025-top-10-te-values",
+          "published_at": "2025-07-31",
+          "title": "Fantasy football 2025: Top 10 TE values"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "6806",
+      "name": "J.K. Dobbins",
+      "pos": "RB",
+      "team_as_of_cutoff": "DEN",
+      "offense_raw": 1,
+      "position_security": -1,
+      "exp_games": 13,
+      "upside": 0,
+      "note": "Denver signing release documents 13 games in 2024, a lost 2023 season and only eight in 2022; crowded RB room adds role risk.",
+      "sources": [
+        {
+          "url": "https://www.denverbroncos.com/news/broncos-sign-rb-j-k-dobbins",
+          "published_at": "2025-06-11",
+          "title": "Broncos sign RB J.K. Dobbins"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "7588",
+      "name": "Javonte Williams",
+      "pos": "RB",
+      "team_as_of_cutoff": "DAL",
+      "offense_raw": 0,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Preseason analysis specifically identifies Blue as a threat to Williams' Dallas lead role; no additional upside correction. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-2025-breakout-candidates",
+          "published_at": "2025-08-07",
+          "title": "Fantasy football 2025: Justin Fields, Caleb Williams among breakout candidates"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "6797",
+      "name": "Justin Herbert",
+      "pos": "QB",
+      "team_as_of_cutoff": "LAC",
+      "offense_raw": 0,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Clear Chargers quarterback; preseason analysis still questioned receiving support, so no upside premium. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-draft-rankings-2025-quarterback-tiers-and-analysis",
+          "published_at": "2025-07-21",
+          "title": "Fantasy football QB rankings 2025: Draft tiers and analysis"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "9484",
+      "name": "Tucker Kraft",
+      "pos": "TE",
+      "team_as_of_cutoff": "GB",
+      "offense_raw": 1,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Documented YAC efficiency supports modest growth; crowded targets keep role security neutral. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://www.nfl.com/news/fantasy-football-2025-top-10-te-values",
+          "published_at": "2025-07-31",
+          "title": "Fantasy football 2025: Top 10 TE values"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "4037",
+      "name": "Chris Godwin",
+      "pos": "WR",
+      "team_as_of_cutoff": "TB",
+      "offense_raw": 1,
+      "position_security": 0,
+      "exp_games": 10,
+      "upside": 0,
+      "note": "August reporting expected the ankle recovery to cost at least the opening month; 10 expected games is an estimate. No additional role or upside adjustment is supported here.",
+      "sources": [
+        {
+          "url": "https://www.nfl.com/news/buccaneers-activate-wr-chris-godwin-pup-list-2025-season",
+          "published_at": "2025-08-21",
+          "title": "Buccaneers to activate WR Chris Godwin (ankle) off PUP list ahead of 2025 season"
+        },
+        {
+          "url": "https://www.si.com/nfl/bucs-gm-gives-chris-godwin-injury-timeline/",
+          "published_at": "2025-08-28",
+          "title": "Bucs GM Jason Licht Gives Definitive Injury Timeline for Star WR Chris Godwin"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "7049",
+      "name": "Jauan Jennings",
+      "pos": "WR",
+      "team_as_of_cutoff": "SF",
+      "offense_raw": 1,
+      "position_security": 0,
+      "exp_games": 14,
+      "upside": 0,
+      "note": "August 7 reporting documented a calf strain and missed practice. Fourteen games is an uncertain availability estimate; role and upside remain neutral.",
+      "sources": [
+        {
+          "url": "https://www.sfchronicle.com/sports/49ers/article/49ers-jauan-jennings-absence-calf-injury-20806943.php",
+          "published_at": "2025-08-07",
+          "title": "49ers’ Jauan Jennings isn’t practicing. Is his absence about a bum calf or a new contract?"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "4663",
+      "name": "Austin Ekeler",
+      "pos": "RB",
+      "team_as_of_cutoff": "WAS",
+      "offense_raw": 1,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "August trade analysis expects Ekeler to retain passing-down and change-of-pace work in an uncertain committee; neutral overall role security, no growth premium; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://new.cbssports.com/fantasy/football/news/fantasy-football-fallout-commanders-trade-brian-robinson-jr-to-the-49ers-heres-what-to-know-before-drafts/",
+          "published_at": "2025-08-22",
+          "title": "Fantasy Football fallout: Commanders trade Brian Robinson Jr. to the 49ers; here's what to know before drafts"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "8183",
+      "name": "Brock Purdy",
+      "pos": "QB",
+      "team_as_of_cutoff": "SF",
+      "offense_raw": 1,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Established San Francisco quarterback; no unsupported additional growth or injury adjustment. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-draft-rankings-2025-quarterback-tiers-and-analysis",
+          "published_at": "2025-07-21",
+          "title": "Fantasy football QB rankings 2025: Draft tiers and analysis"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "3294",
+      "name": "Dak Prescott",
+      "pos": "QB",
+      "team_as_of_cutoff": "DAL",
+      "offense_raw": 0,
+      "position_security": 1,
+      "exp_games": 14,
+      "upside": 1,
+      "note": "Preseason analysis identifies rebound potential after an injury-marred 2024 campaign; 14 games is a modest estimated discount.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-draft-rankings-2025-quarterback-tiers-and-analysis",
+          "published_at": "2025-07-21",
+          "title": "Fantasy football QB rankings 2025: Draft tiers and analysis"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "7553",
+      "name": "Kyle Pitts",
+      "pos": "TE",
+      "team_as_of_cutoff": "ATL",
+      "offense_raw": 0,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "July TE analysis flags unrealized potential and uncertainty over his connection with Penix; neutral role security and no added upside absent stronger evidence; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-te-rankings-2025-draft-tiers-and-analysis",
+          "published_at": "2025-07-24",
+          "title": "Fantasy football TE rankings 2025: Draft tiers and analysis"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "6819",
+      "name": "Michael Pittman",
+      "pos": "WR",
+      "team_as_of_cutoff": "IND",
+      "offense_raw": -1,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "July team analysis expects a rebound after playing through a 2024 back injury; offseason participation supports retaining default availability rather than projecting unresolved injury. Modest role continuity and rebound premium.",
+      "sources": [
+        {
+          "url": "https://www.colts.com/news/the-colts-show-mailbag-michael-pittman-jr-in-2025-re-setting-qb-competition-depth-at-linebacker-safety",
+          "published_at": "2025-07-10",
+          "title": "The Colts Show Mailbag: Michael Pittman Jr. in 2025, re-setting QB competition, depth at linebacker & safety"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11637",
+      "name": "Keon Coleman",
+      "pos": "WR",
+      "team_as_of_cutoff": "BUF",
+      "offense_raw": 2,
+      "position_security": 0,
+      "exp_games": 14,
+      "upside": 2,
+      "note": "A 2024 wrist injury cost four weeks; preseason reporting highlighted camp red-zone success and prior end-zone usage.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-2025-breakout-candidates",
+          "published_at": "2025-08-07",
+          "title": "Fantasy football 2025: Justin Fields, Caleb Williams among breakout candidates"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "10236",
+      "name": "Dalton Kincaid",
+      "pos": "TE",
+      "team_as_of_cutoff": "BUF",
+      "offense_raw": 2,
+      "position_security": 0,
+      "exp_games": 14,
+      "upside": 1,
+      "note": "High pre-injury target rate supports a modest rebound, while the documented November knee injury warrants a small games discount.",
+      "sources": [
+        {
+          "url": "https://www.nfl.com/news/fantasy-football-2025-top-10-te-values",
+          "published_at": "2025-07-31",
+          "title": "Fantasy football 2025: Top 10 TE values"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "10222",
+      "name": "Jayden Reed",
+      "pos": "WR",
+      "team_as_of_cutoff": "GB",
+      "offense_raw": 1,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "July team preview describes increased receiver competition from Golden and Williams; Reed's role merits caution rather than a speculative upside premium; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://www.packers.com/news/countdown-to-camp-packers-are-crowded-but-plenty-capable-at-receiver-2025",
+          "published_at": "2025-07-16",
+          "title": "Countdown to camp: Packers are crowded but plenty capable at receiver"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "4988",
+      "name": "Nick Chubb",
+      "pos": "RB",
+      "team_as_of_cutoff": "HOU",
+      "offense_raw": 0,
+      "position_security": -1,
+      "exp_games": 13,
+      "upside": 0,
+      "note": "June reporting describes major prior knee injury and a short prove-it contract in a crowded backfield; recovery and competition warrant availability and security haircuts, no speculative rebound premium.",
+      "sources": [
+        {
+          "url": "https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/nick-chubb-passes-physical-signs-one-year-2-5-million-contract-with-texans",
+          "published_at": "2025-06-09",
+          "title": "Nick Chubb passes physical, signs one-year, $2.5 million contract with Texans"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "9225",
+      "name": "Tank Bigsby",
+      "pos": "RB",
+      "team_as_of_cutoff": "JAX",
+      "offense_raw": -1,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "The dated PFF body reports alternating Jacksonville preseason starters, supporting committee risk but not a separate upside premium. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://www.pff.com/news/fantasy-football-depth-charts-for-all-32-nfl-teams-2",
+          "published_at": "2025-08-26T17:30:00-04:00",
+          "title": "Fantasy Football: Depth charts for all 32 NFL teams"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "9500",
+      "name": "Josh Downs",
+      "pos": "WR",
+      "team_as_of_cutoff": "IND",
+      "offense_raw": -1,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Exceptional prior route target rate supports modest upside, but the Indianapolis target hierarchy remained uncertain. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-wr-rankings-2025-draft-tiers-and-analysis",
+          "published_at": "2025-07-23",
+          "title": "Fantasy football WR rankings 2025: Draft tiers and analysis"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12484",
+      "name": "Jayden Higgins",
+      "pos": "WR",
+      "team_as_of_cutoff": "HOU",
+      "offense_raw": 0,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "August analysis places the rookie behind Collins and likely Kirk, but identifies size and contested-catch potential; uncertain role with modest rookie upside; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-2025-jaydon-blue-tory-horton-shedeur-sanders-among-later-round-rookies-to-draft",
+          "published_at": "2025-08-15",
+          "title": "Fantasy football 2025: Jaydon Blue, Tory Horton, Shedeur Sanders among later-round rookies to draft"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "9758",
+      "name": "C.J. Stroud",
+      "pos": "QB",
+      "team_as_of_cutoff": "HOU",
+      "offense_raw": 0,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Houston starter with neutral upside: preseason analysis did not establish a new personal workload. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-draft-rankings-2025-quarterback-tiers-and-analysis",
+          "published_at": "2025-07-21",
+          "title": "Fantasy football QB rankings 2025: Draft tiers and analysis"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "7611",
+      "name": "Rhamondre Stevenson",
+      "pos": "RB",
+      "team_as_of_cutoff": "NE",
+      "offense_raw": -1,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "July team preview projects early-down work but warns Henderson could earn a featured role; insecure workload, no extra upside; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://www.patriots.com/news/training-camp-preview-running-backs",
+          "published_at": "2025-07-10",
+          "title": "Training Camp Preview: Running Backs"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "7528",
+      "name": "Najee Harris",
+      "pos": "RB",
+      "team_as_of_cutoff": "LAC",
+      "offense_raw": 0,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "The Chargers moved him to their active roster on August 26 after the eye injury, allowing a possible Week 1 return. Fifteen games and neutral role/upside are conservative estimates.",
+      "sources": [
+        {
+          "url": "https://www.chargers.com/news/najee-harris-eye-injury-fantasy-2025",
+          "published_at": "2025-08-26",
+          "title": "Najee Harris To Begin Season on Chargers 53-Man Roster"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "8676",
+      "name": "Rashid Shaheed",
+      "pos": "WR",
+      "team_as_of_cutoff": "NO",
+      "offense_raw": -2,
+      "position_security": 1,
+      "exp_games": 14,
+      "upside": 1,
+      "note": "August 29 report describes recovery after 2024 meniscus surgery and explosive preseason play; modest recovery-risk haircut and development premium, not assumed regular-season results.",
+      "sources": [
+        {
+          "url": "https://www.profootballnetwork.com/rashid-shaheed-healthy-injuries-new-orleans-saints-health-week-1-status/",
+          "published_at": "2025-08-29",
+          "title": "Is Rashid Shaheed 100% Healthy After Last Year’s Injuries? Latest on the Saints WR’s Health, Week 1 Status"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12457",
+      "name": "Jaydon Blue",
+      "pos": "RB",
+      "team_as_of_cutoff": "DAL",
+      "offense_raw": 0,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 2,
+      "note": "Blue's receiving skills and speed gave him a documented path past Williams and Sanders; the starting job was not secure. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-2025-breakout-candidates",
+          "published_at": "2025-08-07",
+          "title": "Fantasy football 2025: Justin Fields, Caleb Williams among breakout candidates"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "8110",
+      "name": "Jake Ferguson",
+      "pos": "TE",
+      "team_as_of_cutoff": "DAL",
+      "offense_raw": 0,
+      "position_security": 2,
+      "exp_games": 14,
+      "upside": 0,
+      "note": "July team announcement gives Ferguson a four-year extension with substantial guarantees, while noting prior knee/concussion issues; secure role and modest availability haircut.",
+      "sources": [
+        {
+          "url": "https://www.dallascowboys.com/news/cowboys-sign-jake-ferguson-to-four-year-extension",
+          "published_at": "2025-07-27",
+          "title": "Cowboys sign Jake Ferguson to four-year extension"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11576",
+      "name": "Braelon Allen",
+      "pos": "RB",
+      "team_as_of_cutoff": "NYJ",
+      "offense_raw": -1,
+      "position_security": 0,
+      "exp_games": 16,
+      "upside": 1,
+      "note": "July team preview projects a three-back attack with Hall leading and Allen contributing; all 17 games in 2024 support above-default availability and modest second-year growth.",
+      "sources": [
+        {
+          "url": "https://www.newyorkjets.com/news/jets-training-camp-preview-running-backs-breece-hall-braelon-allen-isaiah-davis2025",
+          "published_at": "2025-07-10",
+          "title": "Jets Training Camp Preview | Breece Hall Headlines 'Big, Physical' RBs Room"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11564",
+      "name": "Drake Maye",
+      "pos": "QB",
+      "team_as_of_cutoff": "NE",
+      "offense_raw": -1,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Second-year Patriots starter with documented mobility and developmental upside; passing volume remained uncertain. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-2025-breakout-candidates",
+          "published_at": "2025-08-07",
+          "title": "Fantasy football 2025: Justin Fields, Caleb Williams among breakout candidates"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "6803",
+      "name": "Brandon Aiyuk",
+      "pos": "WR",
+      "team_as_of_cutoff": "SF",
+      "offense_raw": 1,
+      "position_security": 0,
+      "exp_games": 10,
+      "upside": 0,
+      "note": "Pre-cutoff reporting gave only a rough Week 6 knee-recovery target; 10 expected games is an availability estimate, not a known return. Other player factors remain neutral.",
+      "sources": [
+        {
+          "url": "https://www.espn.com/nfl/story/_/id/45947965/49ers-eyes-week-6-return-brandon-aiyuk-wr-injuries-mount",
+          "published_at": "2025-08-11T17:41:00-04:00",
+          "title": "49ers eye Week 6 return for Brandon Aiyuk while WR injuries mount"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "7090",
+      "name": "Darnell Mooney",
+      "pos": "WR",
+      "team_as_of_cutoff": "ATL",
+      "offense_raw": 0,
+      "position_security": 1,
+      "exp_games": 14,
+      "upside": 0,
+      "note": "July team report calls Mooney a starting receiver but says a shoulder injury will sideline him for weeks; modest availability haircut without assuming a missed regular-season game.",
+      "sources": [
+        {
+          "url": "https://www.atlantafalcons.com/news/darnell-mooney-training-camp-shoulder-injury",
+          "published_at": "2025-07-25",
+          "title": "Darnell Mooney to miss time with shoulder injury"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "1479",
+      "name": "Keenan Allen",
+      "pos": "WR",
+      "team_as_of_cutoff": "LAC",
+      "offense_raw": 0,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "August rookie analysis places Lambert-Smith behind McConkey and Allen; veteran top-two role, no extra upside; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-2025-jaydon-blue-tory-horton-shedeur-sanders-among-later-round-rookies-to-draft",
+          "published_at": "2025-08-15",
+          "title": "Fantasy football 2025: Jaydon Blue, Tory Horton, Shedeur Sanders among later-round rookies to draft"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12495",
+      "name": "Ollie Gordon",
+      "pos": "RB",
+      "team_as_of_cutoff": "MIA",
+      "offense_raw": 0,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 2,
+      "note": "August 28 analysis identifies backup and short-yardage opportunity after injuries to Mattison and Wright; significant rookie role-opening premium, not an established starting job; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://dknetwork.draftkings.com/2025/08/28/is-ollie-gordon-a-must-draft-rb-handcuff-after-jaylen-wrights-injury/",
+          "published_at": "2025-08-28",
+          "title": "Is Ollie Gordon a must-draft RB handcuff after Jaylen Wright’s injury?"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "4144",
+      "name": "Jonnu Smith",
+      "pos": "TE",
+      "team_as_of_cutoff": "PIT",
+      "offense_raw": -1,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "July TE analysis cautions against chasing Smith's prior production after changing teams; neutral role security, no added upside; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-te-rankings-2025-draft-tiers-and-analysis",
+          "published_at": "2025-07-24",
+          "title": "Fantasy football TE rankings 2025: Draft tiers and analysis"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "6804",
+      "name": "Jordan Love",
+      "pos": "QB",
+      "team_as_of_cutoff": "GB",
+      "offense_raw": 1,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Green Bay starter grouped among viable later quarterbacks; no specific expansion claim supports an upside premium. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-draft-rankings-2025-quarterback-tiers-and-analysis",
+          "published_at": "2025-07-21",
+          "title": "Fantasy football QB rankings 2025: Draft tiers and analysis"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11589",
+      "name": "Trey Benson",
+      "pos": "RB",
+      "team_as_of_cutoff": "ARI",
+      "offense_raw": 0,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "August team report considers an expanded tandem role for Benson without displacing Conner; modest sophomore growth premium, neutral security; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://www.azcardinals.com/news/can-t-shy-away-from-james-conner-trey-benson-duo-and-red-white-practice-aftermath",
+          "published_at": "2025-08-02",
+          "title": "Can't Shy Away From James Conner-Trey Benson Duo, And Red-White Practice Aftermath"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11560",
+      "name": "Caleb Williams",
+      "pos": "QB",
+      "team_as_of_cutoff": "CHI",
+      "offense_raw": 0,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Second-year Bears starter; preseason analysis identifies developmental upside beyond the rebuilt supporting cast. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-2025-breakout-candidates",
+          "published_at": "2025-08-07",
+          "title": "Fantasy football 2025: Justin Fields, Caleb Williams among breakout candidates"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "5022",
+      "name": "Dallas Goedert",
+      "pos": "TE",
+      "team_as_of_cutoff": "PHI",
+      "offense_raw": 1,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "May reporting confirms a reworked contract retaining Goedert in Philadelphia; modest role continuity, no additional upside; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://www.cbsnews.com/philadelphia/news/dallas-goedert-contract-eagles-stay/",
+          "published_at": "2025-05-07",
+          "title": "Dallas Goedert, Eagles reportedly agree to reworked contract to keep tight end in Philadelphia"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "9494",
+      "name": "Marvin Mims",
+      "pos": "WR",
+      "team_as_of_cutoff": "DEN",
+      "offense_raw": 1,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "July report describes competition for WR2 behind Sutton and Mims' late-2024 receiving growth; uncertain role with a modest development premium; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://www.denvergazette.com/2025/07/30/marvin-mims-broncos-depth-at-wide-receiver-isnt-talked-about-enough-548c4b81-4d05-4177-a926-c020b819c4fc/",
+          "published_at": "2025-07-30",
+          "title": "Marvin Mims: Broncos’ depth at wide receiver ‘isn’t talked about enough’"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "4950",
+      "name": "Christian Kirk",
+      "pos": "WR",
+      "team_as_of_cutoff": "HOU",
+      "offense_raw": 0,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Dated prose expects Kirk to have a prominent Houston role. A mild security adjustment is supported; upside and 15 games remain defaults.",
+      "sources": [
+        {
+          "url": "https://www.cbssports.com/fantasy/football/news/fantasy-football-wide-receiver-rankings-tiers-5-0-how-to-draft-the-wr-position-and-where-value-falls/",
+          "published_at": "2025-08-29T23:32:00-04:00",
+          "title": "Fantasy Football Wide Receiver Rankings Tiers 5.0: How to draft the WR position and where value falls"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "7591",
+      "name": "Justin Fields",
+      "pos": "QB",
+      "team_as_of_cutoff": "NYJ",
+      "offense_raw": -1,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Jets starter with documented rushing upside; long-term job security is not treated as entrenched. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-2025-breakout-candidates",
+          "published_at": "2025-08-07",
+          "title": "Fantasy football 2025: Justin Fields, Caleb Williams among breakout candidates"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "8143",
+      "name": "Jerome Ford",
+      "pos": "RB",
+      "team_as_of_cutoff": "CLE",
+      "offense_raw": -2,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "August 26 analysis describes Ford and Sampson battling for work with unsigned Judkins still looming; insecure lead workload, no extra upside; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://dknetwork.draftkings.com/2025/08/26/is-jerome-ford-or-dylan-sampson-the-browns-rb-that-needs-to-be-drafted-first/",
+          "published_at": "2025-08-26",
+          "title": "Is Jerome Ford or Dylan Sampson the Browns’ RB that needs to be drafted first?"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11565",
+      "name": "J.J. McCarthy",
+      "pos": "QB",
+      "team_as_of_cutoff": "MIN",
+      "offense_raw": 1,
+      "position_security": 1,
+      "exp_games": 14,
+      "upside": 1,
+      "note": "First season as Minnesota starter offers documented upside, with availability discounted for the prior knee injury.",
+      "sources": [
+        {
+          "url": "https://www.nfl.com/news/fantasy-football-2025-6-late-round-sleepers-to-target/",
+          "published_at": "2025-08-12",
+          "title": "Fantasy football 2025: 6 late-round sleepers to target"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12519",
+      "name": "Luther Burden",
+      "pos": "WR",
+      "team_as_of_cutoff": "CHI",
+      "offense_raw": 0,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "Preseason analysis highlights Burden's talent but warns of crowded Chicago targets and an initial missed practice. Availability uses the 15-game default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-wr-rankings-2025-draft-tiers-and-analysis",
+          "published_at": "2025-07-23",
+          "title": "Fantasy football WR rankings 2025: Draft tiers and analysis"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "1339",
+      "name": "Zach Ertz",
+      "pos": "TE",
+      "team_as_of_cutoff": "WAS",
+      "offense_raw": 1,
+      "position_security": 1,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "Official August depth chart retains Ertz ahead of Sinnott; moderately secure veteran role, no extra upside; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://www.commanders.com/news/commanders-release-2025-unofficial-depth-chart",
+          "published_at": "2025-08-04",
+          "title": "Commanders release 2025 unofficial depth chart"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "8136",
+      "name": "Rachaad White",
+      "pos": "RB",
+      "team_as_of_cutoff": "TB",
+      "offense_raw": 1,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "August team report describes White as a pass protector and receiving option alongside Irving; stable complementary work but neutral overall security; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://www.buccaneers.com/news/training-camp-takeaways-dual-threat-backfield-haason-reddick-interception-and-more",
+          "published_at": "2025-08-07",
+          "title": "Training Camp Takeaways: Dual-Threat Backfield, Haason Reddick Interception and More"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "7571",
+      "name": "Rashod Bateman",
+      "pos": "WR",
+      "team_as_of_cutoff": "BAL",
+      "offense_raw": 2,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 0,
+      "note": "July WR analysis regards Bateman as a lower-cost alternative to Flowers but does not establish a larger role; neutral security and no extra upside; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-wr-rankings-2025-draft-tiers-and-analysis",
+          "published_at": "2025-07-23",
+          "title": "Fantasy football WR rankings 2025: Draft tiers and analysis"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "11575",
+      "name": "Ray Davis",
+      "pos": "RB",
+      "team_as_of_cutoff": "BUF",
+      "offense_raw": 2,
+      "position_security": 0,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "August preview places Davis as Cook's primary backup with Johnson also involved; modest second-year growth potential, not a guaranteed takeover; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://www.buffalorumblings.com/90-players-in-90-days/114002/90-buffalo-bills-players-in-90-days-rb-ray-davis",
+          "published_at": "2025-08-25",
+          "title": "90 Buffalo Bills players in 90 days: RB Ray Davis"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12469",
+      "name": "Dylan Sampson",
+      "pos": "RB",
+      "team_as_of_cutoff": "CLE",
+      "offense_raw": -2,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "August analysis expects Sampson behind Judkins when available but identifies a possible passing-down role; uncertain rookie usage with modest growth upside; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://amp.nfl.com/news/fantasy-football-2025-jaydon-blue-tory-horton-shedeur-sanders-among-later-round-rookies-to-draft",
+          "published_at": "2025-08-15",
+          "title": "Fantasy football 2025: Jaydon Blue, Tory Horton, Shedeur Sanders among later-round rookies to draft"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "1689",
+      "name": "Adam Thielen",
+      "pos": "WR",
+      "team_as_of_cutoff": "MIN",
+      "offense_raw": 1,
+      "position_security": 0,
+      "exp_games": 14,
+      "upside": 0,
+      "note": "August 27 trade announcement returns Thielen to Minnesota with Addison's suspension creating early opportunity; 27 games over the prior two seasons support a modest availability haircut; no added upside.",
+      "sources": [
+        {
+          "url": "https://www.vikings.com/news/adam-thielen-acquired-trade-carolina-panthers-wide-receiver-2025",
+          "published_at": "2025-08-27",
+          "title": "Vikings Returning Adam Thielen to Minnesota in Trade with Carolina Panthers"
+        }
+      ],
+      "evidence_status": "researched"
+    },
+    {
+      "player_id": "12490",
+      "name": "Bhayshul Tuten",
+      "pos": "RB",
+      "team_as_of_cutoff": "JAX",
+      "offense_raw": -1,
+      "position_security": -1,
+      "exp_games": 15,
+      "upside": 1,
+      "note": "August preseason reporting documents the rookie's touchdown and prior college production; developmental upside remains modest with an unproven NFL role; 15-game availability default.",
+      "sources": [
+        {
+          "url": "https://hbcugameday.com/2025/08/10/hbcu-connection-powers-preseason-nfl-touchdown/",
+          "published_at": "2025-08-10",
+          "title": "HBCU Connection Powers Preseason NFL Touchdown"
+        }
+      ],
+      "evidence_status": "researched"
+    }
+  ]
+}
