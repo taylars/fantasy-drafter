@@ -211,10 +211,15 @@ nothing on the board reads but a researcher wants in front of them.
 
 Points are not stored anywhere, because the same projection is worth different
 amounts in different leagues. `scoreStats` applies the league's own
-`scoring_settings`, which is the point: Sleeper's precomputed `pts_half_ppr`
-uses a generic preset that docks an interception 1 point where a league may say
-2 — enough to misrank every quarterback by up to 14 points. Deep bench players
-come back with an ADP but no stat line, and are omitted rather than scored zero.
+`scoring_settings`, with receptions swapped to whatever the draft on screen is
+scored at — `scoringFor` — so a standard mock prices a receiver the way that
+room does without giving up the league's finer rules. Sleeper's precomputed
+`pts_half_ppr` is not used for either half of that: it is a generic preset that
+docks an interception 1 point where a league may say 2, enough to misrank every
+quarterback by up to 14 points, and six draftable players have no `pts_*` at
+all, so reading it would price two of them by a different rule than the players
+either side of them. Deep bench players come back with an ADP but no stat line,
+and are omitted rather than scored zero.
 
 A projection carries no `depth_chart_order`, which the model once used to spot a
 healthy starting quarterback. It uses projected pass attempts instead, which is

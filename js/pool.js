@@ -65,6 +65,31 @@ export function draftFormat(league, draft) {
   return draft?.scoring_type ?? league.scoring_type ?? scoringType(league);
 }
 
+// Points per reception, by format. The three scoring formats differ in this
+// one number and in nothing else, which is why a draft's format is applied by
+// swapping `rec` on the league's own settings rather than by reading Sleeper's
+// precomputed pts_*: a league that docks an interception 2 points where
+// Sleeper's preset docks 1 keeps its own answer for every quarterback.
+//
+// `2qb` and `dynasty` are absent on purpose. Neither is a scoring format — one
+// is roster construction, the other is a draft type — so a draft that says
+// either says nothing about receptions and the league's own value stands.
+const FORMAT_REC = { std: 0, half_ppr: 0.5, ppr: 1 };
+
+/* The scoring a board's points are computed under.
+ *
+ * The league's settings, with receptions set to whatever the draft on screen
+ * is scored at. A standard mock run from a half PPR league is a standard board
+ * end to end — the same reason its ADP comes from adp_std — so a receiver's
+ * points there should be the points he is worth in that room, not in the
+ * league the mock was opened from.
+ */
+export function scoringFor(league, draft) {
+  const scoring = league.scoring_settings ?? {};
+  const rec = FORMAT_REC[draftFormat(league, draft)];
+  return rec == null || rec === scoring.rec ? scoring : { ...scoring, rec };
+}
+
 /* A healthy starting quarterback is unusually durable. Grade notes can still
  * explain why a projection is lower, but historical injuries should not make a
  * current QB1 a projected 13-game player unless the feed says he is presently
@@ -120,7 +145,7 @@ export function statLine(stats) {
  * is what `graded` on the row is warning about.
  */
 export function buildPool(projections, grades, league, draft = null) {
-  const scoring = league.scoring_settings ?? {};
+  const scoring = scoringFor(league, draft);
   const key = adpKey(draftFormat(league, draft));
   const pool = [];
 
