@@ -121,20 +121,26 @@ points** — it was nearly indifferent, so the floor buys real insurance cheaply
 Before searching the plan, each RB/WR/TE also receives a small bench-option
 value. Expected-lineup coverage otherwise makes every player below existing
 depth worth exactly zero, even though a late pick can be dropped at little
-cost if his favorable outcome never arrives. The option stays anchored to
-proven production above the waiver wire, with upside acting as a modifier:
+cost if his favorable outcome never arrives. The option is anchored entirely to
+projected production above the waiver wire:
 
 ```
 surplus(i) = max(adjusted_points(i) - waiver_baseline(position(i)), 0)
-option(i)  = 10 * max(upside_grade(i), 0) + 0.02 * surplus(i)
+option(i)  = 0.02 * surplus(i)
 draft_gain(i) = lineup_gain(i) + option(i)
 ```
 
 The option applies only when the roster can already fill every starting slot
 and the player is an RB, WR, or TE—i.e. this pick is being evaluated for the
-bench. Thus `+1` upside is worth at least 10 season points and `+2` at least
-20, with above-wire production breaking ties. Players selected while the
-starting lineup is incomplete receive no bench bonus, and QB/K/DEF never do.
+bench. Players selected while the starting lineup is incomplete receive no
+bench bonus, and QB/K/DEF never do.
+
+Previously the option also added `10 * max(upside_grade(i), 0)`, including
+for players projected below the waiver baseline. Upside already affects
+`adjusted_points`; the separate flat bonus could dominate late bench picks.
+Removing it improved mean points by 108.2 in the 2025 fixture across seeds
+1–8, with a similar improvement across seeds 9–16. These are repeated rooms
+from one season, not independent evidence of gains in future seasons.
 
 ```
 lineup_gain(i) = lineup(roster + i) − lineup(roster)
