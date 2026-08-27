@@ -9,6 +9,7 @@ import assert from "node:assert/strict";
 import { missingStarters } from '../js/draft-policy.js';
 import { DEFAULT_SLOTS, historicalFixture, matrixConfigurations, runBacktest, simulateDraft, strategyPool, weeklyLineup, weeklyReplacements, scoreSeason } from "../js/backtest.js";
 import { parseCsv, injuryDesignation } from '../js/historical-week.js';
+import { PLAN_AHEAD } from '../js/value.js';
 
 const history = new URL("../data/historical/2025/", import.meta.url);
 const historicalDraft = JSON.parse(readFileSync(new URL("draft.json", history), "utf8"));
@@ -19,6 +20,26 @@ const historicalWeeks = Array.from({ length: 17 }, (_, i) => JSON.parse(readFile
 const fixture = historicalFixture(historicalDraft, historicalWeeks, grades2025);
 const draft2026 = JSON.parse(readFileSync(
   new URL("../data/historical/2026/draft.json", import.meta.url), "utf8"));
+
+test("backtest defaults use the production planning horizon", () => {
+  const options = { teams: 8, heroSeat: 4, seed: 3 };
+  assert.deepEqual(simulateDraft(fixture, options).picks,
+    simulateDraft(fixture, { ...options, ahead: PLAN_AHEAD }).picks);
+});
+
+test("pooled backtests retain each seed and report the sample mean and standard error", () => {
+  const { adp } = runBacktest(fixture, { teams: 8, strategies: ['adp'], seeds: [3, 7] });
+  assert.equal(adp.runs.length, 16);
+  assert.deepEqual(adp.runs.map(run => run.seed), [...Array(8).fill(3), ...Array(8).fill(7)]);
+  assert.equal(adp.grade.samples, 16);
+  const totals = adp.runs.map(run => run.results[run.heroSeat - 1].total);
+  const mean = totals.reduce((sum, total) => sum + total, 0) / totals.length;
+  const variance = totals.reduce((sum, total) => sum + (total - mean) ** 2, 0) / (totals.length - 1);
+  assert.equal(adp.grade.averagePoints, Math.round(mean * 10) / 10);
+  assert.equal(adp.grade.pointsStandardError, Math.round(Math.sqrt(variance / totals.length) * 10) / 10);
+  assert.deepEqual(runBacktest(fixture, { teams: 8, strategies: ['adp'], seed: 3 }).adp,
+    runBacktest(fixture, { teams: 8, strategies: ['adp'], seeds: [3] }).adp);
+});
 
 test("the 2025 fixture is a complete frozen regular-season sample", () => {
   assert.equal(fixture.season, "2025");
