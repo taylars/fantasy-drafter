@@ -1,6 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync, existsSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { loadGrades, indexedSeasons } from "../js/grades.js";
 import { loadLocalGrades } from "../bin/lib/grades.mjs";
 import { buildPool } from "../js/pool.js";
@@ -9,6 +10,55 @@ import { adjusted } from "../js/value.js";
 const root = new URL("../", import.meta.url);
 const read = path => JSON.parse(readFileSync(new URL(path, root), "utf8"));
 const latest = indexedSeasons(read("data/historical/index.json"))[0];
+
+// Fingerprint identities only, not scores or evidence. Regrading remains allowed;
+// intentionally changing either existing cohort requires an explicit test update.
+const COHORT_FINGERPRINTS = {
+  "2025": "feb7f9b8d53e85d61255819b180998e917af3a75e2a9a15aa2caf35b9940a8e3",
+  "2026": "8267e2b1694fdde9b63529941d66ec098cd28b7e58af9c2d5c73eec04973c22e",
+};
+
+function containsGrade(value) {
+  if (!value || typeof value !== "object") return false;
+  if (["offense", "position_security", "exp_games", "upside"].every(key => key in value)) return true;
+  return Object.values(value).some(containsGrade);
+}
+
+function checkStore(path, document, canonicalPaths) {
+  if (canonicalPaths.has(path)) return;
+  assert.ok(!/(?:^|\/)(?:grades?(?:[-_.]|\/)|graded-)/i.test(path), `Noncanonical grade store: ${path}`);
+  assert.ok(!containsGrade(document), `Duplicate grade data: ${path}`);
+}
+
+function dataJsonPaths(directory = "data") {
+  return readdirSync(new URL(`${directory}/`, root), {withFileTypes: true}).flatMap(entry => {
+    const path = `${directory}/${entry.name}`;
+    // Local fetched API caches are not versioned authoring data.
+    if (path === "data/cache") return [];
+    if (entry.isDirectory()) return dataJsonPaths(path);
+    return entry.isFile() && entry.name.endsWith(".json") ? [path] : [];
+  });
+}
+
+test("all preserved player IDs remain in their canonical season grade files", () => {
+  for (const [season, expected] of Object.entries(COHORT_FINGERPRINTS)) {
+    const ids = Object.keys(read(`data/historical/${season}/grades.json`).grades).sort();
+    const actual = createHash("sha256").update(JSON.stringify(ids)).digest("hex");
+    assert.equal(actual, expected, `${season}: a preserved grade was removed or replaced`);
+  }
+});
+
+test("grade payloads cannot be duplicated under another data filename", () => {
+  const canonicalPaths = new Set(indexedSeasons(read("data/historical/index.json"))
+    .map(year => `data/historical/${year}/grades.json`));
+  for (const path of dataJsonPaths()) checkStore(path, read(path), canonicalPaths);
+
+  const grade = {offense: 0, position_security: 1, exp_games: 15, upside: 0};
+  assert.throws(() => checkStore("data/backup.json", {players: [{grade}]}, canonicalPaths), /Duplicate grade data/);
+  assert.throws(() => checkStore("data/historical/2025/graded-01.json", {}, canonicalPaths), /Noncanonical grade store/);
+  assert.throws(() => checkStore("data/grades.json", {}, canonicalPaths), /Noncanonical grade store/);
+  assert.doesNotThrow(() => checkStore(`data/historical/${latest}/grades.json`, {grades: {test: grade}}, canonicalPaths));
+});
 
 test("the app loader fetches only the newest season and its grades reach the pricing model", async () => {
   const requests = [];
