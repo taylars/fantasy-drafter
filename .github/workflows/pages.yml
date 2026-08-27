@@ -50,7 +50,7 @@ jobs:
       # this is a few seconds, and a formula change that broke an ordering
       # fails here rather than in a draft.
       - name: Test the recommendations
-        run: node bin/test
+        run: npm test
 
       - uses: actions/configure-pages@v5
 

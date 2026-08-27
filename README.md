@@ -11,7 +11,7 @@ No server, no database, no install. It reads Sleeper directly from the page.
 Open the published board, or run it locally:
 
 ```bash
-bin/dev
+npm start
 ```
 
 Then <http://localhost:8000>. That is a static file server and nothing else —
@@ -37,8 +37,7 @@ the same-origin policy, and a `file://` page has no origin to share. Opening
 | `bin/board.mjs` | the board on the command line |
 | `bin/grades.mjs` | what needs grading, and building `data/grades.json` |
 | `bin/fixture.mjs` | freezing today's pool as the test fixture |
-| `bin/test` | the test runner |
-| `bin/dev` | the local static server |
+| `scripts/start.mjs` | the local static server behind `npm start` |
 | `test/` | what the board should recommend, against a frozen pool |
 
 Everything is plain ES modules with no build step and no dependencies. `js/`
@@ -313,15 +312,14 @@ plant a player whose answer is already known, and check where the ranking puts
 him.
 
 ```bash
-bin/test                      # everything
-bin/test recommends           # just that file
-bin/test "strictly better"    # just the tests whose names match
-bin/test --watch              # rerun on save
+npm test                                      # everything
+npm test -- test/recommends.test.js           # just that file
+npm test -- --test-name-pattern "strictly better"
+npm test -- --watch
 ```
 
-`npm test` is the same thing. A bare word is a file when there is one and a
-test name when there isn't; a word that is neither is an error rather than a
-green run of nothing, which is what Node's own runner would report.
+Arguments after `--` go directly to Node's test runner, for selecting a file,
+matching a test name, or watching for changes.
 
 The suite runs against `test/fixtures/pool.json` — a real pool, priced under a
 real league, written down on a day that has passed. Sleeper's ADP and

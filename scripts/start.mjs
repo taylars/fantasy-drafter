@@ -1,21 +1,7 @@
-#!/usr/bin/env node
-/* Serve the board locally.
+/* Serve the static board locally through `npm start`.
  *
- *     bin/dev                         # http://localhost:8000
- *     bin/dev --port 9000
- *
- * A development tool, not part of the board. Nothing here is deployed: GitHub
- * Pages serves index.html and js/ as static files, and there is no server side
- * to any of it.
- *
- * The board is a static page and GitHub Pages serves it as static files, so
- * this is a static file server and nothing more — no api, no database, nothing
- * that exists here but not in production. That is the point: what runs locally
- * should be the same thing that ships, or local is testing a different program.
- *
- * A server is needed at all only because ES modules and workers are subject to
- * the same-origin policy, and a file:// page has no origin to share. Opening
- * index.html from disk will not work; nothing can be done about that.
+ * A server is needed only because ES modules and workers require an origin;
+ * production remains the same static files served by GitHub Pages.
  */
 
 import { createServer } from "node:http";
@@ -40,10 +26,6 @@ const args = process.argv.slice(2);
 const port = Number(args[args.indexOf("--port") + 1]) || 8000;
 
 const server = createServer(async (req, res) => {
-  // Nothing a request can contain should be able to stop the server. `//` is
-  // the cheap example — it parses as a protocol-relative url with no host and
-  // throws — but the rule is the point: this handler answers, or it 500s, and
-  // either way it is still running for the next request.
   try {
     let pathname;
     try {
@@ -54,9 +36,6 @@ const server = createServer(async (req, res) => {
     }
 
     const rel = pathname.replace(/^\/+/, "") || "index.html";
-
-    // Everything is served from the repo, and nothing above it. Resolving first
-    // and checking the result is what makes `../` in a request harmless.
     const file = path.resolve(ROOT, rel);
     if (file !== ROOT && !file.startsWith(ROOT + path.sep)) {
       res.writeHead(403, { "Content-Type": "text/plain" }).end("no");
@@ -78,8 +57,6 @@ const server = createServer(async (req, res) => {
 
     res.writeHead(200, {
       "Content-Type": TYPES[path.extname(target)] ?? "application/octet-stream",
-      // Nothing is cacheable while developing: an edit you can't see is worse
-      // than a request you didn't need.
       "Cache-Control": "no-store",
     });
     res.end(body);
