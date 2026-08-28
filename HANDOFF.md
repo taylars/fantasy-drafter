@@ -1,6 +1,6 @@
-# Algorithm experiments paused — 2026-08-27
+# Algorithm experiment coordination — resumed 2026-08-27
 
-User requested save and stop. All active agents interrupted; process check found no matching experiment subprocesses. No PR opened or branch pushed. Do not resume until asked.
+User resumed the five remaining experiments and requested notes updated as results arrive. Ceiling, rollout and streamable are active. Correlation and room simulation have finished and committed rejection reports. No PR opened or branch pushed yet. Each agent owns its existing worktree and updates its branch notes incrementally.
 
 ## Integrated state
 
@@ -24,3 +24,11 @@ Each worktree has HANDOFF.md and handoff-artifacts with reports, source snapshot
 Analyze saved ceiling/correlation/room outputs; rollout and streamable were not resumed. Finish aggregate docs/experiments/2025-algorithm-diagnosis.md; verify any further accepted integration; then PR algo-improvements -> main documenting all failures/results. Original final scope was wrap existing experiments, not more broad tuning.
 
 Root .gitignore change preexisted (preserve). Uncommitted docs/backtest-2025.md,js/backtest.js statistical comment and docs/experiments are our pending documentation. Hand-off commit stages only HANDOFF.md at root.
+
+## Resume checkpoint
+
+Current base includes documentation commit749bb5d and streamable comment-only commit20e2543; the earlier uncommitted-files note is now historical. Working tree was clean at resume. No old experiment subprocesses observed. Production candidate remains BUP0,2004.6 discovery/2005.0 heldout.
+
+### Completed after resume
+
+Correlation: reject, corrected holdout +11.5 points, 28 tests pass; notes5b9bbec. Room simulation: reject, +4.76 points discovery concentrated in a few seats, 28 tests pass; notesd0071e8. Reports copied into docs/experiments. Root baseline31 tests pass. Ceiling heldout +33.2 verified; extra PPR check pending. Rollout and streamable continuation agents now active.

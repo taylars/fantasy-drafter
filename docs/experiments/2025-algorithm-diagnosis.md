@@ -41,4 +41,22 @@ and document negative results; no additional broad optimization cycle is planned
 The experiment families are bench option value, QB depth, replacement baselines,
 streamable K/DEF baselines, opponent room simulation, correlation/stacking,
 ceiling/variance, and deeper rollout. Final outcomes and combination checks are
-recorded below after verification.
+recorded below as verification completes.
+
+## Decisions verified so far
+
+| Experiment | Result | Decision |
+|---|---|---|
+| Flat bench upside | Removing the duplicate flat premium: 2004.6 discovery / 2005.0 held-out room points, versus 1896.4 / 1893.6. All 16 seed averages improve. | Keep; retain the original 0.02 above-wire option share. |
+| QB/TE depth | Fractional depth helped the old board, but adding it to the bench fix loses 12.9 discovery / 14.8 held-out points. | Reject additional depth tuning. |
+| Replacement baselines | Queue replacement helped the old board, but adding it to the bench fix loses 27.1 discovery points; seven of eight seed averages lose. | Reject; hardcoded slot assumptions and FLEX sensitivity also argue against shipping it. |
+| Correlation/stacking | Corrected version adds 7.6 discovery / 11.5 held-out points above the bench fix. The original version falsely penalized a player appearing in both dedicated-slot and FLEX coverage. | Reject: small gains below the experiment's improvement gate, with additional uncalibrated weights. |
+| Opponent room simulation | Adds 4.76 discovery points above the bench fix; 84 of 96 totals unchanged, gains concentrated in a few seats. | Reject: weak evidence relative to runtime and model assumptions. |
+
+Full bench trials, sensitivity checks and seed tables are in
+[bench-option-experiment.md](../bench-option-experiment.md). Depth and replacement
+trials are in [qb-depth.md](qb-depth.md) and
+[replacement-baselines.md](replacement-baselines.md). Completed follow-ups are
+in [correlation.md](correlation.md) and [room-simulation.md](room-simulation.md).
+Other reports are added when each branch closes. Ceiling, rollout and streamable interaction decisions
+remain pending at this checkpoint.
