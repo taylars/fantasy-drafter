@@ -1,0 +1,128 @@
+[
+  {
+    "config": {
+      "teams": 10,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "delta": -27.51333333333332,
+    "perSeatDelta": [
+      0.0,
+      -138.5400000000002,
+      56.00000000000023
+    ],
+    "controlMs": 3614.9848759999995,
+    "comboMs": 2083.718
+  },
+  {
+    "config": {
+      "teams": 14,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "delta": 49.54733333333335,
+    "perSeatDelta": [
+      141.5,
+      -17.300000000000182,
+      24.442000000000235
+    ],
+    "controlMs": 3185.926250000001,
+    "comboMs": 1971.7117909999997
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "std",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "delta": -14.656000000000025,
+    "perSeatDelta": [
+      0.0,
+      3.7320000000004256,
+      -47.7000000000005
+    ],
+    "controlMs": 3137.472040999999,
+    "comboMs": 1936.546249
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "delta": -29.636666666666468,
+    "perSeatDelta": [
+      -69.48999999999978,
+      47.51000000000067,
+      -66.93000000000029
+    ],
+    "controlMs": 3441.7282510000005,
+    "comboMs": 2009.398542
+  }
+]

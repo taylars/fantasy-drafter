@@ -1,0 +1,192 @@
+[
+  {
+    "config": {
+      "teams": 10,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "n": 12,
+    "meanDelta": -31.528333333333364,
+    "se": 20.696070181548905,
+    "wins": 2,
+    "perSeed": [
+      {
+        "seed": 17,
+        "meanDelta": -27.51333333333332
+      },
+      {
+        "seed": 18,
+        "meanDelta": -60.74333333333342
+      },
+      {
+        "seed": 19,
+        "meanDelta": -25.700000000000045
+      },
+      {
+        "seed": 20,
+        "meanDelta": -12.156666666666675
+      }
+    ],
+    "controlMs": 14084.036751999998,
+    "comboMs": 8271.992082
+  },
+  {
+    "config": {
+      "teams": 14,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "n": 12,
+    "meanDelta": 59.33333333333329,
+    "se": 20.675781630211755,
+    "wins": 9,
+    "perSeed": [
+      {
+        "seed": 17,
+        "meanDelta": 49.54733333333335
+      },
+      {
+        "seed": 18,
+        "meanDelta": 72.13999999999994
+      },
+      {
+        "seed": 19,
+        "meanDelta": 38.65933333333336
+      },
+      {
+        "seed": 20,
+        "meanDelta": 76.98666666666652
+      }
+    ],
+    "controlMs": 12784.798373999998,
+    "comboMs": 8052.358459000003
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "std",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "n": 12,
+    "meanDelta": 10.265166666666593,
+    "se": 10.108491604221992,
+    "wins": 8,
+    "perSeed": [
+      {
+        "seed": 17,
+        "meanDelta": -14.656000000000025
+      },
+      {
+        "seed": 18,
+        "meanDelta": 35.291999999999994
+      },
+      {
+        "seed": 19,
+        "meanDelta": 35.30733333333327
+      },
+      {
+        "seed": 20,
+        "meanDelta": -14.882666666666864
+      }
+    ],
+    "controlMs": 12300.749415999995,
+    "comboMs": 7939.774042
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "n": 12,
+    "meanDelta": -7.391833333333314,
+    "se": 18.21960313152302,
+    "wins": 8,
+    "perSeed": [
+      {
+        "seed": 17,
+        "meanDelta": -29.636666666666468
+      },
+      {
+        "seed": 18,
+        "meanDelta": 38.41133333333361
+      },
+      {
+        "seed": 19,
+        "meanDelta": 10.837999999999889
+      },
+      {
+        "seed": 20,
+        "meanDelta": -49.18000000000029
+      }
+    ],
+    "controlMs": 13722.152209999995,
+    "comboMs": 8151.255000999999
+  }
+]

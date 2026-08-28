@@ -1,0 +1,992 @@
+[
+  {
+    "config": {
+      "teams": 10,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 1,
+    "seed": 18,
+    "points": 1935.1839999999997,
+    "ms": 732.439959
+  },
+  {
+    "config": {
+      "teams": 10,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 5,
+    "seed": 18,
+    "points": 1778.484,
+    "ms": 696.8736250000001
+  },
+  {
+    "config": {
+      "teams": 10,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 10,
+    "seed": 18,
+    "points": 1798.9040000000002,
+    "ms": 684.426833
+  },
+  {
+    "config": {
+      "teams": 14,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 1,
+    "seed": 18,
+    "points": 1920.7300000000002,
+    "ms": 669.0008750000002
+  },
+  {
+    "config": {
+      "teams": 14,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 7,
+    "seed": 18,
+    "points": 1929.07,
+    "ms": 662.8392910000002
+  },
+  {
+    "config": {
+      "teams": 14,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 14,
+    "seed": 18,
+    "points": 1944.7880000000005,
+    "ms": 658.6682500000002
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "std",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 1,
+    "seed": 18,
+    "points": 1705.1680000000001,
+    "ms": 655.1863749999993
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "std",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 6,
+    "seed": 18,
+    "points": 1891.7900000000002,
+    "ms": 656.4569159999992
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "std",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 12,
+    "seed": 18,
+    "points": 1869.508,
+    "ms": 682.4115419999998
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 1,
+    "seed": 18,
+    "points": 2273.146,
+    "ms": 676.3439170000001
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 6,
+    "seed": 18,
+    "points": 2226.4460000000004,
+    "ms": 683.7385829999994
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 12,
+    "seed": 18,
+    "points": 2232.5860000000002,
+    "ms": 678.7896250000003
+  },
+  {
+    "config": {
+      "teams": 10,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 1,
+    "seed": 19,
+    "points": 1800.114,
+    "ms": 674.7182499999999
+  },
+  {
+    "config": {
+      "teams": 10,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 5,
+    "seed": 19,
+    "points": 1828.3740000000003,
+    "ms": 674.5445
+  },
+  {
+    "config": {
+      "teams": 10,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 10,
+    "seed": 19,
+    "points": 1798.804,
+    "ms": 678.2450410000001
+  },
+  {
+    "config": {
+      "teams": 14,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 1,
+    "seed": 19,
+    "points": 1936.08,
+    "ms": 715.259250000001
+  },
+  {
+    "config": {
+      "teams": 14,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 7,
+    "seed": 19,
+    "points": 2062.3599999999997,
+    "ms": 674.6299589999999
+  },
+  {
+    "config": {
+      "teams": 14,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 14,
+    "seed": 19,
+    "points": 1926.8200000000002,
+    "ms": 675.5079170000008
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "std",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 1,
+    "seed": 19,
+    "points": 1787.364,
+    "ms": 677.850625000001
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "std",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 6,
+    "seed": 19,
+    "points": 1775.86,
+    "ms": 664.6454590000012
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "std",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 12,
+    "seed": 19,
+    "points": 1804.6119999999999,
+    "ms": 663.4733340000002
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 1,
+    "seed": 19,
+    "points": 2217.6959999999995,
+    "ms": 684.1843750000007
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 6,
+    "seed": 19,
+    "points": 2212.136,
+    "ms": 680.5296669999989
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 12,
+    "seed": 19,
+    "points": 2274.156,
+    "ms": 679.0059999999994
+  },
+  {
+    "config": {
+      "teams": 10,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 1,
+    "seed": 20,
+    "points": 1906.734,
+    "ms": 684.3091660000009
+  },
+  {
+    "config": {
+      "teams": 10,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 5,
+    "seed": 20,
+    "points": 1845.504,
+    "ms": 683.828290999998
+  },
+  {
+    "config": {
+      "teams": 10,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 10,
+    "seed": 20,
+    "points": 1888.1440000000002,
+    "ms": 678.8884170000019
+  },
+  {
+    "config": {
+      "teams": 14,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 1,
+    "seed": 20,
+    "points": 1940.28,
+    "ms": 668.7698339999988
+  },
+  {
+    "config": {
+      "teams": 14,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 7,
+    "seed": 20,
+    "points": 2087.63,
+    "ms": 683.5976250000022
+  },
+  {
+    "config": {
+      "teams": 14,
+      "format": "half_ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ]
+    },
+    "heroSeat": 14,
+    "seed": 20,
+    "points": 1836.3180000000002,
+    "ms": 672.3736669999998
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "std",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 1,
+    "seed": 20,
+    "points": 1764.364,
+    "ms": 664.1746249999997
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "std",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 6,
+    "seed": 20,
+    "points": 1702.788,
+    "ms": 670.7472080000007
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "std",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 12,
+    "seed": 20,
+    "points": 1774.9879999999998,
+    "ms": 668.281708999999
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 1,
+    "seed": 20,
+    "points": 2199.836,
+    "ms": 688.5077920000003
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 6,
+    "seed": 20,
+    "points": 2256.506,
+    "ms": 681.1993750000001
+  },
+  {
+    "config": {
+      "teams": 12,
+      "format": "ppr",
+      "slots": [
+        "QB",
+        "RB",
+        "RB",
+        "WR",
+        "WR",
+        "TE",
+        "FLEX",
+        "FLEX",
+        "K",
+        "DEF",
+        "BN",
+        "BN",
+        "BN",
+        "BN",
+        "BN"
+      ],
+      "opponentStyle": "mixed"
+    },
+    "heroSeat": 12,
+    "seed": 20,
+    "points": 2232.536,
+    "ms": 689.5571249999994
+  }
+]
