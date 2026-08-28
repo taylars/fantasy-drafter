@@ -1,6 +1,6 @@
 # Opponent room simulation continuation
 
-## Verdict (pending final discovery run)
+## Verdict: reject — complete
 Original session `agent-ac4384ffa2c585741`, branch `algo/room-sim`, worktree `.claude/worktrees/agent-ac4384ffa2c585741`. Full original log transcribed to `/private/tmp/fantasy-room-original-log.txt`. All original result artifacts copied to `/private/tmp/fantasy-room-validation/`. Original dirty `js/value.js` preserved as `value.original.js`; no experiment code committed.
 
 ## Hypothesis and original work
@@ -33,3 +33,9 @@ Continuation: preserved original source, then changed only BENCH_UPSIDE_POINTS10
 - Simulation supplies marginal survival probabilities; existing wait/search still multiplies marginals independently, so advertised joint coupling is not actually retained downstream.
 - Inferred seat ownership relies on gone Set insertion order and no traded picks. Simulated future room skips hero picks, hence does not condition on specific hero selections. No late redesign or tuning attempted.
 - Original sanity probe showed past-ADP players near0 survival, but “17 at most” top40 survivor assertion in log is not a valid bound: other picks can be outside top40, and hero picks are skipped.
+
+## Resumed discovery result — 2026-08-27
+
+Verified preserved `fantasy-room-validation/bup0-room64.json` parses, includes all 96 unique seed/seat pairs (seeds1–8, seats1–12), and matches control rows in the bench-option worktree `handoff-artifacts/fantasy-bench-validation/bup0/results.json`. Aggregate2009.4 vs2004.6; exact paired mean using saved rounded room totals **+4.760 points**, paired SE2.001. Across12 seat means SE3.232 (t≈1.47), so the draft-pooled estimate overstates robustness across seats. Across8 seed means SE1.247. Only12/96 scores change beyond0.051 rounding tolerance:10 wins,2 losses,84 unchanged. Seat deltas:1 +15.839;6 +33.519;9 −7.210;12 +14.986; all other seats within rounding. Per-seed deltas:0.011,0.014,5.424,3.821,9.526,4.699,8.895,5.688. Complete matched comparison saved in `fantasy-room-validation/bup0-comparison.json`.
+
+Reject for integration: modest discovery-only gain concentrated in few seats, weak original ablations, and unchanged modeling limitations do not support the additional complexity. No held-out sweep or redesign needed to reject; do not claim a demonstrated zero effect. No clean runtime comparison is available (saved room discovery elapsed100.655s versus control199.170s for both discovery and holdout, different workload). Final `npm test` passed28/28,0 failures (14.836s); captured in `fantasy-room-validation/tests-resumed.log`. No source edits during resumed analysis, no new backtest runs, and no experiment processes remain. Original dirty implementation and probe preserved without implementation commit.

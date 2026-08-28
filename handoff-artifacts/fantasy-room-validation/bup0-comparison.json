@@ -1,0 +1,914 @@
+{
+  "matched": {
+    "n": 96,
+    "mean": 4.759729166666702,
+    "se": 2.0006326803279784
+  },
+  "perSeed": [
+    {
+      "seed": 1,
+      "n": 12,
+      "mean": 0.011166666666743671,
+      "se": 0.006210735248211927
+    },
+    {
+      "seed": 2,
+      "n": 12,
+      "mean": 0.013833333333347278,
+      "se": 0.007732098908806145
+    },
+    {
+      "seed": 3,
+      "n": 12,
+      "mean": 5.423666666666691,
+      "se": 9.20321314388173
+    },
+    {
+      "seed": 4,
+      "n": 12,
+      "mean": 3.8213333333333517,
+      "se": 2.7597693835726567
+    },
+    {
+      "seed": 5,
+      "n": 12,
+      "mean": 9.526166666666768,
+      "se": 6.442646874930425
+    },
+    {
+      "seed": 6,
+      "n": 12,
+      "mean": 4.6990000000000505,
+      "se": 4.722821617455276
+    },
+    {
+      "seed": 7,
+      "n": 12,
+      "mean": 8.895166666666663,
+      "se": 8.90862617527573
+    },
+    {
+      "seed": 8,
+      "n": 12,
+      "mean": 5.6875,
+      "se": 5.755894491867904
+    }
+  ],
+  "perSeat": [
+    {
+      "seat": 1,
+      "n": 8,
+      "mean": 15.838999999999942,
+      "se": 9.204338068851829
+    },
+    {
+      "seat": 2,
+      "n": 8,
+      "mean": 0.016500000000036152,
+      "se": 0.010472753765285097
+    },
+    {
+      "seat": 3,
+      "n": 8,
+      "mean": -0.008749999999935199,
+      "se": 0.008035079340023527
+    },
+    {
+      "seat": 4,
+      "n": 8,
+      "mean": -0.016249999999928377,
+      "se": 0.010845917599349745
+    },
+    {
+      "seat": 5,
+      "n": 8,
+      "mean": 0.0025000000000829914,
+      "se": 0.011140338543210589
+    },
+    {
+      "seat": 6,
+      "n": 8,
+      "mean": 33.51875000000004,
+      "se": 14.81888050493834
+    },
+    {
+      "seat": 7,
+      "n": 8,
+      "mean": 0.0062499999999090505,
+      "se": 0.013220317156348589
+    },
+    {
+      "seat": 8,
+      "n": 8,
+      "mean": -0.010000000000047748,
+      "se": 0.008864052604271122
+    },
+    {
+      "seat": 9,
+      "n": 8,
+      "mean": -7.209999999999923,
+      "se": 7.220007419861684
+    },
+    {
+      "seat": 10,
+      "n": 8,
+      "mean": -0.0037499999999113243,
+      "se": 0.010340195494120685
+    },
+    {
+      "seat": 11,
+      "n": 8,
+      "mean": -0.0037499999998829026,
+      "se": 0.00924613819001547
+    },
+    {
+      "seat": 12,
+      "n": 8,
+      "mean": 14.986250000000041,
+      "se": 9.918623525163634
+    }
+  ],
+  "seedMeans": {
+    "n": 8,
+    "mean": 4.759729166666702,
+    "se": 1.246989154852178
+  },
+  "seatMeans": {
+    "n": 12,
+    "mean": 4.759729166666702,
+    "se": 3.232286034374087
+  },
+  "wins": 10,
+  "losses": 2,
+  "tiesWithinRounding": 84,
+  "rows": [
+    {
+      "seed": 1,
+      "seat": 1,
+      "total": 1914,
+      "picks": "Saquon Barkley|James Cook|Omarion Hampton|Jameson Williams|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Stefon Diggs|Brandon Aubrey|Rashid Shaheed|Dallas Goedert|Baltimore Ravens|Brock Purdy|Jake Ferguson|Joshua Palmer",
+      "control": 1913.9680000000003,
+      "delta": 0.03199999999969805
+    },
+    {
+      "seed": 1,
+      "seat": 2,
+      "total": 1893.7,
+      "picks": "Saquon Barkley|James Cook|Omarion Hampton|Jameson Williams|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Jakobi Meyers|Brandon Aubrey|Dallas Goedert|Rashid Shaheed|Baltimore Ravens|Brock Purdy|Jake Ferguson|Joshua Palmer",
+      "control": 1893.658,
+      "delta": 0.0420000000001437
+    },
+    {
+      "seed": 1,
+      "seat": 3,
+      "total": 1940.8,
+      "picks": "Saquon Barkley|Kyren Williams|Brock Bowers|Jameson Williams|Tetairoa McMillan|Jerry Jeudy|Jaylen Warren|Brock Purdy|Stefon Diggs|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 1940.81,
+      "delta": -0.009999999999990905
+    },
+    {
+      "seed": 1,
+      "seat": 4,
+      "total": 2004.7,
+      "picks": "Saquon Barkley|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Jaylen Warren|Brock Purdy|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 2004.6999999999998,
+      "delta": 2.2737367544323206e-13
+    },
+    {
+      "seed": 1,
+      "seat": 5,
+      "total": 2004.7,
+      "picks": "Saquon Barkley|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Jaylen Warren|Brock Purdy|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Tyler Allgeier|Dallas Goedert",
+      "control": 2004.6999999999998,
+      "delta": 2.2737367544323206e-13
+    },
+    {
+      "seed": 1,
+      "seat": 6,
+      "total": 1960.5,
+      "picks": "Saquon Barkley|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Jake Ferguson",
+      "control": 1960.5199999999998,
+      "delta": -0.019999999999754436
+    },
+    {
+      "seed": 1,
+      "seat": 7,
+      "total": 1969.1,
+      "picks": "Derrick Henry|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Brock Purdy|Khalil Shakir|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1969.07,
+      "delta": 0.029999999999972715
+    },
+    {
+      "seed": 1,
+      "seat": 8,
+      "total": 1960.8,
+      "picks": "Derrick Henry|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1960.8100000000004,
+      "delta": -0.010000000000445652
+    },
+    {
+      "seed": 1,
+      "seat": 9,
+      "total": 2091.3,
+      "picks": "Derrick Henry|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Ricky Pearsall|Brock Purdy|Keon Coleman|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2091.2699999999995,
+      "delta": 0.030000000000654836
+    },
+    {
+      "seed": 1,
+      "seat": 10,
+      "total": 1983.7,
+      "picks": "Derrick Henry|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Tony Pollard|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1983.71,
+      "delta": -0.009999999999990905
+    },
+    {
+      "seed": 1,
+      "seat": 11,
+      "total": 2084.1,
+      "picks": "Derrick Henry|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Baltimore Ravens|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2084.0699999999997,
+      "delta": 0.03000000000020009
+    },
+    {
+      "seed": 1,
+      "seat": 12,
+      "total": 2049.9,
+      "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|George Pickens|Tony Pollard|Ricky Pearsall|Emeka Egbuka|Brock Purdy|Brandon Aubrey|Baltimore Ravens|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2049.88,
+      "delta": 0.01999999999998181
+    },
+    {
+      "seed": 2,
+      "seat": 1,
+      "total": 1798.1,
+      "picks": "Saquon Barkley|Omarion Hampton|Tyreek Hill|Jameson Williams|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Zach Charbonnet|Stefon Diggs|Brandon Aubrey|Dallas Goedert|Baltimore Ravens|Brock Purdy|Jake Ferguson|Joshua Palmer",
+      "control": 1798.0720000000003,
+      "delta": 0.02799999999956526
+    },
+    {
+      "seed": 2,
+      "seat": 2,
+      "total": 1999.7,
+      "picks": "Bijan Robinson|James Cook|Omarion Hampton|Jameson Williams|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Jakobi Meyers|Brandon Aubrey|Dallas Goedert|Rashid Shaheed|Baltimore Ravens|Brock Purdy|Jake Ferguson|Joshua Palmer",
+      "control": 1999.7020000000002,
+      "delta": -0.00200000000018008
+    },
+    {
+      "seed": 2,
+      "seat": 3,
+      "total": 2092.6,
+      "picks": "Bijan Robinson|Kyren Williams|Omarion Hampton|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Jordan Addison|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 2092.63,
+      "delta": -0.03000000000020009
+    },
+    {
+      "seed": 2,
+      "seat": 4,
+      "total": 2087.3,
+      "picks": "Bijan Robinson|Chase Brown|Omarion Hampton|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Jordan Addison|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 2087.25,
+      "delta": 0.0500000000001819
+    },
+    {
+      "seed": 2,
+      "seat": 5,
+      "total": 2048.5,
+      "picks": "Derrick Henry|Chase Brown|Omarion Hampton|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Jake Ferguson",
+      "control": 2048.45,
+      "delta": 0.0500000000001819
+    },
+    {
+      "seed": 2,
+      "seat": 6,
+      "total": 2067.8,
+      "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2067.7999999999997,
+      "delta": 4.547473508864641e-13
+    },
+    {
+      "seed": 2,
+      "seat": 7,
+      "total": 2026.1,
+      "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Khalil Shakir|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2026.1299999999999,
+      "delta": -0.029999999999972715
+    },
+    {
+      "seed": 2,
+      "seat": 8,
+      "total": 2106.5,
+      "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|George Pickens|Jerry Jeudy|Deebo Samuel|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2106.5,
+      "delta": 0
+    },
+    {
+      "seed": 2,
+      "seat": 9,
+      "total": 1978.9,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Khalil Shakir|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1978.8700000000001,
+      "delta": 0.029999999999972715
+    },
+    {
+      "seed": 2,
+      "seat": 10,
+      "total": 1997.2,
+      "picks": "Ashton Jeanty|Chase Brown|Brock Bowers|James Conner|George Pickens|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1997.18,
+      "delta": 0.01999999999998181
+    },
+    {
+      "seed": 2,
+      "seat": 11,
+      "total": 1938.8,
+      "picks": "Josh Jacobs|Chase Brown|Brock Bowers|James Conner|George Pickens|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Baltimore Ravens|Joshua Palmer|Drake Maye|Dallas Goedert|Kareem Hunt",
+      "control": 1938.7699999999998,
+      "delta": 0.03000000000020009
+    },
+    {
+      "seed": 2,
+      "seat": 12,
+      "total": 2075.9,
+      "picks": "Josh Jacobs|Chase Brown|Brock Bowers|James Conner|George Pickens|Tony Pollard|Ricky Pearsall|Emeka Egbuka|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2075.88,
+      "delta": 0.01999999999998181
+    },
+    {
+      "seed": 3,
+      "seat": 1,
+      "total": 1959,
+      "picks": "Saquon Barkley|Chase Brown|Omarion Hampton|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Stefon Diggs|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 1915.7379999999998,
+      "delta": 43.26200000000017
+    },
+    {
+      "seed": 3,
+      "seat": 2,
+      "total": 1918.7,
+      "picks": "Saquon Barkley|Chase Brown|Tyreek Hill|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Zach Charbonnet|Stefon Diggs|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Brock Purdy|Dallas Goedert|Joshua Palmer",
+      "control": 1918.668,
+      "delta": 0.032000000000152795
+    },
+    {
+      "seed": 3,
+      "seat": 3,
+      "total": 2016.3,
+      "picks": "Bijan Robinson|Chase Brown|Brock Bowers|Jameson Williams|Jalen Hurts|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Jordan Addison|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Brock Purdy|Dallas Goedert|Joshua Palmer",
+      "control": 2016.3099999999997,
+      "delta": -0.009999999999763531
+    },
+    {
+      "seed": 3,
+      "seat": 4,
+      "total": 2084.1,
+      "picks": "Bijan Robinson|Chase Brown|Brock Bowers|Jameson Williams|Tetairoa McMillan|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Kareem Hunt",
+      "control": 2084.1200000000003,
+      "delta": -0.020000000000436557
+    },
+    {
+      "seed": 3,
+      "seat": 5,
+      "total": 2075.3,
+      "picks": "Bijan Robinson|Chase Brown|Brock Bowers|Terry McLaurin|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Kareem Hunt",
+      "control": 2075.2799999999997,
+      "delta": 0.020000000000436557
+    },
+    {
+      "seed": 3,
+      "seat": 6,
+      "total": 2127.2,
+      "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Tyler Allgeier|Dallas Goedert",
+      "control": 2047.6599999999999,
+      "delta": 79.53999999999996
+    },
+    {
+      "seed": 3,
+      "seat": 7,
+      "total": 1988.3,
+      "picks": "Jahmyr Gibbs|Chase Brown|James Conner|Terry McLaurin|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Brandon Aubrey|Dallas Goedert|Philadelphia Eagles|Joshua Palmer|Drake Maye|Jake Ferguson|Kareem Hunt",
+      "control": 1988.3300000000004,
+      "delta": -0.030000000000427463
+    },
+    {
+      "seed": 3,
+      "seat": 8,
+      "total": 1927.2,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Tony Pollard|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1927.21,
+      "delta": -0.009999999999990905
+    },
+    {
+      "seed": 3,
+      "seat": 9,
+      "total": 1879.3,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Tony Pollard|Matthew Golden|Brock Purdy|Keon Coleman|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1937.0500000000002,
+      "delta": -57.75000000000023
+    },
+    {
+      "seed": 3,
+      "seat": 10,
+      "total": 1882.9,
+      "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Matthew Golden|Brock Purdy|Keon Coleman|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1882.8899999999996,
+      "delta": 0.010000000000445652
+    },
+    {
+      "seed": 3,
+      "seat": 11,
+      "total": 1905.7,
+      "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Xavier Worthy|Matthew Golden|Brock Purdy|Keon Coleman|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1905.6999999999996,
+      "delta": 4.547473508864641e-13
+    },
+    {
+      "seed": 3,
+      "seat": 12,
+      "total": 1938.6,
+      "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|George Pickens|Xavier Worthy|Matthew Golden|Brock Purdy|Keon Coleman|Brandon Aubrey|Baltimore Ravens|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1938.5600000000004,
+      "delta": 0.03999999999950887
+    },
+    {
+      "seed": 4,
+      "seat": 1,
+      "total": 2009.1,
+      "picks": "Saquon Barkley|James Cook|Omarion Hampton|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Stefon Diggs|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 1978.058,
+      "delta": 31.041999999999916
+    },
+    {
+      "seed": 4,
+      "seat": 2,
+      "total": 2038.4,
+      "picks": "Saquon Barkley|Chase Brown|James Cook|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Stefon Diggs|Jordan Addison|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Brock Purdy|Dallas Goedert|Joshua Palmer",
+      "control": 2038.3679999999997,
+      "delta": 0.03200000000038017
+    },
+    {
+      "seed": 4,
+      "seat": 3,
+      "total": 1917.4,
+      "picks": "Saquon Barkley|Chase Brown|Brock Bowers|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Zach Charbonnet|Jordan Addison|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Brock Purdy|Joshua Palmer|Dallas Goedert",
+      "control": 1917.388,
+      "delta": 0.012000000000170985
+    },
+    {
+      "seed": 4,
+      "seat": 4,
+      "total": 2008.9,
+      "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Jameson Williams|Tetairoa McMillan|Jerry Jeudy|Deebo Samuel|Brock Purdy|Zach Charbonnet|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 2008.9099999999999,
+      "delta": -0.009999999999763531
+    },
+    {
+      "seed": 4,
+      "seat": 5,
+      "total": 2096.5,
+      "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Tyler Allgeier|Dallas Goedert",
+      "control": 2096.5,
+      "delta": 0
+    },
+    {
+      "seed": 4,
+      "seat": 6,
+      "total": 2096.5,
+      "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Tyler Allgeier|Dallas Goedert",
+      "control": 2081.77,
+      "delta": 14.730000000000018
+    },
+    {
+      "seed": 4,
+      "seat": 7,
+      "total": 1921.1,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Brock Purdy|Khalil Shakir|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1921.0500000000002,
+      "delta": 0.04999999999972715
+    },
+    {
+      "seed": 4,
+      "seat": 8,
+      "total": 2062.6,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|George Pickens|Tony Pollard|Ricky Pearsall|Emeka Egbuka|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2062.61,
+      "delta": -0.010000000000218279
+    },
+    {
+      "seed": 4,
+      "seat": 9,
+      "total": 2014.6,
+      "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|George Pickens|Jerry Jeudy|Ricky Pearsall|Brock Purdy|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2014.58,
+      "delta": 0.01999999999998181
+    },
+    {
+      "seed": 4,
+      "seat": 10,
+      "total": 1924.7,
+      "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Brock Purdy|Keon Coleman|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1924.66,
+      "delta": 0.03999999999996362
+    },
+    {
+      "seed": 4,
+      "seat": 11,
+      "total": 2016,
+      "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Matthew Golden|Brock Purdy|Keon Coleman|Brandon Aubrey|Baltimore Ravens|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2016.0399999999997,
+      "delta": -0.03999999999973625
+    },
+    {
+      "seed": 4,
+      "seat": 12,
+      "total": 2031.7,
+      "picks": "Josh Jacobs|Chase Brown|Brock Bowers|James Conner|George Pickens|Tony Pollard|Emeka Egbuka|Jakobi Meyers|Brock Purdy|Brandon Aubrey|Baltimore Ravens|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2031.7100000000003,
+      "delta": -0.010000000000218279
+    },
+    {
+      "seed": 5,
+      "seat": 1,
+      "total": 2002.1,
+      "picks": "Saquon Barkley|James Cook|Omarion Hampton|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Jordan Addison|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 1940.2419999999997,
+      "delta": 61.858000000000175
+    },
+    {
+      "seed": 5,
+      "seat": 2,
+      "total": 2146.8,
+      "picks": "Bijan Robinson|Kyren Williams|James Cook|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Stefon Diggs|Khalil Shakir|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Brock Purdy|Dallas Goedert|Joshua Palmer",
+      "control": 2146.7520000000004,
+      "delta": 0.047999999999774445
+    },
+    {
+      "seed": 5,
+      "seat": 3,
+      "total": 2054.1,
+      "picks": "Bijan Robinson|Kyren Williams|Omarion Hampton|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Khalil Shakir|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Brock Purdy|Dallas Goedert|Joshua Palmer",
+      "control": 2054.122,
+      "delta": -0.021999999999934516
+    },
+    {
+      "seed": 5,
+      "seat": 4,
+      "total": 2068.7,
+      "picks": "Bijan Robinson|Chase Brown|Tyreek Hill|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 2068.7299999999996,
+      "delta": -0.02999999999974534
+    },
+    {
+      "seed": 5,
+      "seat": 5,
+      "total": 2052.2,
+      "picks": "Derrick Henry|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 2052.17,
+      "delta": 0.02999999999974534
+    },
+    {
+      "seed": 5,
+      "seat": 6,
+      "total": 2037.1,
+      "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Khalil Shakir|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2037.1,
+      "delta": 0
+    },
+    {
+      "seed": 5,
+      "seat": 7,
+      "total": 2026.1,
+      "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2026.06,
+      "delta": 0.03999999999996362
+    },
+    {
+      "seed": 5,
+      "seat": 8,
+      "total": 2026.1,
+      "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2026.06,
+      "delta": 0.03999999999996362
+    },
+    {
+      "seed": 5,
+      "seat": 9,
+      "total": 1915.3,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1915.28,
+      "delta": 0.01999999999998181
+    },
+    {
+      "seed": 5,
+      "seat": 10,
+      "total": 2018,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Matthew Golden|Brock Purdy|Khalil Shakir|Brandon Aubrey|Baltimore Ravens|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2018.0199999999995,
+      "delta": -0.019999999999527063
+    },
+    {
+      "seed": 5,
+      "seat": 11,
+      "total": 2027,
+      "picks": "Josh Jacobs|Chase Brown|Brock Bowers|James Conner|Jameson Williams|George Pickens|Matthew Golden|Brock Purdy|Keon Coleman|Brandon Aubrey|Baltimore Ravens|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2027.0099999999995,
+      "delta": -0.009999999999536158
+    },
+    {
+      "seed": 5,
+      "seat": 12,
+      "total": 2068.4,
+      "picks": "Josh Jacobs|Chase Brown|Brock Bowers|James Conner|Jameson Williams|George Pickens|Matthew Golden|Emeka Egbuka|Brock Purdy|Brandon Aubrey|Baltimore Ravens|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2016.0399999999997,
+      "delta": 52.360000000000355
+    },
+    {
+      "seed": 6,
+      "seat": 1,
+      "total": 1736.2,
+      "picks": "Saquon Barkley|Omarion Hampton|Tyreek Hill|Jameson Williams|Jayden Daniels|Jerry Jeudy|Kaleb Johnson|Stefon Diggs|Brandon Aubrey|Rashid Shaheed|Dallas Goedert|Baltimore Ravens|Brock Purdy|Jake Ferguson|Joshua Palmer",
+      "control": 1736.232,
+      "delta": -0.03199999999992542
+    },
+    {
+      "seed": 6,
+      "seat": 2,
+      "total": 2050.7,
+      "picks": "Bijan Robinson|Chase Brown|Omarion Hampton|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Stefon Diggs|Khalil Shakir|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 2050.7299999999996,
+      "delta": -0.02999999999974534
+    },
+    {
+      "seed": 6,
+      "seat": 3,
+      "total": 2091.7,
+      "picks": "Bijan Robinson|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Zach Charbonnet|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Joshua Palmer|Dallas Goedert",
+      "control": 2091.74,
+      "delta": -0.03999999999996362
+    },
+    {
+      "seed": 6,
+      "seat": 4,
+      "total": 2091.7,
+      "picks": "Bijan Robinson|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Zach Charbonnet|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Joshua Palmer|Dallas Goedert",
+      "control": 2091.74,
+      "delta": -0.03999999999996362
+    },
+    {
+      "seed": 6,
+      "seat": 5,
+      "total": 2096.2,
+      "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 2096.24,
+      "delta": -0.03999999999996362
+    },
+    {
+      "seed": 6,
+      "seat": 6,
+      "total": 2086,
+      "picks": "Derrick Henry|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2029.3500000000001,
+      "delta": 56.649999999999864
+    },
+    {
+      "seed": 6,
+      "seat": 7,
+      "total": 1904.3,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1904.3099999999997,
+      "delta": -0.009999999999763531
+    },
+    {
+      "seed": 6,
+      "seat": 8,
+      "total": 1904.3,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1904.3099999999997,
+      "delta": -0.009999999999763531
+    },
+    {
+      "seed": 6,
+      "seat": 9,
+      "total": 1925.8,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Matthew Golden|Brock Purdy|Zach Charbonnet|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1925.83,
+      "delta": -0.029999999999972715
+    },
+    {
+      "seed": 6,
+      "seat": 10,
+      "total": 2067.5,
+      "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Ricky Pearsall|Brock Purdy|Keon Coleman|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2067.4900000000002,
+      "delta": 0.009999999999763531
+    },
+    {
+      "seed": 6,
+      "seat": 11,
+      "total": 1995.4,
+      "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Tony Pollard|Matthew Golden|Emeka Egbuka|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1995.3900000000003,
+      "delta": 0.009999999999763531
+    },
+    {
+      "seed": 6,
+      "seat": 12,
+      "total": 2028.2,
+      "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|George Pickens|Tony Pollard|Matthew Golden|Emeka Egbuka|Brock Purdy|Brandon Aubrey|Baltimore Ravens|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2028.2499999999998,
+      "delta": -0.04999999999972715
+    },
+    {
+      "seed": 7,
+      "seat": 1,
+      "total": 1949.7,
+      "picks": "Saquon Barkley|James Cook|Omarion Hampton|Jameson Williams|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brandon Aubrey|Dallas Goedert|Rashid Shaheed|Baltimore Ravens|Brock Purdy|Jake Ferguson|Joshua Palmer",
+      "control": 1949.7080000000003,
+      "delta": -0.008000000000265572
+    },
+    {
+      "seed": 7,
+      "seat": 2,
+      "total": 2016.6,
+      "picks": "Saquon Barkley|James Cook|Tyreek Hill|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Stefon Diggs|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 2016.5700000000002,
+      "delta": 0.02999999999974534
+    },
+    {
+      "seed": 7,
+      "seat": 3,
+      "total": 1988.4,
+      "picks": "Saquon Barkley|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Keon Coleman|Baltimore Ravens|Drake Maye|Joshua Palmer|Dallas Goedert",
+      "control": 1988.37,
+      "delta": 0.03000000000020009
+    },
+    {
+      "seed": 7,
+      "seat": 4,
+      "total": 2096.2,
+      "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 2096.24,
+      "delta": -0.03999999999996362
+    },
+    {
+      "seed": 7,
+      "seat": 5,
+      "total": 2096.5,
+      "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Tyler Allgeier|Dallas Goedert",
+      "control": 2096.5,
+      "delta": 0
+    },
+    {
+      "seed": 7,
+      "seat": 6,
+      "total": 2041.2,
+      "picks": "Derrick Henry|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Tyler Allgeier|Dallas Goedert",
+      "control": 1934.3100000000002,
+      "delta": 106.88999999999987
+    },
+    {
+      "seed": 7,
+      "seat": 7,
+      "total": 1976.6,
+      "picks": "Derrick Henry|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Deebo Samuel|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1976.56,
+      "delta": 0.03999999999996362
+    },
+    {
+      "seed": 7,
+      "seat": 8,
+      "total": 1977.3,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1977.34,
+      "delta": -0.03999999999996362
+    },
+    {
+      "seed": 7,
+      "seat": 9,
+      "total": 1977.3,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1977.34,
+      "delta": -0.03999999999996362
+    },
+    {
+      "seed": 7,
+      "seat": 10,
+      "total": 2033,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Matthew Golden|Brock Purdy|Khalil Shakir|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2033.0499999999997,
+      "delta": -0.04999999999972715
+    },
+    {
+      "seed": 7,
+      "seat": 11,
+      "total": 1909.8,
+      "picks": "Ashton Jeanty|Josh Jacobs|Brock Bowers|James Conner|George Pickens|Jerry Jeudy|Matthew Golden|Brock Purdy|Keon Coleman|Brandon Aubrey|Baltimore Ravens|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1909.8200000000002,
+      "delta": -0.020000000000209184
+    },
+    {
+      "seed": 7,
+      "seat": 12,
+      "total": 2028.2,
+      "picks": "Josh Jacobs|Chase Brown|Brock Bowers|James Conner|George Pickens|Tony Pollard|Matthew Golden|Emeka Egbuka|Brock Purdy|Brandon Aubrey|Baltimore Ravens|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2028.2499999999998,
+      "delta": -0.04999999999972715
+    },
+    {
+      "seed": 8,
+      "seat": 1,
+      "total": 1926.8,
+      "picks": "Saquon Barkley|James Cook|Omarion Hampton|Jameson Williams|Jayden Daniels|Deebo Samuel|Ricky Pearsall|Jordan Addison|Brandon Aubrey|Rashid Shaheed|Dallas Goedert|Baltimore Ravens|Drake Maye|Jake Ferguson|Joshua Palmer",
+      "control": 1936.2699999999998,
+      "delta": -9.4699999999998
+    },
+    {
+      "seed": 8,
+      "seat": 2,
+      "total": 1971,
+      "picks": "Saquon Barkley|James Cook|Omarion Hampton|Trey McBride|Jayden Daniels|Deebo Samuel|Ricky Pearsall|Jordan Addison|Khalil Shakir|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 1971.02,
+      "delta": -0.01999999999998181
+    },
+    {
+      "seed": 8,
+      "seat": 3,
+      "total": 2001.6,
+      "picks": "Saquon Barkley|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Joshua Palmer|Dallas Goedert",
+      "control": 2001.6,
+      "delta": 0
+    },
+    {
+      "seed": 8,
+      "seat": 4,
+      "total": 2096.2,
+      "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 2096.24,
+      "delta": -0.03999999999996362
+    },
+    {
+      "seed": 8,
+      "seat": 5,
+      "total": 2096.2,
+      "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Dallas Goedert|Joshua Palmer",
+      "control": 2096.24,
+      "delta": -0.03999999999996362
+    },
+    {
+      "seed": 8,
+      "seat": 6,
+      "total": 2041.2,
+      "picks": "Derrick Henry|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Rashid Shaheed|Baltimore Ravens|Drake Maye|Tyler Allgeier|Dallas Goedert",
+      "control": 2030.8400000000001,
+      "delta": 10.3599999999999
+    },
+    {
+      "seed": 8,
+      "seat": 7,
+      "total": 2030.8,
+      "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 2030.8400000000001,
+      "delta": -0.040000000000190994
+    },
+    {
+      "seed": 8,
+      "seat": 8,
+      "total": 2095.6,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Trey McBride|Jameson Williams|George Pickens|Deebo Samuel|Matthew Golden|Drake Maye|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Trevor Lawrence|Dallas Goedert|Kareem Hunt",
+      "control": 2095.64,
+      "delta": -0.03999999999996362
+    },
+    {
+      "seed": 8,
+      "seat": 9,
+      "total": 1958.8,
+      "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Tony Pollard|Deebo Samuel|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Drake Maye|Dallas Goedert|Rico Dowdle",
+      "control": 1958.7599999999998,
+      "delta": 0.040000000000190994
+    },
+    {
+      "seed": 8,
+      "seat": 10,
+      "total": 2086.5,
+      "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Ricky Pearsall|Matthew Golden|Drake Maye|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Trevor Lawrence|Dallas Goedert|Rico Dowdle",
+      "control": 2086.53,
+      "delta": -0.03000000000020009
+    },
+    {
+      "seed": 8,
+      "seat": 11,
+      "total": 2086.5,
+      "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Ricky Pearsall|Matthew Golden|Drake Maye|Brandon Aubrey|Philadelphia Eagles|Joshua Palmer|Trevor Lawrence|Dallas Goedert|Rico Dowdle",
+      "control": 2086.53,
+      "delta": -0.03000000000020009
+    },
+    {
+      "seed": 8,
+      "seat": 12,
+      "total": 2083.6,
+      "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Matthew Golden|Emeka Egbuka|Drake Maye|Brandon Aubrey|Baltimore Ravens|Joshua Palmer|Trevor Lawrence|Dallas Goedert|Rico Dowdle",
+      "control": 2016.0399999999997,
+      "delta": 67.56000000000017
+    }
+  ]
+}

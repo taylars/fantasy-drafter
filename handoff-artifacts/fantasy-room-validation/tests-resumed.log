@@ -1,0 +1,40 @@
+
+> fantasy-drafter@0.1.0 test
+> node --test test/*.test.js
+
+✔ the 2025 fixture is a complete frozen regular-season sample (1.241375ms)
+✔ grades stay attached only to the season in which they were researched (1.553292ms)
+✔ draft strategies consume only season grades, never actuals or current injury status (0.158167ms)
+✔ the exhaustive matrix covers every requested environment combination (0.335083ms)
+✔ a simulated draft is deterministic and leaves every team with a legal roster (2144.758083ms)
+✔ weekly scoring starts the highest projected legal players, not hindsight winners (0.457834ms)
+✔ replacement baseline selects top ten free agents by projection, averages actuals (0.293417ms)
+✔ injured slots use replacement scores only when selected; bench depth still competes (0.18675ms)
+✔ weekly inputs never leak to draft strategies and missing archives fail explicitly (0.794083ms)
+✔ historical injury mapping excludes suspension, retirement and questionable status (0.348708ms)
+✔ season replacement pool excludes other teams and respects scoring format (0.501167ms)
+✔ frozen data distinguishes scored games from injury absences and byes (0.840542ms)
+✔ scripted rooms vary by seed while preserving full roster legality (69.580459ms)
+✔ the current board is graded against actual 2025 outcomes and an ADP baseline (12474.819667ms)
+✔ scripted ADP fills a needed starter before a similarly priced backup QB (0.738541ms)
+✔ a large ADP bargain can override the late-QB script (0.133833ms)
+✔ K and DEF usually wait until late and are not duplicated (0.121208ms)
+✔ completion constraints reserve the final pick for an unfilled FLEX (0.744125ms)
+✔ seeded wiggle room is repeatable but changes close calls across seeds (1.904167ms)
+✔ all preserved player IDs remain in their canonical season grade files (3.110416ms)
+✔ grade payloads cannot be duplicated under another data filename (49.093125ms)
+✔ the app loader fetches only the newest season and its grades reach the pricing model (15.209667ms)
+✔ latest selection ignores index ordering and never fills gaps from older seasons (1.319458ms)
+✔ missing or mismatched newest data fails instead of silently falling back (0.287916ms)
+✔ canonical season index matches disk and no duplicate grade stores remain (2.183584ms)
+✔ canonical historical grades reject invalid evidence metadata and grades (17.264167ms)
+✔ a player strictly better than the best on the board is the recommendation (414.790167ms)
+✔ a player strictly worse than the best on the board does not take the top of it (352.965833ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 14836.170125
