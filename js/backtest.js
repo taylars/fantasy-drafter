@@ -440,16 +440,31 @@ function groupedGrades(runs, key) {
   return Object.fromEntries([...groups].map(([value, group]) => [value, gradeRuns(group)]));
 }
 
-export function runMatrix(fixture, { ahead = PLAN_AHEAD, seed = 1 } = {}) {
-  const configs = matrixConfigurations();
+// Callers may select a subset of environments for focused diagnostics. The CLI
+// uses the exhaustive matrix. Progress is observational and never reaches a
+// draft strategy or the scorer.
+export function runMatrix(fixture, {
+  ahead = PLAN_AHEAD, seed = 1, configs = matrixConfigurations(), onProgress,
+} = {}) {
+  const strategies = ["board", "adp"];
+  const total = strategies.length * configs.reduce((sum, config) => sum + config.teams, 0);
+  let completed = 0;
+  const report = (event) => onProgress?.({ completed, total, configurations: configs.length, seed, ...event });
+  report({ type: "start" });
   const output = {};
-  for (const strategy of ["board", "adp"]) {
+  for (const strategy of strategies) {
     const runs = [];
-    for (const config of configs) for (let heroSeat = 1; heroSeat <= config.teams; heroSeat++) {
-      const simulation = simulateDraft(fixture, { ...config, ahead, seed, heroSeat, heroStrategy: strategy });
-      const results = scoreSeason(fixture, simulation, config);
-      for (const result of results) Object.defineProperty(result, "_teams", { value: config.teams });
-      runs.push({ heroSeat, simulation, results, config });
+    for (const [index, config] of configs.entries()) {
+      const context = { strategy, configIndex: index + 1, config: { ...config, slots: [...config.slots] } };
+      report({ type: "configuration", ...context, heroSeat: 0 });
+      for (let heroSeat = 1; heroSeat <= config.teams; heroSeat++) {
+        const simulation = simulateDraft(fixture, { ...config, ahead, seed, heroSeat, heroStrategy: strategy });
+        const results = scoreSeason(fixture, simulation, config);
+        for (const result of results) Object.defineProperty(result, "_teams", { value: config.teams });
+        runs.push({ heroSeat, simulation, results, config });
+        completed++;
+        report({ type: "draft", ...context, heroSeat });
+      }
     }
     output[strategy] = {
       grade: gradeRuns(runs),
@@ -463,5 +478,6 @@ export function runMatrix(fixture, { ahead = PLAN_AHEAD, seed = 1 } = {}) {
       },
     };
   }
+  report({ type: "complete" });
   return output;
 }

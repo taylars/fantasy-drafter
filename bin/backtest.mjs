@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { loadLocalGrades } from "./lib/grades.mjs";
 import { historicalFixture, runBacktest, runMatrix } from "../js/backtest.js";
 import { PLAN_AHEAD } from "../js/value.js";
+import { matrixProgress } from "./lib/progress.mjs";
 
 const history = new URL("../data/historical/2025/", import.meta.url);
 const draft = JSON.parse(await readFile(new URL("draft.json", history), "utf8"));
@@ -22,7 +23,9 @@ if (!Number.isSafeInteger(seed)) throw new Error('--seed must be an integer');
 const seedsArg = process.argv.find(arg => arg.startsWith('--seeds='));
 const seeds = seedsArg ? seedsArg.split('=')[1].split(',').map(Number) : [seed];
 if (seeds.some(s => !Number.isSafeInteger(s))) throw new Error('--seeds must be integers');
-const results = matrix ? runMatrix(fixture, { ahead, seed }) : runBacktest(fixture, { ahead, seed, seeds });
+if (matrix && seedsArg) throw new Error('--matrix uses one --seed=N; --seeds is only supported by the normal backtest');
+const onProgress = matrix && !process.argv.includes('--quiet') ? matrixProgress() : undefined;
+const results = matrix ? runMatrix(fixture, { ahead, seed, onProgress }) : runBacktest(fixture, { ahead, seed, seeds });
 
 if (json) {
   const compact = Object.fromEntries(Object.entries(results).map(([name, value]) => [name,

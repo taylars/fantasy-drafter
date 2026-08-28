@@ -297,6 +297,12 @@ The behavior-level test is a [2025 historical backtest](docs/backtest-2025.md):
 complete simulated drafts are scored against actual Weeks 1–17 results. Run the
 quick 12-team comparison with `npm run backtest`, or the full team-count × draft
 format × roster × scoring × opponent matrix with `npm run backtest -- --matrix`.
+The matrix logs each configuration, draft progress (at most every five seconds),
+elapsed time, and a rough ETA to stderr. A draft must finish before progress can
+advance; this is not a background timer. Add `--quiet` to suppress progress.
+Use `node bin/backtest.mjs --matrix --json > matrix.json` to save clean JSON while
+watching progress in the terminal. Matrix runs accept one `--seed=N`; `--seeds`
+is supported only by the normal backtest.
 The historical inputs are frozen under `data/historical/<season>/`: one
 `draft.json` plus a separate JSON file for every completed week. Tests never
 fetch.

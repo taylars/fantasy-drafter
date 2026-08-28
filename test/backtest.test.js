@@ -10,6 +10,8 @@ import { missingStarters } from '../js/draft-policy.js';
 import { DEFAULT_SLOTS, historicalFixture, matrixConfigurations, runBacktest, simulateDraft, strategyPool, weeklyLineup, weeklyReplacements, scoreSeason } from "../js/backtest.js";
 import { parseCsv, injuryDesignation } from '../js/historical-week.js';
 import { PLAN_AHEAD } from '../js/value.js';
+import { runMatrix } from '../js/backtest.js';
+import { matrixProgress } from '../bin/lib/progress.mjs';
 
 const history = new URL("../data/historical/2025/", import.meta.url);
 const historicalDraft = JSON.parse(readFileSync(new URL("draft.json", history), "utf8"));
@@ -18,6 +20,43 @@ const grades2026 = JSON.parse(readFileSync(new URL("../2026/grades.json", histor
 const historicalWeeks = Array.from({ length: 17 }, (_, i) => JSON.parse(readFileSync(
   new URL(`weeks/week-${String(i + 1).padStart(2, "0")}.json`, history), "utf8")));
 const fixture = historicalFixture(historicalDraft, historicalWeeks, grades2025);
+
+test('matrix progress counts drafts without changing results', () => {
+  const configs = [matrixConfigurations()[0]];
+  const events = [];
+  const options = { configs, ahead: 1, seed: 7 };
+  const result = runMatrix(fixture, { ...options, onProgress: event => events.push(event) });
+  assert.deepEqual(result, runMatrix(fixture, options));
+  const total = configs[0].teams * 2;
+  assert.equal(events[0].type, 'start');
+  assert.equal(events.at(-1).type, 'complete');
+  assert.equal(events.at(-1).completed, total);
+  assert.ok(events.every(e => e.total === total && e.seed === 7));
+  assert.deepEqual(events.filter(e => e.type === 'draft').map(e => e.completed),
+    Array.from({ length: total }, (_, i) => i + 1));
+  assert.deepEqual(events.filter(e => e.type === 'configuration').map(e => e.strategy), ['board', 'adp']);
+});
+
+test('matrix logger emits configuration changes and throttled draft progress', () => {
+  let time = 0;
+  const lines = [];
+  const log = matrixProgress({ write: line => lines.push(line), now: () => time });
+  const base = { configurations: 216, total: 4752, completed: 0, seed: 1,
+    strategy: 'board', configIndex: 1, config: matrixConfigurations()[0], heroSeat: 0 };
+  log({ ...base, type: 'start' });
+  log({ ...base, type: 'configuration' });
+  time = 1000;
+  log({ ...base, type: 'draft', completed: 1, heroSeat: 1 });
+  assert.equal(lines.length, 2);
+  time = 5000;
+  log({ ...base, type: 'draft', completed: 2, heroSeat: 2 });
+  assert.match(lines[2], /seat 2\/8.*2\/4752.*elapsed 5s.*rough ETA/);
+  log({ ...base, type: 'configuration', strategy: 'adp' });
+  assert.match(lines[3], /ADP/);
+  log({ ...base, type: 'complete', completed: 4752 });
+  assert.match(lines[4], /Complete: 4752\/4752 drafts \(100%\)/);
+  assert.ok(lines.every(line => !/NaN|Infinity/.test(line)));
+});
 const draft2026 = JSON.parse(readFileSync(
   new URL("../data/historical/2026/draft.json", import.meta.url), "utf8"));
 

@@ -28,3 +28,11 @@ Existing PR#1 was discovered during resume: https://github.com/taylars/fantasy-d
 ## Caveats
 
 One season, archived projections not proven preseason snapshots, repeated seat/seed dependence, follow-up reuse of heldout rooms, uncalibrated spread assumptions. No exhaustive merged matrix or broad browser benchmark. The proposed score is a heuristic, not expected points or championship probabilities.
+
+## Matrix progress and app verification (2026-08-27)
+
+Matrix CLI now reports configuration/strategy, seats, completed/total drafts, percentage, elapsed time and rough ETA to stderr. `--quiet` disables logging; `--json` stdout remains clean. Progress advances between drafts, not during a synchronous simulation. The full matrix remains 216 configurations / 4,752 drafts and has NOT been completed on the merged code. Startup smoke was intentionally terminated after its first configuration log. Focused matrix regression checks verify logging does not change results.
+
+Browser smoke: real public Sleeper data for taylars, Atlanta League completed draft and A league far, far away… upcoming draft. Verified league switching, roster/drafted rendering, reload persistence, updated score tooltips, 541 player rows, three upcoming-draft recommendations, no NaN/Infinity values, and no browser warnings/errors. No live pick was submitted. Actual worker handler tested against direct shared-model output for snake/linear drafts at early/middle/late stages and initialization resets. This is browser smoke coverage, not a benchmark or exhaustive device/league test.
+
+Final verification for this update: `npm test` — 36 passed, 0 failed; `git diff --check` clean.
