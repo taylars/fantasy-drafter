@@ -158,6 +158,10 @@
   .pos-count.TE .pc-pos{background:var(--te);}
   .pos-count.K  .pc-pos{background:var(--k);}
   .pos-count.DEF .pc-pos{background:var(--def);}
+  /* A position the draft won't accept another player at. The count is the
+     thing that changed, so the cap is what gets marked, not the whole chip. */
+  .pos-count .pc-cap{opacity:.55;}
+  .pos-count.full .pc-n{background:var(--ink);color:var(--sticker);}
   .pos-count.none{border-color:var(--board-dark);}
   .pos-count.none .pc-pos{background:var(--board-dark);color:var(--ink-soft);}
   .pos-count.none .pc-n{background:transparent;color:var(--ink-soft);}

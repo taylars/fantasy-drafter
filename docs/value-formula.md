@@ -183,6 +183,30 @@ pick 49. Three things a naive version gets wrong:
    with it — the same 256 plans for a third of the work, which is what makes
    this affordable to run on every row of a live board.
 
+**Position limits are legality, not preference.** A league can cap how many of
+a position one roster may hold — Sleeper calls them position limits and enforces
+them by rejecting the pick — and the draft settings carry both the caps and the
+flag saying they are enforced. A capped position is removed from the board and
+from the plan tree rather than priced down: a recommendation you are not allowed
+to act on is worse than no recommendation, and a plan that spends its second
+pick on an illegal one is mispricing every branch beneath it. The league on the
+board caps QB/TE/K/DEF at 2 and RB/WR at 4 across 15 rounds, so the caps bind
+with one pick of slack in the whole draft — before they were read, the board's
+top recommendation at pick 152 was a fifth receiver worth 4.7 points more than
+anything else on it, and Sleeper would have refused the pick.
+
+**Position limits are legality, not preference.** A league can cap how many of
+a position one roster may hold — Sleeper calls them position limits and enforces
+them by rejecting the pick — and the draft settings carry both the caps and the
+flag saying they are enforced. A capped position is removed from the board and
+from the plan tree rather than priced down: a recommendation you are not allowed
+to act on is worse than no recommendation, and a plan that spends its second
+pick on an illegal one is mispricing every branch beneath it. The league on the
+board caps QB/TE/K/DEF at 2 and RB/WR at 4 across 15 rounds, so the caps bind
+with one pick of slack in the whole draft — before they were read, the board's
+top recommendation at pick 152 was a fifth receiver worth 4.7 points more than
+anything else on it, and Sleeper would have refused the pick.
+
 The output that answers "RB now or later" is the best plan starting with each
 position, differenced against the best plan overall:
 

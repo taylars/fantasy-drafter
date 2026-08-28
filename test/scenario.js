@@ -39,10 +39,10 @@ export const RECOMMENDED = 3;
  * anonymised anyway; what a test actually cares about is the seat, because the
  * seat is what decides how long the wait is until our next pick.
  */
-function draftOf(slot, type) {
+function draftOf(slot, type, limits) {
   const draft_order = { [US]: slot };
   for (let s = 1; s <= teams; s++) if (s !== slot) draft_order[`team-${s}`] = s;
-  return { teams, rounds, type, reversal_round: 0, draft_order };
+  return { teams, rounds, type, reversal_round: 0, draft_order, position_limits: limits };
 }
 
 /* Find a player in the pool, by name, by id, or by handing over the object.
@@ -83,7 +83,7 @@ function resolve(who, index) {
  */
 export function scenario({
   plant = [], roster = [], drafted = [], slot = 1, at = null, type = "snake",
-  limit = 200, ahead,
+  limit = 200, ahead, limits = {},
 } = {}) {
   const players = [...pool(), ...plant];
 
@@ -99,7 +99,7 @@ export function scenario({
   const ours = new Set(mine.map((p) => p.player_id));
   const gone = new Set([...ours, ...theirs.map((p) => p.player_id)]);
 
-  const draft = draftOf(slot, type);
+  const draft = draftOf(slot, type, limits);
   const userIds = new Set([US]);
   const picks = ourPicks(draft, userIds);
   const atPick = at ?? picks.find((p) => p > gone.size) ?? gone.size + 1;

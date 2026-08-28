@@ -363,6 +363,8 @@ function renderRoster() {
 
 // Every position the league starts, whether or not we hold one — a zero is the
 // count worth seeing — plus anything we've drafted that the slots don't name.
+// A drafted count is reported against the draft's own cap where it sets one,
+// because "3" and "3 of 4" are different states of the same roster.
 function positionCounts() {
   const counts = new Map();
   for (const m of MINE) if (m.p) counts.set(m.p, (counts.get(m.p) || 0) + 1);
@@ -373,16 +375,27 @@ function positionCounts() {
   if (SLOTS.includes("FLEX")) for (const pos of FLEXOK) wanted.add(pos);
   for (const pos of counts.keys()) wanted.add(pos);
 
+  const limits = DRAFT?.position_limits ?? {};
+  for (const pos of Object.keys(limits)) wanted.add(pos);
+
   const known = POS_ORDER.filter((pos) => wanted.has(pos));
   const rest = Array.from(wanted).filter((pos) => !POS_ORDER.includes(pos)).sort();
-  return known.concat(rest).map((pos) => ({ pos, n: counts.get(pos) || 0 }));
+  return known.concat(rest).map((pos) =>
+    ({ pos, n: counts.get(pos) || 0, cap: limits[pos] ?? null }));
 }
 
 function renderPositionCounts() {
-  $("pos-counts").innerHTML = positionCounts().map((c) =>
-    '<span class="pos-count ' + esc(c.pos) + (c.n ? "" : " none") + '">' +
-      '<span class="pc-pos">' + esc(c.pos) + "</span>" +
-      '<span class="pc-n">' + c.n + "</span></span>").join("");
+  $("pos-counts").innerHTML = positionCounts().map((c) => {
+    const full = c.cap !== null && c.n >= c.cap;
+    return '<span class="pos-count ' + esc(c.pos) + (c.n ? "" : " none")
+      + (full ? " full" : "")
+      + '" title="' + esc(c.pos) + ": " + c.n
+      + (c.cap === null ? " drafted" : " of " + c.cap + " allowed") + '">'
+      + '<span class="pc-pos">' + esc(c.pos) + "</span>"
+      + '<span class="pc-n">' + c.n
+      + (c.cap === null ? "" : '<span class="pc-cap">/' + c.cap + "</span>")
+      + "</span></span>";
+  }).join("");
 }
 
 function renderMeta() {

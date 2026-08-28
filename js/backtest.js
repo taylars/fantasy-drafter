@@ -62,10 +62,11 @@ export function draftOrder({ teams, rounds, type = "snake", reversalRound = 0 })
   return order;
 }
 
-function draftShape({ teams, rounds, type, reversalRound }) {
+function draftShape({ teams, rounds, type, reversalRound, limits }) {
   const draft_order = {};
   for (let seat = 0; seat < teams; seat++) draft_order[`seat-${seat + 1}`] = seat + 1;
-  return { teams, rounds, type, reversal_round: reversalRound, draft_order };
+  return { teams, rounds, type, reversal_round: reversalRound, draft_order,
+           position_limits: limits };
 }
 
 export function strategyPool(players, format) {
@@ -96,10 +97,15 @@ export function simulateDraft(fixture, {
   format = "half_ppr",
   opponentStyle = "adp",
   seed = 1,
+  // Positional roster caps, as `{QB: 2, RB: 4, ...}`. Empty by default: the
+  // sweep's rosters shapes are synthetic and uncapped, and switching the
+  // default on would move every historical grade for a reason that has nothing
+  // to do with the strategy being measured.
+  limits = {},
 } = {}) {
   if (!['board', 'adp'].includes(heroStrategy)) throw new Error(`unknown hero strategy: ${heroStrategy}`);
   const rounds = slots.length;
-  const draft = draftShape({ teams, rounds, type, reversalRound });
+  const draft = draftShape({ teams, rounds, type, reversalRound, limits });
   const order = draftOrder({ teams, rounds, type, reversalRound });
   const pool = strategyPool(fixture.players, format)
     .filter((p) => Number.isFinite(p.adp) && Number.isFinite(p.points))
@@ -133,7 +139,7 @@ export function simulateDraft(fixture, {
       const style = seat + 1 === heroSeat ? 'adp' : opponentStyle === "mixed"
         ? STYLES[seat % STYLES.length] : opponentStyle;
       chosen = scriptedChoice(available, roster, slots, {
-        teams, style, seed, seat: seat + 1, round: Math.floor(i / teams) + 1,
+        teams, style, seed, seat: seat + 1, round: Math.floor(i / teams) + 1, limits,
       });
     }
 
@@ -148,7 +154,7 @@ export function simulateDraft(fixture, {
                    : opponentStyle === 'mixed' ? STYLES[seat % STYLES.length] : opponentStyle });
   }
 
-  return { teams, slots, rosters, picks };
+  return { teams, slots, limits, rosters, picks };
 }
 
 /* Rank by weekly projections, then reveal actual results. Injured roster

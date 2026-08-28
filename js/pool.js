@@ -197,6 +197,27 @@ export function buildPool(projections, grades, league, draft = null) {
   return pool;
 }
 
+/* Positional roster caps, when the draft will actually enforce them.
+ *
+ * Sleeper writes a `position_limit_<pos>` per position and a separate
+ * `enforce_position_limits` flag. Without the flag the limits are inert
+ * settings the draft ignores, so reading them would invent a constraint the
+ * room isn't playing under. The parent league carries the same numbers but
+ * never the flag; the draft on screen is what rejects a pick, so it is the
+ * only source here.
+ */
+const LIMIT_PREFIX = "position_limit_";
+
+export function positionLimits(settings = {}) {
+  if (!settings.enforce_position_limits) return {};
+  const limits = {};
+  for (const [key, value] of Object.entries(settings)) {
+    if (!key.startsWith(LIMIT_PREFIX) || typeof value !== "number" || value <= 0) continue;
+    limits[key.slice(LIMIT_PREFIX.length).toUpperCase()] = value;
+  }
+  return limits;
+}
+
 /* The draft object, flattened to the handful of fields the model reads.
  *
  * Sleeper nests teams/rounds/reversal under `settings` and leaves type, status
@@ -216,6 +237,7 @@ export function draftShape(draft) {
     teams: settings.teams,
     rounds: settings.rounds,
     reversal_round: settings.reversal_round ?? 0,
+    position_limits: positionLimits(settings),
     start_time: draft.start_time ?? null,
     draft_order: draft.draft_order,
     // A mock started from a league records it here even though league_id is

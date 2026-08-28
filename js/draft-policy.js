@@ -1,6 +1,7 @@
 /* A scripted ADP drafter, independent of the board's value formula.
  * Preferences are in draft-pick units, so a sufficiently large ADP bargain
- * can beat the script. Only roster completion is a hard constraint.
+ * can beat the script. Roster completion and the league's position limits are
+ * the only hard constraints.
  */
 const FLEX = new Set(['RB', 'WR', 'TE']);
 export const STYLES = ['adp', 'robust_rb', 'zero_rb', 'late_qb'];
@@ -28,7 +29,7 @@ function noise(key) {
 }
 
 export function scriptedChoice(available, roster, slots, {
-  teams = 12, round = roster.length + 1, style = 'adp', seed = 1, seat = 1,
+  teams = 12, round = roster.length + 1, style = 'adp', seed = 1, seat = 1, limits = {},
 } = {}) {
   if (!STYLES.includes(style)) throw new Error(`unknown draft style: ${style}`);
   const have = counts(roster.map(p => p.position));
@@ -41,6 +42,7 @@ export function scriptedChoice(available, roster, slots, {
 
   for (const p of available) {
     const pos = p.position;
+    if ((have[pos] ?? 0) >= (limits[pos] ?? Infinity)) continue;
     if (!(pos in need) && !(FLEX.has(pos) && flexNeed)) continue;
     if ((pos === 'K' || pos === 'DEF') && (have[pos] ?? 0) >= (need[pos] ?? 0)) continue;
     const after = missingStarters([...roster, p], slots);

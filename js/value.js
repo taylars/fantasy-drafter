@@ -505,6 +505,25 @@ export function ourPicks(draft, userIds) {
   return picks;
 }
 
+/* How many of each position a roster holds. */
+function counts(roster) {
+  const have = {};
+  for (const player of roster) have[player.position] = (have[player.position] ?? 0) + 1;
+  return have;
+}
+
+/* Whether the draft would still accept another player at this position.
+ *
+ * A league can cap how many of a position one roster may hold — Sleeper calls
+ * them position limits, and enforces them by rejecting the pick. A capped
+ * position is not merely a bad idea to draft, it is not a pick that exists, so
+ * it has to leave the board and the plan tree rather than be priced down.
+ */
+export function underLimit(roster, limits = {}) {
+  const have = counts(roster);
+  return (position) => (have[position] ?? 0) < (limits[position] ?? Infinity);
+}
+
 /* Positions we have to spend our last picks on to field a legal lineup.
  *
  * Legality, not value. A kicker is worth ~0 to take at any point — the twelfth
@@ -514,20 +533,24 @@ export function ourPicks(draft, userIds) {
  * rest of it is. So once the picks remaining are down to the slots still empty,
  * those slots are the only thing on the board.
  */
-export function mustFill(roster, slots, picksLeft) {
+export function mustFill(roster, slots, picksLeft, limits = {}) {
   const needed = {};
   for (const slot of slots) {
     if (slot === "BN" || slot === "FLEX") continue;
     needed[slot] = (needed[slot] ?? 0) + 1;
   }
-  const have = {};
-  for (const player of roster) have[player.position] = (have[player.position] ?? 0) + 1;
+  const have = counts(roster);
 
   const short = {};
   let total = 0;
   for (const [position, count] of Object.entries(needed)) {
     const gap = count - (have[position] ?? 0);
-    if (gap > 0) { short[position] = gap; total += gap; }
+    // A position already at its cap cannot be filled, however short of it we
+    // are. Forcing the board onto one would leave nothing legal to recommend.
+    if (gap > 0 && (have[position] ?? 0) < (limits[position] ?? Infinity)) {
+      short[position] = gap;
+      total += gap;
+    }
   }
   return picksLeft <= total ? new Set(Object.keys(short)) : new Set();
 }
@@ -540,12 +563,12 @@ export function mustFill(roster, slots, picksLeft) {
  * assign that replacement a tiny positive gain, but the planner should not
  * spend a second roster spot chasing it.
  */
-export function planPositions(roster, slots, positions = PLAN_POSITIONS) {
-  const have = {};
-  for (const player of roster) have[player.position] = (have[player.position] ?? 0) + 1;
+export function planPositions(roster, slots, positions = PLAN_POSITIONS, limits = {}) {
+  const have = counts(roster);
   const needed = {};
   for (const slot of slots) if (STREAMABLE.has(slot)) needed[slot] = (needed[slot] ?? 0) + 1;
-  return positions.filter((p) => !STREAMABLE.has(p) || (have[p] ?? 0) < (needed[p] ?? 0));
+  return positions.filter((p) => (have[p] ?? 0) < (limits[p] ?? Infinity))
+                  .filter((p) => !STREAMABLE.has(p) || (have[p] ?? 0) < (needed[p] ?? 0));
 }
 
 /* Mean and best value of every modeled continuation.
@@ -556,24 +579,24 @@ export function planPositions(roster, slots, positions = PLAN_POSITIONS) {
  * plans without making the live board enumerate an intractable
  * player-by-player tree.
  */
-function continuationStats(picks, roster, available, slots, base, positions, sampleKey) {
+function continuationStats(picks, roster, available, slots, base, positions, sampleKey, limits) {
   if (!picks.length) return [0, 0];
 
   const held = lineup(roster, slots, base);
   const filled = lineupFilled(roster, slots);
   const meanTotals = [], bestTotals = [];
 
-  planPositions(roster, slots, positions).forEach((position, index) => {
+  planPositions(roster, slots, positions, limits).forEach((position, index) => {
     const outcomes = waitOutcomes(position, available, picks[0], roster, slots, base, held, filled);
     if (!outcomes.length) return;
     const [got, player] = sampleOutcome(outcomes, sampleKey * 7 + index);
 
     const [meanRest, bestRest] = player === null
       ? continuationStats(picks.slice(1), roster, available, slots, base, positions,
-                          sampleKey * 7 + index)
+                          sampleKey * 7 + index, limits)
       : continuationStats(picks.slice(1), [...roster, player],
                           available.filter((p) => p.player_id !== player.player_id),
-                          slots, base, positions, sampleKey * 7 + index);
+                          slots, base, positions, sampleKey * 7 + index, limits);
 
     meanTotals.push(got + meanRest);
     bestTotals.push(got + bestRest);
@@ -593,20 +616,20 @@ function continuationStats(picks, roster, available, slots, base, positions, sam
  * each pick against the roster we hold today is not a plan, because by the
  * third pick it is pricing against a roster we won't have.
  */
-function continuation(picks, roster, available, slots, base, positions) {
+function continuation(picks, roster, available, slots, base, positions, limits) {
   if (!picks.length) return [0, []];
 
   const held = lineup(roster, slots, base);
   const filled = lineupFilled(roster, slots);
   let best = null;
 
-  for (const position of planPositions(roster, slots, positions)) {
+  for (const position of planPositions(roster, slots, positions, limits)) {
     const [got, player] = wait(position, available, picks[0], roster, slots, base, held, filled);
     if (player === null) continue;
     const [rest, taken] = continuation(
       picks.slice(1), [...roster, player],
       available.filter((p) => p.player_id !== player.player_id),
-      slots, base, positions);
+      slots, base, positions, limits);
     const total = got + rest;
     if (best === null || total > best[0]) best = [total, [[picks[0], player], ...taken]];
   }
@@ -621,6 +644,7 @@ function continuation(picks, roster, available, slots, base, positions) {
 export function situation({ pool, slots, draft, gone, ours, atPick, userIds }) {
   return {
     slots,
+    limits: draft.position_limits ?? {},
     base: baselines(pool, draft.teams, draft.rounds),
     roster: pool.filter((p) => ours.has(p.player_id)),
     available: pool.filter((p) => !gone.has(p.player_id)),
@@ -640,7 +664,7 @@ export function situation({ pool, slots, draft, gone, ours, atPick, userIds }) {
 function outlook(sit, candidates, gains, ahead) {
   const picks = sit.upcoming.slice(0, ahead);
   const restOf = {}, bestPlan = {}, startingAverages = [];
-  const open = new Set(planPositions(sit.roster, sit.slots));
+  const open = new Set(planPositions(sit.roster, sit.slots, PLAN_POSITIONS, sit.limits));
 
   const positions = new Set();
   for (const player of candidates) if (open.has(player.position)) positions.add(player.position);
@@ -656,7 +680,7 @@ function outlook(sit, candidates, gains, ahead) {
     const [mean, bestRest] = continuationStats(
       picks.slice(1), [...sit.roster, chosen],
       sit.available.filter((p) => p.player_id !== chosen.player_id),
-      sit.slots, sit.base, PLAN_POSITIONS, 1);
+      sit.slots, sit.base, PLAN_POSITIONS, 1, sit.limits);
     restOf[position] = mean;
     startingAverages.push(got + mean);
     bestPlan[position] = got + bestRest;
@@ -679,9 +703,14 @@ function outlook(sit, candidates, gains, ahead) {
  * upside, but it does not participate in the recommendation score.
  */
 export function board(sit, { limit = BOARD_LIMIT, ahead = PLAN_AHEAD } = {}) {
-  const forced = mustFill(sit.roster, sit.slots, sit.upcoming.length);
-  const open = new Set(planPositions(sit.roster, sit.slots));
-  const pickable = sit.available.filter((p) => forced.size ? forced.has(p.position) : open.has(p.position));
+  const forced = mustFill(sit.roster, sit.slots, sit.upcoming.length, sit.limits);
+  const open = new Set(planPositions(sit.roster, sit.slots, PLAN_POSITIONS, sit.limits));
+  // The limit filter is applied on top of `forced` rather than folded into it:
+  // a position we are forced onto is one we are short of starters at, but the
+  // cap still has the last word about what can be drafted at all.
+  const legal = underLimit(sit.roster, sit.limits);
+  const pickable = sit.available.filter((p) => legal(p.position)
+    && (forced.size ? forced.has(p.position) : open.has(p.position)));
   const candidates = pickable.slice().sort((a, b) => a.adp - b.adp).slice(0, limit);
 
   // The roster is the same for every candidate, so its lineup and whether it is
@@ -737,7 +766,7 @@ export function plans(sit, { ahead = PLAN_AHEAD, positions = PLAN_POSITIONS } = 
   const filled = lineupFilled(sit.roster, sit.slots);
   const scored = [];
 
-  for (const position of planPositions(sit.roster, sit.slots, positions)) {
+  for (const position of planPositions(sit.roster, sit.slots, positions, sit.limits)) {
     let got = -Infinity, chosen = null;
     for (const player of sit.available) {
       if (player.position !== position) continue;
@@ -750,7 +779,7 @@ export function plans(sit, { ahead = PLAN_AHEAD, positions = PLAN_POSITIONS } = 
     const [rest, taken] = continuation(
       picks.slice(1), [...sit.roster, chosen],
       sit.available.filter((p) => p.player_id !== chosen.player_id),
-      sit.slots, sit.base, positions);
+      sit.slots, sit.base, positions, sit.limits);
     const plan = [[picks[0], chosen], ...taken];
     scored.push({ total: got + rest, sequence: plan.map(([, p]) => p.position), plan });
   }

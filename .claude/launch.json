@@ -4,7 +4,7 @@
     {
       "name": "draft-board",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["bin/dev"],
+      "runtimeArgs": ["scripts/start.mjs"],
       "port": 8000
     }
   ]
