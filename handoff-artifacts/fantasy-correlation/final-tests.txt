@@ -1,0 +1,51 @@
+(node:63965) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+--import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("./handoff-artifacts/fantasy-correlation/loader.mjs", pathToFileURL("./"));'
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ the 2025 fixture is a complete frozen regular-season sample (0.918167ms)
+✔ grades stay attached only to the season in which they were researched (1.291375ms)
+✔ draft strategies consume only season grades, never actuals or current injury status (0.132167ms)
+✔ the exhaustive matrix covers every requested environment combination (0.280417ms)
+✔ a simulated draft is deterministic and leaves every team with a legal roster (3269.213875ms)
+✔ weekly scoring starts the highest projected legal players, not hindsight winners (0.516375ms)
+✔ replacement baseline selects top ten free agents by projection, averages actuals (0.304708ms)
+✔ injured slots use replacement scores only when selected; bench depth still competes (0.171583ms)
+✔ weekly inputs never leak to draft strategies and missing archives fail explicitly (0.782542ms)
+✔ historical injury mapping excludes suspension, retirement and questionable status (0.32925ms)
+✔ season replacement pool excludes other teams and respects scoring format (0.4915ms)
+✔ frozen data distinguishes scored games from injury absences and byes (0.745167ms)
+✔ scripted rooms vary by seed while preserving full roster legality (69.274417ms)
+✔ the current board is graded against actual 2025 outcomes and an ADP baseline (18526.352417ms)
+(node:63966) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+--import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("./handoff-artifacts/fantasy-correlation/loader.mjs", pathToFileURL("./"));'
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ scripted ADP fills a needed starter before a similarly priced backup QB (1.0795ms)
+✔ a large ADP bargain can override the late-QB script (0.119333ms)
+✔ K and DEF usually wait until late and are not duplicated (0.105708ms)
+✔ completion constraints reserve the final pick for an unfilled FLEX (0.096542ms)
+✔ seeded wiggle room is repeatable but changes close calls across seeds (1.709125ms)
+(node:63967) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+--import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("./handoff-artifacts/fantasy-correlation/loader.mjs", pathToFileURL("./"));'
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ all preserved player IDs remain in their canonical season grade files (3.308542ms)
+✔ grade payloads cannot be duplicated under another data filename (41.108417ms)
+✔ the app loader fetches only the newest season and its grades reach the pricing model (14.761208ms)
+✔ latest selection ignores index ordering and never fills gaps from older seasons (1.062875ms)
+✔ missing or mismatched newest data fails instead of silently falling back (0.247709ms)
+✔ canonical season index matches disk and no duplicate grade stores remain (1.59325ms)
+(node:63968) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+--import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("./handoff-artifacts/fantasy-correlation/loader.mjs", pathToFileURL("./"));'
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ canonical historical grades reject invalid evidence metadata and grades (15.869458ms)
+(node:63969) ExperimentalWarning: `--experimental-loader` may be removed in the future; instead use `register()`:
+--import 'data:text/javascript,import { register } from "node:module"; import { pathToFileURL } from "node:url"; register("./handoff-artifacts/fantasy-correlation/loader.mjs", pathToFileURL("./"));'
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ a player strictly better than the best on the board is the recommendation (479.143042ms)
+✔ a player strictly worse than the best on the board does not take the top of it (422.527375ms)
+ℹ tests 28
+ℹ suites 0
+ℹ pass 28
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 22036.196417

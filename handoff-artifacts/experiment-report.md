@@ -59,3 +59,15 @@ per-seat delta [17.501999999999953, 0.006249999999965894, -6.388750000000016, -3
 Original buggy full gains shrink to +4.4±4.0 over BUP0; corrected full +7.6±3.8. These do not clear the original >20-point improvement gate. Run exactly one corrected holdout to assess whether apparent championship/highs changes survive seeds9–16; no further tuning or sweeps.
 
 Holdout command: `STACK_W=.10 COLL_W=.06 CROWD_W=.03 DEDUP=1 node --experimental-loader /private/tmp/fantasy-correlation/loader.mjs /private/tmp/fantasy-correlation/dump.mjs /private/tmp/fantasy-correlation/fixed-holdout.json 9,10,11,12,13,14,15,16`.
+
+## Resumed holdout review — 2026-08-27
+
+Saved corrected holdout parses and yields 2016.5 points, paired +11.5 ±3.4 over BUP0 (seat-cluster SE 3.6), seeds9–16. Discovery +7.6 and holdout +11.5 both fail the original >20-point gate: reject production change, no more tuning. Output integrity and reproducible summary are being finalized; no new simulations have been launched.
+
+### Final decision and verification
+
+**Completed — reject for production.** Corrected discovery: 2012.2 vs control 2004.6 (+7.6); corrected holdout: 2016.5 vs 2005.0 (+11.5). Holdout seed deltas: +20.6, +8.0, +15.7, +12.7, -5.7, +13.2, +17.0, +10.4. Holdout weekly-high rate 17.9% vs15.4%, championship51.0% vs49.0%, playoff76.0% vs75.0%; discovery championship53.1% vs44.8% did not retain its magnitude. Positive room results do not clear the predefined >20-point threshold, and only 2025 outcomes exist. No cross-format expansion or additional parameter tuning warranted. This is rejection under the improvement gate, not proof of zero benefit.
+
+Updated `fantasy-correlation/summarize.py` resolves retained artifact paths instead of vanished scratch paths. `python3 handoff-artifacts/fantasy-correlation/summarize.py` passed: original-full, fixed-full, fixed-holdout each contain all96 expected unique seed/seat combinations; row means match reported aggregate points. Full output retained in `fantasy-correlation/final-summary.txt`.
+
+Re-ran `STACK_W=.10 COLL_W=.06 CROWD_W=.03 DEDUP=1 node --experimental-loader ./handoff-artifacts/fantasy-correlation/loader.mjs --test test/*.test.js`: **28/28 passed**, no failures/cancellations; output `fantasy-correlation/final-tests.txt`. No evaluator/data/policy changes. No new simulations or running experiment processes. Original dirty `js/value.js` remains untouched and uncommitted; no production implementation commit to cherry-pick. Do not merge experimental branch history.

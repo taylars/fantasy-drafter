@@ -1,0 +1,15 @@
+original-full {'score': 86.3, 'letter': 'B', 'averagePoints': 2009, 'pointsStandardError': 7.4, 'samples': 96, 'averageFinish': 2.55, 'pointsPercentile': 85.9, 'allPlayWinRate': 62.3, 'weeklyHighScoreRate': 19.2, 'playoffRate': 69.8, 'championshipRate': 52.1, 'benchContribution': 480.5, 'benchStarts': 43.3, 'positionalPoints': {'QB': 324, 'RB': 679.5, 'WR': 442.4, 'TE': 301.4, 'K': 170.9, 'DEF': 90.8}}
+paired 4.4 ±4.0; seat-cluster ±3.7
+per-seed 1:1988.4, 2:1997.4, 3:1996.5, 4:2018.1, 5:2040.0, 6:2003.1, 7:2016.1, 8:2012.2
+per-seed delta 1:0.3, 2:-20.7, 3:26.7, 4:10.5, 5:12.7, 6:9.6, 7:17.5, 8:-21.6
+per-seat delta [17.501999999999953, 0.006249999999965894, -6.388750000000016, -3.467499999999916, -8.34375, 17.08000000000007, 12.764999999999958, 7.152499999999918, -20.49025000000003, 22.91100000000003, 10.189000000000135, 3.5180000000000007]
+fixed-full {'score': 86.7, 'letter': 'B', 'averagePoints': 2012.2, 'pointsStandardError': 7.3, 'samples': 96, 'averageFinish': 2.52, 'pointsPercentile': 86.2, 'allPlayWinRate': 62.7, 'weeklyHighScoreRate': 18.3, 'playoffRate': 74, 'championshipRate': 53.1, 'benchContribution': 512.4, 'benchStarts': 44.7, 'positionalPoints': {'QB': 327, 'RB': 676.4, 'WR': 456.1, 'TE': 288.5, 'K': 172, 'DEF': 92.2}}
+paired 7.6 ±3.8; seat-cluster ±3.4
+per-seed 1:1992.1, 2:2015.7, 3:1991.9, 4:2020.5, 5:2054.6, 6:1998.8, 7:2011.9, 8:2012.4
+per-seed delta 1:4.0, 2:-2.4, 3:22.1, 4:12.9, 5:27.3, 6:5.3, 7:13.2, 8:-21.5
+per-seat delta [17.501999999999953, 0.006249999999965894, -6.388750000000016, -3.467499999999916, -8.34375, 18.933749999999975, 8.428750000000122, 7.152499999999918, 4.946250000000049, 28.833750000000038, 20.386250000000075, 3.399999999999892]
+fixed-holdout {'score': 86.8, 'letter': 'B', 'averagePoints': 2016.5, 'pointsStandardError': 7.4, 'samples': 96, 'averageFinish': 2.36, 'pointsPercentile': 87.6, 'allPlayWinRate': 63.2, 'weeklyHighScoreRate': 17.9, 'playoffRate': 76, 'championshipRate': 51, 'benchContribution': 505.8, 'benchStarts': 44.2, 'positionalPoints': {'QB': 324.1, 'RB': 676.3, 'WR': 470.7, 'TE': 278.7, 'K': 173.3, 'DEF': 93.3}}
+paired 11.5 ±3.4; seat-cluster ±3.6
+per-seed 9:2036.3, 10:2028.2, 11:1990.6, 12:2024.3, 13:1972.8, 14:2049.4, 15:2006.1, 16:2023.8
+per-seed delta 9:20.6, 10:8.0, 11:15.7, 12:12.7, 13:-5.7, 14:13.2, 15:17.0, 16:10.4
+per-seat delta [19.190249999999992, 17.324999999999903, -3.5562500000000057, 0.026250000000004547, -7.598750000000081, 10.108750000000157, 23.58500000000012, 4.129999999999939, 11.456500000000062, 22.385249999999957, 34.89000000000004, 5.9424999999999955]

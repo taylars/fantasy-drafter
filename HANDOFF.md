@@ -1,10 +1,10 @@
-# correlation — paused 2026-08-27
+# correlation — completed 2026-08-27
 
-Branch `algo/correlation`. User requested stop to conserve credits. Agents interrupted; final process check found no matching experiment subprocesses.
+Branch `algo/correlation`. Resumed at user request; saved holdout analyzed. No new simulations needed.
 
 ## State
 
-Paused, likely reject: corrected full+BUP0 gains7.6 discovery; original buggy full gains4.4. Duplicate dedicated/FLEX player coverage caused false collision penalty. Corrected variant28 tests pass. Heldout launched: inspect saved output, not yet verified. No merge.
+Completed, reject for production: corrected full+BUP0 gains +7.6 discovery and +11.5 held-out room points, both below the original >20-point gate. Original buggy full gains +4.4 discovery. Duplicate dedicated/FLEX player coverage caused false collision penalty. Corrected variant re-tested: 28/28 pass. All three saved outputs verified: exactly 96 unique expected seed/seat rows each, aggregate mean agrees with reported grade. No merge.
 
 ## Resume
 
@@ -12,4 +12,4 @@ Read handoff-artifacts/experiment-report.md if present, then original-session-au
 
 Shared controls: bench-option worktree handoff-artifacts/fantasy-bench-validation/{baseline,bup0,bss05}/results.json. Original Claude log: ~/.claude/projects/-Users-taylor-larsen-Code-fantasy-drafter/fea0e246-7ebd-4223-8e8e-8f1ab60d4b49/subagents/agent-aa78ed01a26c1c937.jsonl.
 
-PR intended algo-improvements into main documenting every success and failure; not opened. Do not resume until user asks.
+PR intended algo-improvements into main documenting every success and failure; not opened. No experiment work remains. Experimental source stays uncommitted and must not be merged.
