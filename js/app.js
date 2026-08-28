@@ -354,7 +354,7 @@ function renderRoster() {
   wrap.innerHTML = "";
   for (const f of assignSlots()) {
     const el = document.createElement("div");
-    el.className = "slot" + (f.player ? " on" : "");
+    el.className = "slot" + (f.player ? " filled" : "");
     el.innerHTML = '<span class="lbl">' + f.label + "</span>" + (f.player ? esc(f.player.n) : "—");
     wrap.appendChild(el);
   }
