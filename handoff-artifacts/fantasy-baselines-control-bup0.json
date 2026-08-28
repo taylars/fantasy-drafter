@@ -1,0 +1,139 @@
+{
+  "grade": {
+    "score": 85.6,
+    "letter": "B",
+    "averagePoints": 1988.1,
+    "pointsStandardError": 18,
+    "samples": 12,
+    "averageFinish": 2.92,
+    "pointsPercentile": 82.6,
+    "allPlayWinRate": 61.8,
+    "weeklyHighScoreRate": 18.6,
+    "playoffRate": 75,
+    "championshipRate": 50,
+    "benchContribution": 521.5,
+    "benchStarts": 44.5,
+    "positionalPoints": {
+      "QB": 327.4,
+      "RB": 683.3,
+      "WR": 434.6,
+      "TE": 275.3,
+      "K": 176.6,
+      "DEF": 90.8
+    }
+  },
+  "perSeed": [
+    {
+      "seed": 1,
+      "grade": {
+        "score": 85.6,
+        "letter": "B",
+        "averagePoints": 1988.1,
+        "pointsStandardError": 18,
+        "samples": 12,
+        "averageFinish": 2.92,
+        "pointsPercentile": 82.6,
+        "allPlayWinRate": 61.8,
+        "weeklyHighScoreRate": 18.6,
+        "playoffRate": 75,
+        "championshipRate": 50,
+        "benchContribution": 521.5,
+        "benchStarts": 44.5,
+        "positionalPoints": {
+          "QB": 327.4,
+          "RB": 683.3,
+          "WR": 434.6,
+          "TE": 275.3,
+          "K": 176.6,
+          "DEF": 90.8
+        }
+      }
+    }
+  ],
+  "runs": [
+    {
+      "seed": 1,
+      "seat": 1,
+      "total": 1913.9680000000003
+    },
+    {
+      "seed": 1,
+      "seat": 2,
+      "total": 1893.658
+    },
+    {
+      "seed": 1,
+      "seat": 3,
+      "total": 1940.81
+    },
+    {
+      "seed": 1,
+      "seat": 4,
+      "total": 2004.6999999999998
+    },
+    {
+      "seed": 1,
+      "seat": 5,
+      "total": 2004.6999999999998
+    },
+    {
+      "seed": 1,
+      "seat": 6,
+      "total": 1960.5199999999998
+    },
+    {
+      "seed": 1,
+      "seat": 7,
+      "total": 1969.07
+    },
+    {
+      "seed": 1,
+      "seat": 8,
+      "total": 1960.8100000000004
+    },
+    {
+      "seed": 1,
+      "seat": 9,
+      "total": 2091.2699999999995
+    },
+    {
+      "seed": 1,
+      "seat": 10,
+      "total": 1983.71
+    },
+    {
+      "seed": 1,
+      "seat": 11,
+      "total": 2084.0699999999997
+    },
+    {
+      "seed": 1,
+      "seat": 12,
+      "total": 2049.88
+    }
+  ],
+  "discovery": {
+    "score": 85.6,
+    "letter": "B",
+    "averagePoints": 1988.1,
+    "pointsStandardError": 18,
+    "samples": 12,
+    "averageFinish": 2.92,
+    "pointsPercentile": 82.6,
+    "allPlayWinRate": 61.8,
+    "weeklyHighScoreRate": 18.6,
+    "playoffRate": 75,
+    "championshipRate": 50,
+    "benchContribution": 521.5,
+    "benchStarts": 44.5,
+    "positionalPoints": {
+      "QB": 327.4,
+      "RB": 683.3,
+      "WR": 434.6,
+      "TE": 275.3,
+      "K": 176.6,
+      "DEF": 90.8
+    }
+  },
+  "heldout": null
+}

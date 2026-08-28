@@ -1,0 +1,852 @@
+{
+  "grade": {
+    "score": 84.6,
+    "letter": "B",
+    "averagePoints": 1979.8,
+    "pointsStandardError": 8.4,
+    "samples": 108,
+    "averageFinish": 2.94,
+    "pointsPercentile": 82.4,
+    "allPlayWinRate": 61.5,
+    "weeklyHighScoreRate": 14.8,
+    "playoffRate": 75,
+    "championshipRate": 45.4,
+    "benchContribution": 438.1,
+    "benchStarts": 41.6,
+    "positionalPoints": {
+      "QB": 285.8,
+      "RB": 719.6,
+      "WR": 451.1,
+      "TE": 255.3,
+      "K": 176.6,
+      "DEF": 91.3,
+      "FLEX": 0
+    }
+  },
+  "perSeed": [
+    {
+      "seed": 1,
+      "grade": {
+        "score": 81.1,
+        "letter": "B-",
+        "averagePoints": 1948.7,
+        "pointsStandardError": 16.5,
+        "samples": 12,
+        "averageFinish": 3.5,
+        "pointsPercentile": 77.3,
+        "allPlayWinRate": 59.5,
+        "weeklyHighScoreRate": 14.7,
+        "playoffRate": 58.3,
+        "championshipRate": 33.3,
+        "benchContribution": 467,
+        "benchStarts": 44,
+        "positionalPoints": {
+          "QB": 288.9,
+          "RB": 711.8,
+          "WR": 437.9,
+          "TE": 242.7,
+          "K": 176.6,
+          "DEF": 90.8
+        }
+      }
+    },
+    {
+      "seed": 2,
+      "grade": {
+        "score": 88,
+        "letter": "B+",
+        "averagePoints": 2005.6,
+        "pointsStandardError": 30,
+        "samples": 12,
+        "averageFinish": 2.83,
+        "pointsPercentile": 83.3,
+        "allPlayWinRate": 61.6,
+        "weeklyHighScoreRate": 17.2,
+        "playoffRate": 83.3,
+        "championshipRate": 66.7,
+        "benchContribution": 450.9,
+        "benchStarts": 41.8,
+        "positionalPoints": {
+          "QB": 292.5,
+          "RB": 742.3,
+          "WR": 443,
+          "TE": 258.1,
+          "K": 176.6,
+          "DEF": 93
+        }
+      }
+    },
+    {
+      "seed": 3,
+      "grade": {
+        "score": 79.1,
+        "letter": "C+",
+        "averagePoints": 1919.8,
+        "pointsStandardError": 17.9,
+        "samples": 12,
+        "averageFinish": 4.17,
+        "pointsPercentile": 71.2,
+        "allPlayWinRate": 57.9,
+        "weeklyHighScoreRate": 11.8,
+        "playoffRate": 58.3,
+        "championshipRate": 25,
+        "benchContribution": 409.1,
+        "benchStarts": 41.8,
+        "positionalPoints": {
+          "QB": 269.4,
+          "RB": 705.6,
+          "WR": 451.6,
+          "TE": 225.8,
+          "K": 176.6,
+          "DEF": 90.8
+        }
+      }
+    },
+    {
+      "seed": 4,
+      "grade": {
+        "score": 86.3,
+        "letter": "B",
+        "averagePoints": 1992.8,
+        "pointsStandardError": 20.4,
+        "samples": 12,
+        "averageFinish": 2.42,
+        "pointsPercentile": 87.1,
+        "allPlayWinRate": 63.2,
+        "weeklyHighScoreRate": 13.7,
+        "playoffRate": 83.3,
+        "championshipRate": 50,
+        "benchContribution": 420.9,
+        "benchStarts": 40,
+        "positionalPoints": {
+          "QB": 282.4,
+          "RB": 722.7,
+          "WR": 469.2,
+          "TE": 251.1,
+          "K": 176.6,
+          "DEF": 90.8
+        }
+      }
+    },
+    {
+      "seed": 5,
+      "grade": {
+        "score": 86.5,
+        "letter": "B",
+        "averagePoints": 2017.3,
+        "pointsStandardError": 33.1,
+        "samples": 12,
+        "averageFinish": 2.25,
+        "pointsPercentile": 88.6,
+        "allPlayWinRate": 63.1,
+        "weeklyHighScoreRate": 19.6,
+        "playoffRate": 83.3,
+        "championshipRate": 41.7,
+        "benchContribution": 425,
+        "benchStarts": 40,
+        "positionalPoints": {
+          "QB": 285.9,
+          "RB": 747.8,
+          "WR": 444.5,
+          "TE": 271.7,
+          "K": 176.6,
+          "DEF": 90.8
+        }
+      }
+    },
+    {
+      "seed": 6,
+      "grade": {
+        "score": 80.2,
+        "letter": "B-",
+        "averagePoints": 1941.7,
+        "pointsStandardError": 30.2,
+        "samples": 12,
+        "averageFinish": 4.08,
+        "pointsPercentile": 72,
+        "allPlayWinRate": 58.2,
+        "weeklyHighScoreRate": 12.3,
+        "playoffRate": 66.7,
+        "championshipRate": 33.3,
+        "benchContribution": 399.4,
+        "benchStarts": 39.7,
+        "positionalPoints": {
+          "QB": 277.7,
+          "RB": 689.2,
+          "WR": 445.7,
+          "TE": 259.5,
+          "K": 176.6,
+          "DEF": 93
+        }
+      }
+    },
+    {
+      "seed": 7,
+      "grade": {
+        "score": 83.2,
+        "letter": "B",
+        "averagePoints": 1958.1,
+        "pointsStandardError": 19.1,
+        "samples": 12,
+        "averageFinish": 3,
+        "pointsPercentile": 81.8,
+        "allPlayWinRate": 61.2,
+        "weeklyHighScoreRate": 13.7,
+        "playoffRate": 66.7,
+        "championshipRate": 41.7,
+        "benchContribution": 404.3,
+        "benchStarts": 40.8,
+        "positionalPoints": {
+          "QB": 275.9,
+          "RB": 707.9,
+          "WR": 444,
+          "TE": 265,
+          "K": 176.6,
+          "DEF": 88.7
+        }
+      }
+    },
+    {
+      "seed": 8,
+      "grade": {
+        "score": 89.2,
+        "letter": "B+",
+        "averagePoints": 2036.3,
+        "pointsStandardError": 22.4,
+        "samples": 12,
+        "averageFinish": 2.08,
+        "pointsPercentile": 90.2,
+        "allPlayWinRate": 66,
+        "weeklyHighScoreRate": 15.2,
+        "playoffRate": 83.3,
+        "championshipRate": 66.7,
+        "benchContribution": 545.1,
+        "benchStarts": 46.5,
+        "positionalPoints": {
+          "QB": 311,
+          "RB": 753.8,
+          "WR": 445.7,
+          "TE": 260.6,
+          "K": 176.6,
+          "DEF": 88.7
+        }
+      }
+    },
+    {
+      "seed": 9,
+      "grade": {
+        "score": 87.6,
+        "letter": "B+",
+        "averagePoints": 1998.1,
+        "pointsStandardError": 15.3,
+        "samples": 12,
+        "averageFinish": 2.08,
+        "pointsPercentile": 90.2,
+        "allPlayWinRate": 63.2,
+        "weeklyHighScoreRate": 14.7,
+        "playoffRate": 91.7,
+        "championshipRate": 50,
+        "benchContribution": 420.8,
+        "benchStarts": 40.1,
+        "positionalPoints": {
+          "QB": 288.9,
+          "RB": 695.3,
+          "WR": 478.6,
+          "TE": 263.4,
+          "K": 176.6,
+          "DEF": 95.2,
+          "FLEX": 0
+        }
+      }
+    }
+  ],
+  "runs": [
+    {
+      "seed": 1,
+      "seat": 1,
+      "total": 1976.5899999999997
+    },
+    {
+      "seed": 1,
+      "seat": 2,
+      "total": 1936.1399999999999
+    },
+    {
+      "seed": 1,
+      "seat": 3,
+      "total": 1912.1999999999998
+    },
+    {
+      "seed": 1,
+      "seat": 4,
+      "total": 2009.0400000000002
+    },
+    {
+      "seed": 1,
+      "seat": 5,
+      "total": 1935.6399999999999
+    },
+    {
+      "seed": 1,
+      "seat": 6,
+      "total": 1975.9399999999998
+    },
+    {
+      "seed": 1,
+      "seat": 7,
+      "total": 1901.602
+    },
+    {
+      "seed": 1,
+      "seat": 8,
+      "total": 1882.8020000000001
+    },
+    {
+      "seed": 1,
+      "seat": 9,
+      "total": 2061.402
+    },
+    {
+      "seed": 1,
+      "seat": 10,
+      "total": 1905.702
+    },
+    {
+      "seed": 1,
+      "seat": 11,
+      "total": 2006.062
+    },
+    {
+      "seed": 1,
+      "seat": 12,
+      "total": 1880.7720000000002
+    },
+    {
+      "seed": 2,
+      "seat": 1,
+      "total": 1830.5900000000001
+    },
+    {
+      "seed": 2,
+      "seat": 2,
+      "total": 2092.4599999999996
+    },
+    {
+      "seed": 2,
+      "seat": 3,
+      "total": 2085.06
+    },
+    {
+      "seed": 2,
+      "seat": 4,
+      "total": 2175.5899999999997
+    },
+    {
+      "seed": 2,
+      "seat": 5,
+      "total": 2113.6000000000004
+    },
+    {
+      "seed": 2,
+      "seat": 6,
+      "total": 2055.84
+    },
+    {
+      "seed": 2,
+      "seat": 7,
+      "total": 1966.862
+    },
+    {
+      "seed": 2,
+      "seat": 8,
+      "total": 2028.4920000000002
+    },
+    {
+      "seed": 2,
+      "seat": 9,
+      "total": 1913.0620000000001
+    },
+    {
+      "seed": 2,
+      "seat": 10,
+      "total": 1908.2020000000002
+    },
+    {
+      "seed": 2,
+      "seat": 11,
+      "total": 1899.352
+    },
+    {
+      "seed": 2,
+      "seat": 12,
+      "total": 1997.8719999999998
+    },
+    {
+      "seed": 3,
+      "seat": 1,
+      "total": 1979.3899999999999
+    },
+    {
+      "seed": 3,
+      "seat": 2,
+      "total": 1870.52
+    },
+    {
+      "seed": 3,
+      "seat": 3,
+      "total": 1993.5800000000002
+    },
+    {
+      "seed": 3,
+      "seat": 4,
+      "total": 1977.902
+    },
+    {
+      "seed": 3,
+      "seat": 5,
+      "total": 1939.3820000000005
+    },
+    {
+      "seed": 3,
+      "seat": 6,
+      "total": 2022.762
+    },
+    {
+      "seed": 3,
+      "seat": 7,
+      "total": 1925.0720000000001
+    },
+    {
+      "seed": 3,
+      "seat": 8,
+      "total": 1855.702
+    },
+    {
+      "seed": 3,
+      "seat": 9,
+      "total": 1867.4419999999996
+    },
+    {
+      "seed": 3,
+      "seat": 10,
+      "total": 1879.382
+    },
+    {
+      "seed": 3,
+      "seat": 11,
+      "total": 1893.4919999999995
+    },
+    {
+      "seed": 3,
+      "seat": 12,
+      "total": 1833.5420000000004
+    },
+    {
+      "seed": 4,
+      "seat": 1,
+      "total": 2029.46
+    },
+    {
+      "seed": 4,
+      "seat": 2,
+      "total": 2083.3
+    },
+    {
+      "seed": 4,
+      "seat": 3,
+      "total": 1981.63
+    },
+    {
+      "seed": 4,
+      "seat": 4,
+      "total": 1971.8499999999997
+    },
+    {
+      "seed": 4,
+      "seat": 5,
+      "total": 2133.7200000000003
+    },
+    {
+      "seed": 4,
+      "seat": 6,
+      "total": 2037.7620000000002
+    },
+    {
+      "seed": 4,
+      "seat": 7,
+      "total": 1885.182
+    },
+    {
+      "seed": 4,
+      "seat": 8,
+      "total": 1984.6020000000003
+    },
+    {
+      "seed": 4,
+      "seat": 9,
+      "total": 1963.782
+    },
+    {
+      "seed": 4,
+      "seat": 10,
+      "total": 1898.452
+    },
+    {
+      "seed": 4,
+      "seat": 11,
+      "total": 1990.432
+    },
+    {
+      "seed": 4,
+      "seat": 12,
+      "total": 1953.702
+    },
+    {
+      "seed": 5,
+      "seat": 1,
+      "total": 2002.09
+    },
+    {
+      "seed": 5,
+      "seat": 2,
+      "total": 2239.3600000000006
+    },
+    {
+      "seed": 5,
+      "seat": 3,
+      "total": 2139.46
+    },
+    {
+      "seed": 5,
+      "seat": 4,
+      "total": 2169.02
+    },
+    {
+      "seed": 5,
+      "seat": 5,
+      "total": 2055.84
+    },
+    {
+      "seed": 5,
+      "seat": 6,
+      "total": 1968.3120000000004
+    },
+    {
+      "seed": 5,
+      "seat": 7,
+      "total": 1938.5320000000002
+    },
+    {
+      "seed": 5,
+      "seat": 8,
+      "total": 1938.5320000000002
+    },
+    {
+      "seed": 5,
+      "seat": 9,
+      "total": 1834.252
+    },
+    {
+      "seed": 5,
+      "seat": 10,
+      "total": 1939.6919999999996
+    },
+    {
+      "seed": 5,
+      "seat": 11,
+      "total": 1991.8820000000003
+    },
+    {
+      "seed": 5,
+      "seat": 12,
+      "total": 1990.432
+    },
+    {
+      "seed": 6,
+      "seat": 1,
+      "total": 1830.5900000000001
+    },
+    {
+      "seed": 6,
+      "seat": 2,
+      "total": 2101.39
+    },
+    {
+      "seed": 6,
+      "seat": 3,
+      "total": 2052.31
+    },
+    {
+      "seed": 6,
+      "seat": 4,
+      "total": 2086.53
+    },
+    {
+      "seed": 6,
+      "seat": 5,
+      "total": 1998.5219999999997
+    },
+    {
+      "seed": 6,
+      "seat": 6,
+      "total": 1966.862
+    },
+    {
+      "seed": 6,
+      "seat": 7,
+      "total": 1832.802
+    },
+    {
+      "seed": 6,
+      "seat": 8,
+      "total": 1826.302
+    },
+    {
+      "seed": 6,
+      "seat": 9,
+      "total": 1822.6419999999998
+    },
+    {
+      "seed": 6,
+      "seat": 10,
+      "total": 1983.1519999999998
+    },
+    {
+      "seed": 6,
+      "seat": 11,
+      "total": 1917.382
+    },
+    {
+      "seed": 6,
+      "seat": 12,
+      "total": 1881.5620000000001
+    },
+    {
+      "seed": 7,
+      "seat": 1,
+      "total": 1976.6899999999996
+    },
+    {
+      "seed": 7,
+      "seat": 2,
+      "total": 1964.8799999999999
+    },
+    {
+      "seed": 7,
+      "seat": 3,
+      "total": 1914.8100000000002
+    },
+    {
+      "seed": 7,
+      "seat": 4,
+      "total": 2133.7200000000003
+    },
+    {
+      "seed": 7,
+      "seat": 5,
+      "total": 1998.5219999999997
+    },
+    {
+      "seed": 7,
+      "seat": 6,
+      "total": 1943.2220000000002
+    },
+    {
+      "seed": 7,
+      "seat": 7,
+      "total": 1898.5520000000001
+    },
+    {
+      "seed": 7,
+      "seat": 8,
+      "total": 1905.8319999999999
+    },
+    {
+      "seed": 7,
+      "seat": 9,
+      "total": 1905.8319999999999
+    },
+    {
+      "seed": 7,
+      "seat": 10,
+      "total": 1998.642
+    },
+    {
+      "seed": 7,
+      "seat": 11,
+      "total": 1906.3120000000001
+    },
+    {
+      "seed": 7,
+      "seat": 12,
+      "total": 1950.242
+    },
+    {
+      "seed": 8,
+      "seat": 1,
+      "total": 1991.9099999999999
+    },
+    {
+      "seed": 8,
+      "seat": 2,
+      "total": 2093.1
+    },
+    {
+      "seed": 8,
+      "seat": 3,
+      "total": 2047.22
+    },
+    {
+      "seed": 8,
+      "seat": 4,
+      "total": 2133.7200000000003
+    },
+    {
+      "seed": 8,
+      "seat": 5,
+      "total": 2133.7200000000003
+    },
+    {
+      "seed": 8,
+      "seat": 6,
+      "total": 1952.832
+    },
+    {
+      "seed": 8,
+      "seat": 7,
+      "total": 1952.832
+    },
+    {
+      "seed": 8,
+      "seat": 8,
+      "total": 2108.2599999999998
+    },
+    {
+      "seed": 8,
+      "seat": 9,
+      "total": 1887.252
+    },
+    {
+      "seed": 8,
+      "seat": 10,
+      "total": 2038.3500000000001
+    },
+    {
+      "seed": 8,
+      "seat": 11,
+      "total": 2038.3500000000001
+    },
+    {
+      "seed": 8,
+      "seat": 12,
+      "total": 2058.4700000000003
+    },
+    {
+      "seed": 9,
+      "seat": 1,
+      "total": 2017.63
+    },
+    {
+      "seed": 9,
+      "seat": 2,
+      "total": 1945.0200000000004
+    },
+    {
+      "seed": 9,
+      "seat": 3,
+      "total": 1929.1499999999999
+    },
+    {
+      "seed": 9,
+      "seat": 4,
+      "total": 1976.1799999999998
+    },
+    {
+      "seed": 9,
+      "seat": 5,
+      "total": 2108.68
+    },
+    {
+      "seed": 9,
+      "seat": 6,
+      "total": 2041.2799999999997
+    },
+    {
+      "seed": 9,
+      "seat": 7,
+      "total": 1982.7219999999998
+    },
+    {
+      "seed": 9,
+      "seat": 8,
+      "total": 2064.422
+    },
+    {
+      "seed": 9,
+      "seat": 9,
+      "total": 2016.722
+    },
+    {
+      "seed": 9,
+      "seat": 10,
+      "total": 1963.782
+    },
+    {
+      "seed": 9,
+      "seat": 11,
+      "total": 1976.242
+    },
+    {
+      "seed": 9,
+      "seat": 12,
+      "total": 1955.042
+    }
+  ],
+  "discovery": {
+    "score": 84.2,
+    "letter": "B",
+    "averagePoints": 1977.5,
+    "pointsStandardError": 9.2,
+    "samples": 96,
+    "averageFinish": 3.04,
+    "pointsPercentile": 81.4,
+    "allPlayWinRate": 61.3,
+    "weeklyHighScoreRate": 14.8,
+    "playoffRate": 72.9,
+    "championshipRate": 44.8,
+    "benchContribution": 440.2,
+    "benchStarts": 41.8,
+    "positionalPoints": {
+      "QB": 285.5,
+      "RB": 722.6,
+      "WR": 447.7,
+      "TE": 254.3,
+      "K": 176.6,
+      "DEF": 90.8
+    }
+  },
+  "heldout": {
+    "score": 87.6,
+    "letter": "B+",
+    "averagePoints": 1998.1,
+    "pointsStandardError": 15.3,
+    "samples": 12,
+    "averageFinish": 2.08,
+    "pointsPercentile": 90.2,
+    "allPlayWinRate": 63.2,
+    "weeklyHighScoreRate": 14.7,
+    "playoffRate": 91.7,
+    "championshipRate": 50,
+    "benchContribution": 420.8,
+    "benchStarts": 40.1,
+    "positionalPoints": {
+      "QB": 288.9,
+      "RB": 695.3,
+      "WR": 478.6,
+      "TE": 263.4,
+      "K": 176.6,
+      "DEF": 95.2,
+      "FLEX": 0
+    }
+  }
+}
