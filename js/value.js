@@ -143,11 +143,33 @@ export function baselines(pool, teams, rounds) {
     byPosition.get(player.position).push(player);
   }
 
+  const MODE = globalThis.process?.env?.BASELINE_MODE ?? "current";
+  const SHARE = JSON.parse(globalThis.process?.env?.BASELINE_SHARE ?? "{}");
+  const STARTERS = { QB: 1, RB: 2, WR: 2, TE: 1 };
   for (const [position, players] of byPosition) {
     const ranked = players.map(adjusted).sort((a, b) => b - a);
     if (!ranked.length) continue;
     if (STREAMABLE.has(position)) {
       out[position] = ranked[Math.min(teams, ranked.length) - 1];
+    } else if (MODE === "wire" && (globalThis.process?.env?.BASELINE_POS ?? position).includes(position)) {
+      const left = players.filter((p) => p.adp > drafted).map(adjusted).sort((a, b) => b - a);
+      out[position] = left.length ? left[0] : ranked[ranked.length - 1];
+    } else if (MODE === "queue") {
+      const flex = Number(globalThis.process?.env?.BASELINE_FLEX ?? 0);
+      const slots = (STARTERS[position] ?? 0) + (FLEXABLE.has(position) ? flex : 0);
+      const k = Math.round(teams * slots * (1 - (DEFAULT_AVAILABILITY[position] ?? 0.85)));
+      const left = players.filter((p) => p.adp > drafted).map(adjusted).sort((a, b) => b - a);
+      out[position] = left.length
+        ? left[Math.min(Math.max(1, k), left.length) - 1]
+        : ranked[ranked.length - 1];
+    } else if (MODE === "wireK") {
+      const k = Number(globalThis.process?.env?.BASELINE_K ?? 1);
+      const left = players.filter((p) => p.adp > drafted).map(adjusted).sort((a, b) => b - a);
+      out[position] = left.length ? left[Math.min(k, left.length) - 1] : ranked[ranked.length - 1];
+    } else if (MODE === "demand" && (globalThis.process?.env?.BASELINE_POS ?? position).includes(position)) {
+      const slots = (STARTERS[position] ?? 0) + (SHARE[position] ?? 0);
+      const idx = Math.round(teams * slots);
+      out[position] = ranked[Math.min(idx, ranked.length - 1)];
     } else {
       const taken = players.filter((p) => p.adp <= drafted).length;
       out[position] = ranked[Math.min(taken, ranked.length - 1)];
