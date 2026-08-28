@@ -28,7 +28,17 @@ if (command === "check") {
     if (JSON.stringify(dirs) !== JSON.stringify([...years].sort())) throw new Error("Historical season index is stale");
   }
   for (const season of options.all ? years : [options.season ?? years[0]]) {
-    const document = await loadLocalGrades(season);
+    // A captured-but-ungraded season is a known state, not a broken one: the
+    // backtest runs it with neutral defaults. Only --all tolerates it, so
+    // asking for one season by name still fails loudly when it has no grades.
+    let document;
+    try {
+      document = await loadLocalGrades(season);
+    } catch (error) {
+      if (!options.all || error?.code !== "ENOENT") throw error;
+      console.log(`${season}: ungraded (no grades.json)`);
+      continue;
+    }
     validateGradeCohort(document, await readProjectJson(`data/historical/${season}/draft.json`));
     console.log(`${season}: validated ${Object.keys(document.grades).length} canonical grades`);
   }
