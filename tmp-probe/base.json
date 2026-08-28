@@ -1,0 +1,604 @@
+{
+ "elapsed": 263.662,
+ "grade": {
+  "score": 76.1,
+  "letter": "C",
+  "averagePoints": 1896.4,
+  "pointsStandardError": 9.5,
+  "samples": 96,
+  "averageFinish": 5.05,
+  "pointsPercentile": 63.2,
+  "allPlayWinRate": 55.1,
+  "weeklyHighScoreRate": 10,
+  "playoffRate": 50,
+  "championshipRate": 25,
+  "benchContribution": 218.6,
+  "benchStarts": 29.1,
+  "positionalPoints": {
+   "QB": 252.9,
+   "RB": 708.6,
+   "WR": 404.7,
+   "TE": 249.2,
+   "K": 176.6,
+   "DEF": 104.4
+  }
+ },
+ "rows": [
+  {
+   "seed": 1,
+   "seat": 1,
+   "total": 1864.8,
+   "picks": "Saquon Barkley|James Cook|Omarion Hampton|Jameson Williams|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Stefon Diggs|Brandon Aubrey|Dallas Goedert|Philadelphia Eagles|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 1,
+   "seat": 2,
+   "total": 1843.6,
+   "picks": "Saquon Barkley|James Cook|Omarion Hampton|Jameson Williams|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Jakobi Meyers|Brandon Aubrey|Dallas Goedert|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 1,
+   "seat": 3,
+   "total": 1855,
+   "picks": "Saquon Barkley|Kyren Williams|Brock Bowers|Jameson Williams|Tetairoa McMillan|Jerry Jeudy|Jaylen Warren|Brock Purdy|Stefon Diggs|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 1,
+   "seat": 4,
+   "total": 1940.6,
+   "picks": "Saquon Barkley|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Rico Dowdle"
+  },
+  {
+   "seed": 1,
+   "seat": 5,
+   "total": 1940.6,
+   "picks": "Saquon Barkley|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Rico Dowdle"
+  },
+  {
+   "seed": 1,
+   "seat": 6,
+   "total": 1835.2,
+   "picks": "Saquon Barkley|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 1,
+   "seat": 7,
+   "total": 1792.3,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Rashid Shaheed|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 1,
+   "seat": 8,
+   "total": 1805.6,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 1,
+   "seat": 9,
+   "total": 1935.5,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Ricky Pearsall|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 1,
+   "seat": 10,
+   "total": 1826.9,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Tony Pollard|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 1,
+   "seat": 11,
+   "total": 1908.3,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Baltimore Ravens|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 1,
+   "seat": 12,
+   "total": 1882.8,
+   "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|George Pickens|Tony Pollard|Ricky Pearsall|Emeka Egbuka|Brock Purdy|Brandon Aubrey|Baltimore Ravens|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 2,
+   "seat": 1,
+   "total": 1711,
+   "picks": "Saquon Barkley|Omarion Hampton|Tyreek Hill|Jameson Williams|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Zach Charbonnet|Stefon Diggs|Brandon Aubrey|Dallas Goedert|Baltimore Ravens|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 2,
+   "seat": 2,
+   "total": 1950.9,
+   "picks": "Bijan Robinson|James Cook|Omarion Hampton|Jameson Williams|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Jakobi Meyers|Brandon Aubrey|Dallas Goedert|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 2,
+   "seat": 3,
+   "total": 2016,
+   "picks": "Bijan Robinson|Kyren Williams|Omarion Hampton|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 2,
+   "seat": 4,
+   "total": 2019.4,
+   "picks": "Bijan Robinson|Chase Brown|Omarion Hampton|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 2,
+   "seat": 5,
+   "total": 1961.8,
+   "picks": "Derrick Henry|Chase Brown|Omarion Hampton|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 2,
+   "seat": 6,
+   "total": 1908.6,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 2,
+   "seat": 7,
+   "total": 1883.5,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 2,
+   "seat": 8,
+   "total": 1957.7,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|George Pickens|Jerry Jeudy|Deebo Samuel|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 2,
+   "seat": 9,
+   "total": 1829.2,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 2,
+   "seat": 10,
+   "total": 1815.6,
+   "picks": "Ashton Jeanty|Chase Brown|Brock Bowers|James Conner|George Pickens|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 2,
+   "seat": 11,
+   "total": 1827.1,
+   "picks": "Josh Jacobs|Chase Brown|Brock Bowers|James Conner|George Pickens|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Baltimore Ravens|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 2,
+   "seat": 12,
+   "total": 1908.8,
+   "picks": "Josh Jacobs|Chase Brown|Brock Bowers|James Conner|George Pickens|Tony Pollard|Ricky Pearsall|Emeka Egbuka|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 3,
+   "seat": 1,
+   "total": 1887.5,
+   "picks": "Saquon Barkley|Chase Brown|Omarion Hampton|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Stefon Diggs|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 3,
+   "seat": 2,
+   "total": 1837.2,
+   "picks": "Saquon Barkley|Chase Brown|Tyreek Hill|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Zach Charbonnet|Stefon Diggs|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 3,
+   "seat": 3,
+   "total": 2024.5,
+   "picks": "Bijan Robinson|Chase Brown|Brock Bowers|Jameson Williams|Jalen Hurts|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 3,
+   "seat": 4,
+   "total": 1967.6,
+   "picks": "Bijan Robinson|Chase Brown|Brock Bowers|Jameson Williams|Tetairoa McMillan|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 3,
+   "seat": 5,
+   "total": 1948.6,
+   "picks": "Bijan Robinson|Chase Brown|Brock Bowers|Terry McLaurin|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 3,
+   "seat": 6,
+   "total": 1932.1,
+   "picks": "Jahmyr Gibbs|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 3,
+   "seat": 7,
+   "total": 1841.9,
+   "picks": "Jahmyr Gibbs|Chase Brown|James Conner|Terry McLaurin|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Brandon Aubrey|Dallas Goedert|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 3,
+   "seat": 8,
+   "total": 1770.4,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Tony Pollard|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 3,
+   "seat": 9,
+   "total": 1721.5,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Tony Pollard|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 3,
+   "seat": 10,
+   "total": 1731.5,
+   "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 3,
+   "seat": 11,
+   "total": 1745.4,
+   "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Xavier Worthy|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 3,
+   "seat": 12,
+   "total": 1809.5,
+   "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|George Pickens|Xavier Worthy|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 4,
+   "seat": 1,
+   "total": 1945,
+   "picks": "Saquon Barkley|James Cook|Omarion Hampton|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Stefon Diggs|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 4,
+   "seat": 2,
+   "total": 1982.4,
+   "picks": "Saquon Barkley|Chase Brown|James Cook|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Stefon Diggs|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 4,
+   "seat": 3,
+   "total": 1858.8,
+   "picks": "Saquon Barkley|Chase Brown|Brock Bowers|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Zach Charbonnet|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Xavier Legette"
+  },
+  {
+   "seed": 4,
+   "seat": 4,
+   "total": 1915.4,
+   "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Jameson Williams|Tetairoa McMillan|Jerry Jeudy|Deebo Samuel|Brock Purdy|Zach Charbonnet|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 4,
+   "seat": 5,
+   "total": 2048.3,
+   "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Rico Dowdle"
+  },
+  {
+   "seed": 4,
+   "seat": 6,
+   "total": 1935.6,
+   "picks": "Jahmyr Gibbs|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Rashid Shaheed|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 4,
+   "seat": 7,
+   "total": 1749.8,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 4,
+   "seat": 8,
+   "total": 1888.4,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|George Pickens|Tony Pollard|Ricky Pearsall|Emeka Egbuka|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 4,
+   "seat": 9,
+   "total": 1852.5,
+   "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|George Pickens|Jerry Jeudy|Ricky Pearsall|Brock Purdy|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 4,
+   "seat": 10,
+   "total": 1772.7,
+   "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 4,
+   "seat": 11,
+   "total": 1885.5,
+   "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 4,
+   "seat": 12,
+   "total": 1909.3,
+   "picks": "Josh Jacobs|Chase Brown|Brock Bowers|James Conner|George Pickens|Tony Pollard|Emeka Egbuka|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 5,
+   "seat": 1,
+   "total": 1898.6,
+   "picks": "Saquon Barkley|James Cook|Omarion Hampton|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Rashid Shaheed|Woody Marks|Brenton Strange|Joshua Palmer|Hunter Henry"
+  },
+  {
+   "seed": 5,
+   "seat": 2,
+   "total": 2097.8,
+   "picks": "Bijan Robinson|Kyren Williams|James Cook|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Stefon Diggs|Brandon Aubrey|Philadelphia Eagles|Keon Coleman|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 5,
+   "seat": 3,
+   "total": 2000.3,
+   "picks": "Bijan Robinson|Kyren Williams|Omarion Hampton|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brandon Aubrey|Philadelphia Eagles|Rashid Shaheed|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 5,
+   "seat": 4,
+   "total": 2022.3,
+   "picks": "Bijan Robinson|Chase Brown|Tyreek Hill|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 5,
+   "seat": 5,
+   "total": 2007.4,
+   "picks": "Derrick Henry|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Woody Marks|Brenton Strange|Dalton Kincaid|Rico Dowdle"
+  },
+  {
+   "seed": 5,
+   "seat": 6,
+   "total": 1895.5,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Rashid Shaheed|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 5,
+   "seat": 7,
+   "total": 1876.4,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 5,
+   "seat": 8,
+   "total": 1876.4,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 5,
+   "seat": 9,
+   "total": 1748.2,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 5,
+   "seat": 10,
+   "total": 1866.8,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 5,
+   "seat": 11,
+   "total": 1885.5,
+   "picks": "Josh Jacobs|Chase Brown|Brock Bowers|James Conner|Jameson Williams|George Pickens|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 5,
+   "seat": 12,
+   "total": 1885.5,
+   "picks": "Josh Jacobs|Chase Brown|Brock Bowers|James Conner|Jameson Williams|George Pickens|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 6,
+   "seat": 1,
+   "total": 1717.6,
+   "picks": "Saquon Barkley|Omarion Hampton|Tyreek Hill|Jameson Williams|Jayden Daniels|Jerry Jeudy|Kaleb Johnson|Stefon Diggs|Brandon Aubrey|Dallas Goedert|Philadelphia Eagles|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 6,
+   "seat": 2,
+   "total": 2014,
+   "picks": "Bijan Robinson|Chase Brown|Omarion Hampton|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Stefon Diggs|Brandon Aubrey|Philadelphia Eagles|Rashid Shaheed|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 6,
+   "seat": 3,
+   "total": 2050.9,
+   "picks": "Bijan Robinson|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Zach Charbonnet|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Rico Dowdle"
+  },
+  {
+   "seed": 6,
+   "seat": 4,
+   "total": 2050.9,
+   "picks": "Bijan Robinson|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Zach Charbonnet|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Rico Dowdle"
+  },
+  {
+   "seed": 6,
+   "seat": 5,
+   "total": 2049.2,
+   "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Rico Dowdle"
+  },
+  {
+   "seed": 6,
+   "seat": 6,
+   "total": 1925.6,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Stefon Diggs|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 6,
+   "seat": 7,
+   "total": 1748.2,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 6,
+   "seat": 8,
+   "total": 1748.2,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Ricky Pearsall|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 6,
+   "seat": 9,
+   "total": 1707.6,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 6,
+   "seat": 10,
+   "total": 1905.1,
+   "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Ricky Pearsall|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 6,
+   "seat": 11,
+   "total": 1853.5,
+   "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Tony Pollard|Matthew Golden|Emeka Egbuka|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 6,
+   "seat": 12,
+   "total": 1894.1,
+   "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|George Pickens|Tony Pollard|Matthew Golden|Emeka Egbuka|Brock Purdy|Brandon Aubrey|Baltimore Ravens|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 7,
+   "seat": 1,
+   "total": 1884,
+   "picks": "Saquon Barkley|James Cook|Omarion Hampton|Jameson Williams|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brandon Aubrey|Dallas Goedert|Philadelphia Eagles|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 7,
+   "seat": 2,
+   "total": 1960.4,
+   "picks": "Saquon Barkley|James Cook|Tyreek Hill|Trey McBride|Jayden Daniels|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Stefon Diggs|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 7,
+   "seat": 3,
+   "total": 1950.7,
+   "picks": "Saquon Barkley|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Rico Dowdle"
+  },
+  {
+   "seed": 7,
+   "seat": 4,
+   "total": 2049.2,
+   "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Rico Dowdle"
+  },
+  {
+   "seed": 7,
+   "seat": 5,
+   "total": 2049.2,
+   "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Rico Dowdle"
+  },
+  {
+   "seed": 7,
+   "seat": 6,
+   "total": 1895.5,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Rashid Shaheed|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 7,
+   "seat": 7,
+   "total": 1820.4,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Jerry Jeudy|Deebo Samuel|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 7,
+   "seat": 8,
+   "total": 1837.6,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 7,
+   "seat": 9,
+   "total": 1837.6,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 7,
+   "seat": 10,
+   "total": 1871.9,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 7,
+   "seat": 11,
+   "total": 1782.8,
+   "picks": "Ashton Jeanty|Josh Jacobs|Brock Bowers|James Conner|George Pickens|Jerry Jeudy|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  },
+  {
+   "seed": 7,
+   "seat": 12,
+   "total": 1894.1,
+   "picks": "Josh Jacobs|Chase Brown|Brock Bowers|James Conner|George Pickens|Tony Pollard|Matthew Golden|Emeka Egbuka|Brock Purdy|Brandon Aubrey|Baltimore Ravens|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 8,
+   "seat": 1,
+   "total": 1852.6,
+   "picks": "Saquon Barkley|James Cook|Omarion Hampton|Jameson Williams|Jayden Daniels|Deebo Samuel|Ricky Pearsall|Jordan Addison|Brandon Aubrey|Dallas Goedert|Philadelphia Eagles|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 8,
+   "seat": 2,
+   "total": 1916.1,
+   "picks": "Saquon Barkley|James Cook|Omarion Hampton|Trey McBride|Jayden Daniels|Deebo Samuel|Ricky Pearsall|Jordan Addison|Brandon Aubrey|Philadelphia Eagles|Rashid Shaheed|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 8,
+   "seat": 3,
+   "total": 1950.7,
+   "picks": "Saquon Barkley|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Rico Dowdle"
+  },
+  {
+   "seed": 8,
+   "seat": 4,
+   "total": 2049.2,
+   "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Rico Dowdle"
+  },
+  {
+   "seed": 8,
+   "seat": 5,
+   "total": 2049.2,
+   "picks": "Jahmyr Gibbs|Chase Brown|Brock Bowers|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Jaylen Warren|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Rico Dowdle"
+  },
+  {
+   "seed": 8,
+   "seat": 6,
+   "total": 1891.1,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 8,
+   "seat": 7,
+   "total": 1891.1,
+   "picks": "Derrick Henry|Chase Brown|James Conner|Trey McBride|Jameson Williams|Jerry Jeudy|Deebo Samuel|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 8,
+   "seat": 8,
+   "total": 2055,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Trey McBride|Jameson Williams|George Pickens|Deebo Samuel|Matthew Golden|Drake Maye|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 8,
+   "seat": 9,
+   "total": 1798.8,
+   "picks": "Ashton Jeanty|Chase Brown|James Conner|Brock Bowers|Jameson Williams|Tony Pollard|Deebo Samuel|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 8,
+   "seat": 10,
+   "total": 1989.3,
+   "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Ricky Pearsall|Matthew Golden|Drake Maye|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Hunter Henry"
+  },
+  {
+   "seed": 8,
+   "seat": 11,
+   "total": 1989.3,
+   "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Ricky Pearsall|Matthew Golden|Drake Maye|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Brenton Strange|Woody Marks|Hunter Henry"
+  },
+  {
+   "seed": 8,
+   "seat": 12,
+   "total": 1885.5,
+   "picks": "Josh Jacobs|Chase Brown|James Conner|Brock Bowers|Jameson Williams|George Pickens|Matthew Golden|Brock Purdy|Brandon Aubrey|Philadelphia Eagles|Marvin Mims|Woody Marks|Brenton Strange|Dalton Kincaid|Xavier Legette"
+  }
+ ]
+}
