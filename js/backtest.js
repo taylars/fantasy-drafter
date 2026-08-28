@@ -5,7 +5,7 @@
  * handed to a strategy. That separation is the backtest's most important rule.
  */
 
-import { board, situation, DEFAULT_AVAILABILITY } from "./value.js";
+import { board, situation, DEFAULT_AVAILABILITY, PLAN_AHEAD, BOARD_LIMIT } from "./value.js";
 import { validateGrades } from "./grades.js";
 import { scriptedChoice, missingStarters, STYLES } from "./draft-policy.js";
 
@@ -92,7 +92,7 @@ export function simulateDraft(fixture, {
   slots = DEFAULT_SLOTS,
   type = "snake",
   reversalRound = 0,
-  ahead = 2,
+  ahead = PLAN_AHEAD,
   format = "half_ppr",
   opponentStyle = "adp",
   seed = 1,
@@ -127,7 +127,7 @@ export function simulateDraft(fixture, {
         atPick: i + 1,
         userIds: new Set([userId]),
       });
-      chosen = board(sit, { ahead, limit: pool.length }).ranked.find(row =>
+      chosen = board(sit, { ahead, limit: BOARD_LIMIT }).ranked.find(row =>
         missingStarters([...roster, row.player], slots) <= picksLeft - 1)?.player;
     } else {
       const style = seat + 1 === heroSeat ? 'adp' : opponentStyle === "mixed"
@@ -345,10 +345,17 @@ export function gradeRuns(runs) {
                     + 0.15 * normalizedPlayoffs + 0.15 * normalizedChampionships;
   const score = 50 + 50 * performance;
   const averagePoints = hero.reduce((sum, r) => sum + r.total, 0) / hero.length;
+  // Descriptive standard error across simulated seat/seed totals. These reuse
+  // the same NFL season and are not independent seasonal observations. Compare
+  // strategy changes with paired runs and inspect room/seat concentration too.
+  const variance = hero.length > 1
+    ? hero.reduce((sum, r) => sum + (r.total - averagePoints) ** 2, 0) / (hero.length - 1) : 0;
   return {
     score: Math.round(score * 10) / 10,
     letter: letter(score),
     averagePoints: Math.round(averagePoints * 10) / 10,
+    pointsStandardError: Math.round(Math.sqrt(variance / hero.length) * 10) / 10,
+    samples: hero.length,
     averageFinish: Math.round(hero.reduce((sum, r) => sum + r.rank, 0) / hero.length * 100) / 100,
     pointsPercentile: Math.round(pointsPercentile * 1000) / 10,
     allPlayWinRate: Math.round(allPlay * 1000) / 10,
@@ -370,17 +377,30 @@ function runTeams(result) {
   return result._teams;
 }
 
+/* Grade every seat, over one seed or several.
+ *
+ * One seed is twelve drafts against one scripted room, and that is not enough
+ * to judge a change by: across seeds 1..6 the same board scores anywhere from
+ * 66.4 to 74.2, because a twelfth of a championship is worth four points of
+ * grade on its own. Seed 1 sits near the bottom of that range, so the default
+ * run flattered ADP by about five points for no reason but the draw.
+ *
+ * Pooling seats across several rooms is the fix. `pointsStandardError` is
+ * reported alongside so a change can be read against the noise it has to clear
+ * rather than against the last number someone happened to see.
+ */
 export function runBacktest(fixture, options = {}) {
   const teams = options.teams ?? 12;
   const strategies = options.strategies ?? ["board", "adp"];
+  const seeds = options.seeds ?? [options.seed ?? 1];
   const output = {};
   for (const strategy of strategies) {
     const runs = [];
-    for (let heroSeat = 1; heroSeat <= teams; heroSeat++) {
-      const simulation = simulateDraft(fixture, { ...options, teams, heroSeat, heroStrategy: strategy });
+    for (const seed of seeds) for (let heroSeat = 1; heroSeat <= teams; heroSeat++) {
+      const simulation = simulateDraft(fixture, { ...options, seed, teams, heroSeat, heroStrategy: strategy });
       const results = scoreSeason(fixture, simulation, options);
       for (const result of results) Object.defineProperty(result, "_teams", { value: teams });
-      runs.push({ heroSeat, simulation, results });
+      runs.push({ heroSeat, seed, simulation, results });
     }
     output[strategy] = { grade: gradeRuns(runs), runs };
   }
@@ -420,16 +440,31 @@ function groupedGrades(runs, key) {
   return Object.fromEntries([...groups].map(([value, group]) => [value, gradeRuns(group)]));
 }
 
-export function runMatrix(fixture, { ahead = 2, seed = 1 } = {}) {
-  const configs = matrixConfigurations();
+// Callers may select a subset of environments for focused diagnostics. The CLI
+// uses the exhaustive matrix. Progress is observational and never reaches a
+// draft strategy or the scorer.
+export function runMatrix(fixture, {
+  ahead = PLAN_AHEAD, seed = 1, configs = matrixConfigurations(), onProgress,
+} = {}) {
+  const strategies = ["board", "adp"];
+  const total = strategies.length * configs.reduce((sum, config) => sum + config.teams, 0);
+  let completed = 0;
+  const report = (event) => onProgress?.({ completed, total, configurations: configs.length, seed, ...event });
+  report({ type: "start" });
   const output = {};
-  for (const strategy of ["board", "adp"]) {
+  for (const strategy of strategies) {
     const runs = [];
-    for (const config of configs) for (let heroSeat = 1; heroSeat <= config.teams; heroSeat++) {
-      const simulation = simulateDraft(fixture, { ...config, ahead, seed, heroSeat, heroStrategy: strategy });
-      const results = scoreSeason(fixture, simulation, config);
-      for (const result of results) Object.defineProperty(result, "_teams", { value: config.teams });
-      runs.push({ heroSeat, simulation, results, config });
+    for (const [index, config] of configs.entries()) {
+      const context = { strategy, configIndex: index + 1, config: { ...config, slots: [...config.slots] } };
+      report({ type: "configuration", ...context, heroSeat: 0 });
+      for (let heroSeat = 1; heroSeat <= config.teams; heroSeat++) {
+        const simulation = simulateDraft(fixture, { ...config, ahead, seed, heroSeat, heroStrategy: strategy });
+        const results = scoreSeason(fixture, simulation, config);
+        for (const result of results) Object.defineProperty(result, "_teams", { value: config.teams });
+        runs.push({ heroSeat, simulation, results, config });
+        completed++;
+        report({ type: "draft", ...context, heroSeat });
+      }
     }
     output[strategy] = {
       grade: gradeRuns(runs),
@@ -443,5 +478,6 @@ export function runMatrix(fixture, { ahead = 2, seed = 1 } = {}) {
       },
     };
   }
+  report({ type: "complete" });
   return output;
 }

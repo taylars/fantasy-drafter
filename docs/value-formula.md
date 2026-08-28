@@ -24,8 +24,9 @@ This is a well-trodden problem, and the shape below is not original:
 
 ## The formula
 
-Four steps, all in season points, so any number on the board can be explained
-in a sentence.
+Four steps, expressed in season-point units. Lineup value includes the
+projection-spread preference described below, so it is a heuristic score, not
+an expected season-points forecast.
 
 **1. Adjust the projection.** `db.projected_points` is the mean case under our
 own scoring. The grades correct it:
@@ -121,20 +122,26 @@ points** — it was nearly indifferent, so the floor buys real insurance cheaply
 Before searching the plan, each RB/WR/TE also receives a small bench-option
 value. Expected-lineup coverage otherwise makes every player below existing
 depth worth exactly zero, even though a late pick can be dropped at little
-cost if his favorable outcome never arrives. The option stays anchored to
-proven production above the waiver wire, with upside acting as a modifier:
+cost if his favorable outcome never arrives. The option is anchored entirely to
+projected production above the waiver wire:
 
 ```
 surplus(i) = max(adjusted_points(i) - waiver_baseline(position(i)), 0)
-option(i)  = 10 * max(upside_grade(i), 0) + 0.02 * surplus(i)
+option(i)  = 0.02 * surplus(i)
 draft_gain(i) = lineup_gain(i) + option(i)
 ```
 
 The option applies only when the roster can already fill every starting slot
 and the player is an RB, WR, or TE—i.e. this pick is being evaluated for the
-bench. Thus `+1` upside is worth at least 10 season points and `+2` at least
-20, with above-wire production breaking ties. Players selected while the
-starting lineup is incomplete receive no bench bonus, and QB/K/DEF never do.
+bench. Players selected while the starting lineup is incomplete receive no
+bench bonus, and QB/K/DEF never do.
+
+Previously the option also added `10 * max(upside_grade(i), 0)`, including
+for players projected below the waiver baseline. Upside already affects
+`adjusted_points`; the separate flat bonus could dominate late bench picks.
+Removing it improved mean points by 108.2 in the 2025 fixture across seeds
+1–8, with a similar improvement across seeds 9–16. These are repeated rooms
+from one season, not independent evidence of gains in future seasons.
 
 ```
 lineup_gain(i) = lineup(roster + i) − lineup(roster)
@@ -352,3 +359,31 @@ question fixed the definition; the grades themselves needed re-doing.
 Grades are ordinal because that's what research can produce defensibly; turning
 −2..+2 into a multiplier is the formula's job, not the researcher's. Only the
 top ~200 by ADP need grading — below that the differences are under a point.
+
+
+## Fixed projection-spread preference
+
+Lineup coverage now adds `0.5 × 17 × sqrt(varianceProxy)` to its mean-points
+component. Each covered slot-season contributes its coverage fraction times
+`(adjustedProjection / 17 × positionCV × (1 + .06 × max(0, upside)))²`. Unfilled or
+below-wire coverage uses the wire projection and its position's CV with no
+upside grade. FLEX coverage follows the same allocation as mean points; bench
+players outside the existing coverage/depth demand add no spread value.
+
+CV assumptions are QB .33, RB .55, WR .60, TE .65, K .45, DEF .70 (fallback .60).
+These are **uncalibrated preseason heuristics**, not measured distributions.
+They assume independent contributions and ignore correlations. The term also
+rewards projection magnitude and position; it is not a weekly win-probability,
+playoff, or championship model. No realized outcomes enter strategy inputs.
+There are no runtime tuning knobs.
+
+With the separate bench upside bonus removed, fixed weight .5 improved the
+2025 eight-seed discovery mean by42.7 points and held-out room seeds9–16 by33.2
+points (paired SE6.5,96 rooms/seats). All eight held-out seed averages improved.
+Small seed17 format checks included a PPR loss of11.3 points across three seats;
+an expanded PPR check (seeds9–10,24 seats) gained10.5 points (SE9.0), including
+one unchanged seed. The evidence is one NFL season with repeated players and
+room seeds, not independent season validation; gains may not generalize.
+
+Coverage allocation retains the existing adjusted-mean ordering, including
+FLEX. It does not jointly optimize mean plus spread across possible lineups.

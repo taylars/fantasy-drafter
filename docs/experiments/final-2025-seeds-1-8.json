@@ -1,0 +1,48 @@
+{
+  "board": {
+    "score": 88.8,
+    "letter": "B+",
+    "averagePoints": 2047.4,
+    "pointsStandardError": 8.4,
+    "samples": 96,
+    "averageFinish": 2.07,
+    "pointsPercentile": 90.2,
+    "allPlayWinRate": 66.2,
+    "weeklyHighScoreRate": 19.1,
+    "playoffRate": 81.3,
+    "championshipRate": 58.3,
+    "benchContribution": 490.4,
+    "benchStarts": 42.2,
+    "positionalPoints": {
+      "QB": 328.5,
+      "RB": 678.7,
+      "WR": 465.2,
+      "TE": 305.6,
+      "K": 176.6,
+      "DEF": 92.7
+    }
+  },
+  "adp": {
+    "score": 71.4,
+    "letter": "C-",
+    "averagePoints": 1846.1,
+    "pointsStandardError": 14,
+    "samples": 96,
+    "averageFinish": 6.5,
+    "pointsPercentile": 50,
+    "allPlayWinRate": 50,
+    "weeklyHighScoreRate": 8.3,
+    "playoffRate": 50,
+    "championshipRate": 8.3,
+    "benchContribution": 319.7,
+    "benchStarts": 40.4,
+    "positionalPoints": {
+      "QB": 294.3,
+      "RB": 594.9,
+      "WR": 577.4,
+      "TE": 152.3,
+      "K": 134,
+      "DEF": 93.3
+    }
+  }
+}

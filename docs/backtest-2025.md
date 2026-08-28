@@ -8,6 +8,11 @@ term moved in the expected direction.
 
 ## Result
 
+For the current production-default diagnosis, multi-seed baseline, and
+subsequent strategy experiments, see
+[2025 algorithm diagnosis](experiments/2026-08-27-009-algorithm-diagnosis.md).
+The older tables below are retained as history, not the current benchmark.
+
 The tables also predate projection-selected lineups and injury replacement
 baselines. They remain historical results, not the current benchmark.
 

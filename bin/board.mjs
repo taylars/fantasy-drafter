@@ -19,7 +19,7 @@ import { loadLocalGrades } from "./lib/grades.mjs";
 import { SleeperClient } from "../js/sleeper.js";
 import { FileCache } from "../js/cache-fs.js";
 import { buildPool, draftState, draftShape, draftFormat } from "../js/pool.js";
-import { situation, board, plans } from "../js/value.js";
+import { situation, board, plans, BOARD_LIMIT } from "../js/value.js";
 
 function parseArgs(argv) {
   const args = { top: 15 };
@@ -69,11 +69,12 @@ async function main() {
   const sit = situation({ pool, slots: league.roster_positions ?? [], draft, gone, ours, atPick, userIds });
 
   if (args.json) {
-    const { ranked } = board(sit, { limit: Number(args.top) || 250 });
+    const { ranked } = board(sit);
     console.log(JSON.stringify({
       league: league.name, season, at_pick: sit.atPick, upcoming: sit.upcoming,
       roster: sit.roster.map((p) => p.name),
-      values: ranked.map((r) => ({
+      // --top limits display, not the candidate pool used by the planner.
+      values: ranked.slice(0, Number(args.top) || BOARD_LIMIT).map((r) => ({
         player_id: r.player.player_id, name: r.player.name, position: r.player.position,
         adp: r.player.adp, value: +r.value.toFixed(1), gain: +r.gain.toFixed(1),
         option: +r.option.toFixed(1), graded: r.player.graded,
@@ -105,7 +106,7 @@ async function main() {
     return;
   }
 
-  const { ranked } = board(sit, { limit: 250 });
+  const { ranked } = board(sit);
   const graded = ranked.filter((r) => r.player.graded).length;
   console.log(`  graded:    ${graded} of ${ranked.length} shown`);
   console.log(`\n  ${"value".padStart(7)} ${"gain".padStart(7)} ${"option".padStart(7)} ${"cost".padStart(7)}  `

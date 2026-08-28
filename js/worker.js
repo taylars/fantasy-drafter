@@ -1,10 +1,9 @@
 /* The value model, off the main thread.
  *
- * Pricing a board is a few hundred milliseconds of arithmetic — a plan search
- * four picks deep, branching over six positions, each branch ranking a whole
- * position against the roster it would leave behind. That is not long, but it
- * is far too long to spend on the thread that has to keep the page scrolling,
- * and it happens again every three seconds while a draft is live.
+ * Pricing a board evaluates modeled draft continuations against the rosters
+ * they would leave behind. Keep that arithmetic off the thread that scrolls
+ * the page: it runs again every three seconds while a draft is live. The
+ * shared board defaults select the pricing horizon and candidate pool.
  *
  * The pool is sent once and kept here. It is a megabyte of players, and
  * shipping it across on every poll would cost more in copying than the
@@ -12,7 +11,7 @@
  * the picks.
  */
 
-import { situation, board } from "./value.js";
+import { situation, board, BOARD_LIMIT } from "./value.js";
 
 let state = null;   // {pool, slots, draft, userIds}
 
@@ -43,7 +42,7 @@ self.onmessage = ({ data }) => {
         atPick: payload.atPick,
         userIds: state.userIds,
       });
-      const { ranked, upcoming } = board(sit, { limit: payload.limit ?? 250 });
+      const { ranked, upcoming } = board(sit, { limit: payload.limit ?? BOARD_LIMIT });
 
       // Only what the page draws. The Player objects carry a memoised
       // `_adjusted` and everything the formula needed; sending them back whole

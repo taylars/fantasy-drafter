@@ -17,7 +17,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { scenario } from "./scenario.js";
-import { like } from "./fixture.js";
+import { like, player } from "./fixture.js";
+import { adjusted, optionValue, lineup, gain } from "../js/value.js";
 
 test("a player strictly better than the best on the board is the recommendation", () => {
   const before = scenario();
@@ -56,4 +57,33 @@ test("a player strictly worse than the best on the board does not take the top o
   // Still worth recommending, though — ten points off the best back in the
   // draft is a fine player, and a shortlist that dropped him would be wrong.
   assert.ok(after.recommends(nearly), `top three was ${after.top().join(", ")}`);
+});
+
+test("bench upside has no independent value below the waiver projection", () => {
+  const player = { position: "WR", points: 100, upside: 2, offense: 0,
+    position_security: 0, availability: 0.85 };
+  const wire = { WR: adjusted({ ...player }) + 1 };
+  assert.equal(optionValue({ ...player }, [], [], wire, true), 0);
+  assert.ok(optionValue({ ...player, points: 200 }, [], [], wire, true) > 0);
+  assert.equal(optionValue({ ...player, points: 200 }, [], [], wire, false), 0);
+  assert.equal(optionValue({ ...player, position: "QB", points: 200 }, [], [], {}, true), 0);
+});
+
+test("spread preference counts only covered starting slots, including FLEX and wire", () => {
+  const starter = player({ name: "Starter", position: "WR", adp: 1, points: 200, exp_games: 17 });
+  const reserve = player({ name: "Reserve", position: "WR", adp: 2, points: 150, exp_games: 17 });
+  const belowWire = player({ name: "Below Wire", position: "TE", adp: 3, points: 1, exp_games: 17, upside: 2 });
+  const base = { WR: 100, TE: 100 };
+  assert.equal(lineup([starter, reserve], ["FLEX", "BN"], base), lineup([starter], ["FLEX", "BN"], base));
+  assert.ok(gain(reserve, [starter], ["FLEX", "FLEX"], base) > 0);
+  assert.equal(gain(belowWire, [starter], ["FLEX", "FLEX"], base), 0);
+  const unavailable = like(starter, { availability: 0 });
+  assert.equal(lineup([unavailable], ["WR"], base), lineup([], ["WR"], base));
+});
+
+test("projection-spread valuation ignores realized outcomes and stale experimental sigma", () => {
+  const original = player({ name: "Projection", position: "RB", adp: 1, points: 200, exp_games: 17 });
+  const polluted = { ...original, _sigma: 100000, actual: 99999, weekly: [99999] };
+  assert.equal(lineup([polluted], ["RB"], {}), lineup([original], ["RB"], {}));
+  assert.ok(lineup([like(polluted, { points: 210 })], ["RB"], {}) > lineup([original], ["RB"], {}));
 });

@@ -10,9 +10,9 @@
  *
  *   value = gain(player) - cost(position)
  *
- * where `gain` is what he adds to the best legal starting lineup across a whole
- * 17-week season — his projection first corrected for the context the provider
- * cannot see — and `cost` is what spending this pick on his position does to
+ * where `gain` is what he adds to projected lineup coverage across a whole
+ * 17-week season, including a fixed projection-spread heuristic — his projection
+ * first corrected for the context the provider cannot see — and `cost` is what spending this pick on his position does to
  * the rest of the draft. So the top of the board sits at zero and everything
  * below it is regret, in points, against the best line available.
  *
@@ -71,14 +71,11 @@ export const DEFAULT_AVAILABILITY = { QB: 0.88, RB: 0.79, WR: 0.85, TE: 0.82, K:
 // that is 3.5% light is 3.5% light in the first round as well.
 const UPSIDE_WEIGHT = 0.0175;
 
-// A bench player has option value even when the mean projection does not crack
-// today's best lineup. Upside is the reason to spend a late pick on that
-// outcome: +1 is worth 10 season points and +2 is worth 20. A small share of
-// above-wire production breaks ties between players with the same upside. This
-// term applies only after the roster can already field every starting slot, so
-// it cannot inflate a player being drafted to fill the lineup.
+// A small share of projected production above the wire gives useful bench
+// players option value even when they do not improve the current lineup.
+// Upside grades already affect adjusted(); a separate flat grade bonus can
+// dominate late picks even for players with no above-wire projection.
 const BENCH_OPTION_WEIGHT = 0.02;
-const BENCH_UPSIDE_POINTS = 10.0;
 
 // ADP is a mean and players go in a range around it. Sleeper publishes no
 // spread, so this is assumed, and it is the least evidenced number in the file:
@@ -95,6 +92,41 @@ const ADP_SPREAD_FLOOR = 4.0;
 // claim its gain without ever spending a later pick on one.
 export const PLAN_AHEAD = 4;
 const PLAN_POSITIONS = ["RB", "WR", "TE", "QB", "K", "DEF"];
+
+// How many candidates, by ADP, the board prices. Exported because every caller
+// that ranks a real draft — the page, the CLI, the backtest — has to use the
+// same number or they are not measuring the same board. They drifted once:
+// the backtest planned two picks ahead against the whole pool while the page
+// planned four against the top 250, and the backtest's grade was reporting a
+// strategy nothing in production ran.
+export const BOARD_LIMIT = 250;
+
+/* Projection-spread preference, an uncalibrated preseason heuristic.
+ * Position CVs and the upside multiplier are assumptions, not estimates from
+ * realized weekly outcomes. Summing independent variance proxies ignores player
+ * correlation; this is not a win-probability or playoff model. Fixed weight .5
+ * improved held-out 2025 room seeds with the bench bonus removed, but does not
+ * establish generalization to other seasons (see experiment report).
+ */
+const WEEKLY_CV = { QB: 0.33, RB: 0.55, WR: 0.60, TE: 0.65, K: 0.45, DEF: 0.70 };
+const DEFAULT_CV = 0.60;
+const UPSIDE_SPREAD = 0.06;
+const SPREAD_WEIGHT = 0.5;
+
+function sigmaFor(position, weeklyMean, upside = 0) {
+  const cv = (WEEKLY_CV[position] ?? DEFAULT_CV) * (1 + UPSIDE_SPREAD * Math.max(0, upside));
+  return cv * Math.max(0, weeklyMean);
+}
+
+function weeklySigma(player) {
+  // No second player cache: copying a player and changing his projection must
+  // not carry a stale spread proxy from a previous board evaluation.
+  return sigmaFor(player.position, adjusted(player) / SEASON_GAMES, player.upside);
+}
+
+function objective(points, variance) {
+  return points + SPREAD_WEIGHT * SEASON_GAMES * Math.sqrt(Math.max(0, variance));
+}
 
 /* Season points if he played every week, corrected for context.
  *
@@ -125,6 +157,39 @@ export function adjusted(player) {
  * is over, which is what the wire actually offers — for a running back that is
  * a hundred points worse than the last starter, and assuming otherwise makes a
  * receiver-only draft look optimal when it isn't.
+ *
+ * The last starter looks too generous for a streamable position, and the board
+ * duly takes a kicker in round 10 where ADP waits until 12. It credits the best
+ * kicker +22.3 and the best defense +13.0 from an empty roster, which is a lot
+ * for a pick that could be a fourth receiver. That was measured rather than
+ * argued: the streamable rung was swept from the last starter up to the best
+ * player at the position — the level that collapses the surplus to zero and
+ * leaves `mustFill` alone to decide — over seeds 1-8, paired seat for seat.
+ *
+ *   rung, as a share of        K round  DEF round   points vs
+ *   last starter -> best                             the last starter
+ *   0%  (the last starter)        9.6      10.7      —  (1896.4 ±9.5)
+ *   40%                          10.0      11.1       -1.4 ±1.2
+ *   70%                          10.6      11.6      -32.0 ±3.5
+ *   85%                          11.8      12.8      -46.8 ±3.8
+ *   100% (the best kicker)       14.0      15.0      -20.2 ±3.9
+ *
+ * Every rung loses, and pushing the other way — below the last starter, taking
+ * K and DEF earlier still — also loses (-2.0 ±0.8). This is a peak, not a slope.
+ *
+ * The reason is that the freed picks buy nothing. At the -32 rung the roster mix
+ * moves by under a tenth of a player everywhere and the entire loss is K and DEF
+ * scoring less; at the -20 rung the picks go into a second and third quarterback
+ * (QB 1.00 -> 2.63 per roster) worth less than the depth back they displace.
+ * There is no round-10 receiver waiting to be freed. Kicker alone, delayed to
+ * round 12, costs -60.1 ±4.2.
+ *
+ * Read this as one season, though. The 2025 projections rank kickers at
+ * Spearman 0.29 over a 17-man pool and defenses at 0.29 over 26 — weak enough
+ * that the true correlation could be near zero, and the board's kicker edge
+ * (176.6 against ADP's 134.0) leans on the projection having correctly put the
+ * season's best kicker first. The rung is right for this data; it is the number
+ * here most likely to be luck, and a second season should re-run this sweep.
  */
 export function baselines(pool, teams, rounds) {
   const drafted = teams * rounds;
@@ -179,14 +244,14 @@ function slotDemand(slots) {
  * our own players for the spot.
  */
 function wire(base) {
-  let best = 0;
+  let best = 0, from = null;
   for (const position of FLEXABLE) {
-    if (position in base && base[position] > best) best = base[position];
+    if (position in base && base[position] > best) { best = base[position]; from = position; }
   }
-  return best;
+  return [best, from];
 }
 
-/* Season points this roster covers against a given demand.
+/* Points plus a projection-spread preference against a given demand.
  *
  * A player covers only the share of the season he is available for, so the
  * games his starters miss fall to the next man at that position, and to the
@@ -206,40 +271,53 @@ function wire(base) {
  * a player could be punished for.
  */
 function coverage(roster, need, flex, base) {
-  let total = 0;
-  const spare = []; // [adjusted, weeks] left over for the FLEX
+  let total = 0, variance = 0;
+  const spare = []; // [adjusted, weeks, sigma] left over for the FLEX
+
+  // A slot filled for `weeks` slot-seasons occupies that many slots in a
+  // typical week, so its share of the weekly variance is weighted the same way
+  // its share of the points is. Weeks are taken as independent draws.
+  const spend = (weeks, value, sigma) => { total += weeks * value; variance += weeks * sigma * sigma; };
 
   const positions = new Set(Object.keys(need));
   for (const player of roster) if (FLEXABLE.has(player.position)) positions.add(player.position);
 
   for (const position of positions) {
     const floor = base[position] ?? 0;
+    const floorSigma = sigmaFor(position, floor / SEASON_GAMES);
     let remaining = need[position] ?? 0;
     const mine = roster.filter((p) => p.position === position)
                        .sort((a, b) => adjusted(b) - adjusted(a));
     for (const player of mine) {
       const covered = Math.min(player.availability, remaining);
-      total += covered * Math.max(adjusted(player), floor);
+      // A week we would not start him in is a week the wire plays, so it takes
+      // the wire's spread along with the wire's points.
+      if (adjusted(player) >= floor) spend(covered, adjusted(player), weeklySigma(player));
+      else spend(covered, floor, floorSigma);
       remaining -= covered;
       if (player.availability > covered && FLEXABLE.has(position)) {
-        spare.push([adjusted(player), player.availability - covered]);
+        spare.push([adjusted(player), player.availability - covered, weeklySigma(player)]);
       }
     }
-    total += remaining * floor;
+    spend(remaining, floor, floorSigma);
   }
 
-  const floor = wire(base);
+  const [floor, floorPosition] = wire(base);
+  const floorSigma = sigmaFor(floorPosition ?? "WR", floor / SEASON_GAMES);
   let remaining = flex;
   spare.sort((a, b) => b[0] - a[0] || b[1] - a[1]);
-  for (const [value, weeks] of spare) {
+  for (const [value, weeks, sigma] of spare) {
     const covered = Math.min(weeks, remaining);
-    total += covered * Math.max(value, floor);
+    if (value >= floor) spend(covered, value, sigma);
+    else spend(covered, floor, floorSigma);
     remaining -= covered;
   }
-  return total + remaining * floor;
+  spend(remaining, floor, floorSigma);
+  return objective(total, variance);
 }
 
-/* Season points from the best legal lineup this roster can field.
+/* Heuristic score of projected lineup coverage.
+ * Allocation remains sorted by adjusted mean, not by the combined objective.
  *
  * Every starting slot needs all seventeen weeks, and depth is what covers the
  * ones a starter misses — a third running back is not a spare, he is the man
@@ -288,8 +366,7 @@ function lineupFilled(roster, slots) {
 export function optionValue(player, roster, slots, base, filled = null) {
   const isFilled = filled ?? lineupFilled(roster, slots);
   if (!FLEXABLE.has(player.position) || !isFilled) return 0;
-  const surplus = Math.max(0, adjusted(player) - (base[player.position] ?? 0));
-  return BENCH_UPSIDE_POINTS * Math.max(0, player.upside) + BENCH_OPTION_WEIGHT * surplus;
+  return BENCH_OPTION_WEIGHT * Math.max(0, adjusted(player) - (base[player.position] ?? 0));
 }
 
 /* Value added by a draft pick: lineup production plus bench option. */
@@ -601,7 +678,7 @@ function outlook(sit, candidates, gains, ahead) {
  * `plans` remains a separate, best-case path explorer. It is useful to explain
  * upside, but it does not participate in the recommendation score.
  */
-export function board(sit, { limit = 200, ahead = PLAN_AHEAD } = {}) {
+export function board(sit, { limit = BOARD_LIMIT, ahead = PLAN_AHEAD } = {}) {
   const forced = mustFill(sit.roster, sit.slots, sit.upcoming.length);
   const open = new Set(planPositions(sit.roster, sit.slots));
   const pickable = sit.available.filter((p) => forced.size ? forced.has(p.position) : open.has(p.position));
