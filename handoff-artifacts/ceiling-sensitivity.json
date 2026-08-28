@@ -1,0 +1,232 @@
+{
+  "seconds": 16.439285833000003,
+  "perSeed": [
+    {
+      "label": "classic",
+      "seed": 17,
+      "grade": {
+        "score": 92.8,
+        "letter": "A-",
+        "averagePoints": 1875,
+        "pointsStandardError": 26.8,
+        "samples": 3,
+        "averageFinish": 1.33,
+        "pointsPercentile": 97,
+        "allPlayWinRate": 66.1,
+        "weeklyHighScoreRate": 23.5,
+        "playoffRate": 100,
+        "championshipRate": 66.7,
+        "benchContribution": 418.4,
+        "benchStarts": 37.7,
+        "positionalPoints": {
+          "QB": 321.4,
+          "RB": 644.2,
+          "WR": 385.8,
+          "TE": 240.9,
+          "K": 176.6,
+          "DEF": 106
+        }
+      }
+    },
+    {
+      "label": "three_wr",
+      "seed": 17,
+      "grade": {
+        "score": 82.5,
+        "letter": "B-",
+        "averagePoints": 1998,
+        "pointsStandardError": 30.3,
+        "samples": 3,
+        "averageFinish": 2.67,
+        "pointsPercentile": 84.8,
+        "allPlayWinRate": 64.3,
+        "weeklyHighScoreRate": 11.8,
+        "playoffRate": 66.7,
+        "championshipRate": 33.3,
+        "benchContribution": 361.4,
+        "benchStarts": 35,
+        "positionalPoints": {
+          "QB": 310,
+          "RB": 641.6,
+          "WR": 488.3,
+          "TE": 275.5,
+          "K": 176.6,
+          "DEF": 106
+        }
+      }
+    },
+    {
+      "label": "std",
+      "seed": 17,
+      "grade": {
+        "score": 84,
+        "letter": "B",
+        "averagePoints": 1802.9,
+        "pointsStandardError": 74.9,
+        "samples": 3,
+        "averageFinish": 2,
+        "pointsPercentile": 90.9,
+        "allPlayWinRate": 63.3,
+        "weeklyHighScoreRate": 13.7,
+        "playoffRate": 66.7,
+        "championshipRate": 33.3,
+        "benchContribution": 344.8,
+        "benchStarts": 34,
+        "positionalPoints": {
+          "QB": 303.6,
+          "RB": 764.2,
+          "WR": 296.6,
+          "TE": 155.9,
+          "K": 176.6,
+          "DEF": 106
+        }
+      }
+    },
+    {
+      "label": "ppr",
+      "seed": 17,
+      "grade": {
+        "score": 88.1,
+        "letter": "B+",
+        "averagePoints": 2325.1,
+        "pointsStandardError": 9.9,
+        "samples": 3,
+        "averageFinish": 1.67,
+        "pointsPercentile": 93.9,
+        "allPlayWinRate": 71.8,
+        "weeklyHighScoreRate": 29.4,
+        "playoffRate": 66.7,
+        "championshipRate": 33.3,
+        "benchContribution": 409.5,
+        "benchStarts": 35,
+        "positionalPoints": {
+          "QB": 328,
+          "RB": 801.3,
+          "WR": 547.9,
+          "TE": 413.9,
+          "K": 161.1,
+          "DEF": 73
+        }
+      }
+    },
+    {
+      "label": "mixed",
+      "seed": 17,
+      "grade": {
+        "score": 85.1,
+        "letter": "B",
+        "averagePoints": 2025.9,
+        "pointsStandardError": 60.7,
+        "samples": 3,
+        "averageFinish": 2.67,
+        "pointsPercentile": 84.8,
+        "allPlayWinRate": 64.9,
+        "weeklyHighScoreRate": 9.8,
+        "playoffRate": 100,
+        "championshipRate": 33.3,
+        "benchContribution": 564.8,
+        "benchStarts": 47.3,
+        "positionalPoints": {
+          "QB": 327.9,
+          "RB": 763.7,
+          "WR": 393.3,
+          "TE": 267.1,
+          "K": 176.6,
+          "DEF": 97.3
+        }
+      }
+    }
+  ],
+  "points": [
+    {
+      "label": "classic",
+      "seed": 17,
+      "seat": 1,
+      "points": 1824.8380000000002
+    },
+    {
+      "label": "classic",
+      "seed": 17,
+      "seat": 6,
+      "points": 1883.75
+    },
+    {
+      "label": "classic",
+      "seed": 17,
+      "seat": 12,
+      "points": 1916.3999999999999
+    },
+    {
+      "label": "three_wr",
+      "seed": 17,
+      "seat": 1,
+      "points": 1983.9859999999999
+    },
+    {
+      "label": "three_wr",
+      "seed": 17,
+      "seat": 6,
+      "points": 2056.0879999999997
+    },
+    {
+      "label": "three_wr",
+      "seed": 17,
+      "seat": 12,
+      "points": 1953.8359999999998
+    },
+    {
+      "label": "std",
+      "seed": 17,
+      "seat": 1,
+      "points": 1768.518
+    },
+    {
+      "label": "std",
+      "seed": 17,
+      "seat": 6,
+      "points": 1693.698
+    },
+    {
+      "label": "std",
+      "seed": 17,
+      "seat": 12,
+      "points": 1946.362
+    },
+    {
+      "label": "ppr",
+      "seed": 17,
+      "seat": 1,
+      "points": 2344.796
+    },
+    {
+      "label": "ppr",
+      "seed": 17,
+      "seat": 6,
+      "points": 2316.7859999999996
+    },
+    {
+      "label": "ppr",
+      "seed": 17,
+      "seat": 12,
+      "points": 2313.796
+    },
+    {
+      "label": "mixed",
+      "seed": 17,
+      "seat": 1,
+      "points": 1908.7099999999998
+    },
+    {
+      "label": "mixed",
+      "seed": 17,
+      "seat": 6,
+      "points": 2111.87
+    },
+    {
+      "label": "mixed",
+      "seed": 17,
+      "seat": 12,
+      "points": 2057.18
+    }
+  ]
+}
