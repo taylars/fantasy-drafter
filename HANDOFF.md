@@ -1,34 +1,30 @@
-# Algorithm experiment coordination — resumed 2026-08-27
+# Algorithm experiments — final coordination state
 
-User resumed the five remaining experiments and requested notes updated as results arrive. Ceiling, rollout and streamable are active. Correlation and room simulation have finished and committed rejection reports. No PR opened or branch pushed yet. Each agent owns its existing worktree and updates its branch notes incrementally.
+All eight experiment families have final decisions. The five resumed agents updated their branch notes as results arrived and committed their completed reports. No further experiments are running.
 
-## Integrated state
+## Integrated on algo-improvements
 
-Code HEAD92b4812 on algo-improvements: original default/multi-seed fixes f8dc709/8f691ba; statistics/default tests f89c591; bench fix7b803fb; page/CLI shared default fix92b4812. All31 tests passed. Fresh official8-seed run reproduces2004.6 points vs1896.4 old board and1846.1 ADP; heldout bench2005.0. origin/main571c083 is ancestor.
+Production/backtest defaults and multi-seed reporting; flat bench-upside removal; fixed preseason spread preference (ceiling production commit66a0b77 integrated as7b2cc9b). Planning remains4 picks /250 candidates. Rollout is not shipped.
 
-## Branches
+Fresh merged normal backtest: seeds1–8,96 drafts,2047.4 ±8.4 points versus original production-aligned1896.4 ±9.5 and ADP1846.1 ±14. Saved held-out spread result2038.2 versus bench-only2005.0. Full216-environment matrix on merged code NOT run. Targeted checks are not a substitute. See docs/experiments/2025-algorithm-diagnosis.md and final-2025-seeds-1-8.json. Integrated strategy suite33 tests passed; final publishing gate repeats it.
 
-- **algo/bench-option**: Complete, integrated: 2004.6 discovery / 2005.0 holdout; +108.2/+111.4 vs baseline. 29 branch tests pass. Commit c7d6560 integrated as 7b803fb.
-- **algo/qb-depth**: Complete, reject: fractional depth+BUP0 loses12.9 discovery and14.8 holdout. 28 tests pass. Original experiment preserved.
-- **algo/baselines**: Complete, reject: queue+BUP0 loses27.1 discovery; seven of8 seeds worse. 28 tests pass. Original source restored.
-- **algo/ceiling**: Paused, promising: BUP0+risk=-.5 scores2047.4, +42.7 discovery. Heldout output exists but parent has not verified it. Next: analyze heldout; small seed17 cross-format checks; only then decide production implementation. Mutable knobs, uncalibrated CV assumptions and runtime require review. Current source may temporarily set BUP0. No merge.
-- **algo/correlation**: Paused, likely reject: corrected full+BUP0 gains7.6 discovery; original buggy full gains4.4. Duplicate dedicated/FLEX player coverage caused false collision penalty. Corrected variant28 tests pass. Heldout launched: inspect saved output, not yet verified. No merge.
-- **algo/room-sim**: Paused: BUP0 interaction launched; inspect saved output. Original64 simulation +6.5 concentrated few seats; no-needs -12.4;256 simulation +2.1. 28 tests pass. Marginal probabilities still multiplied independently, ownership inferred from pick order, hero picks skipped. Current source may temporarily set BUP0. No merge.
-- **algo/rollout**: Not resumed by Codex. Original Claude work: greedy full1882.4 loses; uniform1909.7; ahead5=1912.5 at4.8x runtime. Variants confounded, no final validation or merge. Inspect original log and local tmp scripts before continuing.
-- **algo/streamable**: Claude completed; not resumed by Codex. Comment-only commit c13502d. All tested K/DEF baseline rungs lost on old board; original28 tests pass. No strategy change. BUP0 interaction untested.
+## Branch outcomes and final note commits
 
-Each worktree has HANDOFF.md and handoff-artifacts with reports, source snapshots, dirty diff and available scratch results. Do not cherry-pick artifact handoff commits into production automatically. Experimental source changes remain uncommitted where originally uncommitted.
+- algo/bench-option: keep simple BUP0; original implementationc7d6560 integrated7b803fb; note959c769.
+- algo/qb-depth: reject extra depth; note60607df.
+- algo/baselines: reject replacement tuning; noteacccecd.
+- algo/ceiling: keep fixed heuristic; production66a0b77; final notescfd5bd6.
+- algo/correlation: reject small corrected gains; final notes5b9bbec.
+- algo/room-sim: reject weak concentrated gain; final notesd0071e8.
+- algo/streamable: preserve current baseline; fresh interactions lose on every seed; final notesd693289.
+- algo/rollout: defer despite default gain/speed; cross-format regressions plus truncated trajectories and >15-round horizon flaws; final notes9e216c2. Exact future fixes documented in its report.
 
-## Remaining
+Each worktree retains HANDOFF.md and handoff-artifacts. Original dirty experiments are preserved; do not merge artifact branch histories into production. Reports are copied to docs/experiments (bench and ceiling have standalone docs). Reports may include historical running checkpoints followed by final verdicts.
 
-Analyze saved ceiling/correlation/room outputs; rollout and streamable were not resumed. Finish aggregate docs/experiments/2025-algorithm-diagnosis.md; verify any further accepted integration; then PR algo-improvements -> main documenting all failures/results. Original final scope was wrap existing experiments, not more broad tuning.
+## Publishing
 
-Root .gitignore change preexisted (preserve). Uncommitted docs/backtest-2025.md,js/backtest.js statistical comment and docs/experiments are our pending documentation. Hand-off commit stages only HANDOFF.md at root.
+Existing PR#1 was discovered during resume: https://github.com/taylars/fantasy-drafter/pull/1 (algo-improvements -> main). Update that PR with final reports; do not create another. Final body prepared in /private/tmp/fantasy-pr-final.md. Publishing confirmation is the final remaining step at this checkpoint. Do not merge the PR automatically.
 
-## Resume checkpoint
+## Caveats
 
-Current base includes documentation commit749bb5d and streamable comment-only commit20e2543; the earlier uncommitted-files note is now historical. Working tree was clean at resume. No old experiment subprocesses observed. Production candidate remains BUP0,2004.6 discovery/2005.0 heldout.
-
-### Completed after resume
-
-Correlation: reject, corrected holdout +11.5 points, 28 tests pass; notes5b9bbec. Room simulation: reject, +4.76 points discovery concentrated in a few seats, 28 tests pass; notesd0071e8. Reports copied into docs/experiments. Root baseline31 tests pass. Ceiling heldout +33.2 verified; extra PPR check pending. Rollout and streamable continuation agents now active.
+One season, archived projections not proven preseason snapshots, repeated seat/seed dependence, follow-up reuse of heldout rooms, uncalibrated spread assumptions. No exhaustive merged matrix or broad browser benchmark. The proposed score is a heuristic, not expected points or championship probabilities.

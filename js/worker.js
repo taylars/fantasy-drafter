@@ -1,10 +1,9 @@
 /* The value model, off the main thread.
  *
- * Pricing a board is a few hundred milliseconds of arithmetic — a plan search
- * four picks deep, branching over six positions, each branch ranking a whole
- * position against the roster it would leave behind. That is not long, but it
- * is far too long to spend on the thread that has to keep the page scrolling,
- * and it happens again every three seconds while a draft is live.
+ * Pricing a board evaluates modeled draft continuations against the rosters
+ * they would leave behind. Keep that arithmetic off the thread that scrolls
+ * the page: it runs again every three seconds while a draft is live. The
+ * shared board defaults select the pricing horizon and candidate pool.
  *
  * The pool is sent once and kept here. It is a megabyte of players, and
  * shipping it across on every poll would cost more in copying than the

@@ -482,8 +482,8 @@ function applyLive(picks, gone, ours, result) {
       cell.textContent = v ? formatEdge(v.value) : "";
       if (v) {
         cell.title = "team-value edge versus the average modeled plan " + formatEdge(v.value) +
-          " · best four-pick path versus that average " + formatEdge(v.best_plan_edge) +
-          " · this player's lineup gain " + v.gain.toFixed(0) +
+          " · best modeled continuation versus that average " + formatEdge(v.best_plan_edge) +
+          " · this player's lineup score gain " + v.gain.toFixed(0) +
           (v.graded ? "" : " · ungraded");
       }
     }
