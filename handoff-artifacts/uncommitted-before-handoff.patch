@@ -1,0 +1,377 @@
+diff --git a/js/value.js b/js/value.js
+index e933366..81dd7de 100644
+--- a/js/value.js
++++ b/js/value.js
+@@ -78,7 +78,7 @@ const UPSIDE_WEIGHT = 0.0175;
+ // term applies only after the roster can already field every starting slot, so
+ // it cannot inflate a player being drafted to fill the lineup.
+ const BENCH_OPTION_WEIGHT = 0.02;
+-const BENCH_UPSIDE_POINTS = 10.0;
++const BENCH_UPSIDE_POINTS = 0;
+ 
+ // ADP is a mean and players go in a range around it. Sleeper publishes no
+ // spread, so this is assumed, and it is the least evidenced number in the file:
+@@ -334,6 +334,240 @@ export function survival(adp, pick) {
+   return 0.5 * erfc((pick - adp) / sigma / Math.SQRT2);
+ }
+ 
++/* --- The room, simulated --------------------------------------------------
++ *
++ * `survival` above prices each player on his own, as if the picks between now
++ * and our next one were coin flips with no budget. Two things are wrong with
++ * that. Only one player comes off the board per pick, so survival across a
++ * position is strongly negatively coupled — the analytic version will happily
++ * believe we get two backs who cannot both last. And it cannot see a run: if
++ * the eleven seats ahead of us have all taken a back and none has a tight end,
++ * the tight ends are safer than their ADP says and the backs are in danger.
++ *
++ * So instead of a formula per player, play the intervening picks out. Each
++ * opposing seat is given the same generic behaviour — take near the top of the
++ * remaining board, with the ADP noise the analytic model already assumes, and
++ * nudge toward a starting slot it still owes — and the whole stretch between
++ * our picks is run a few dozen times. The share of runs in which a player is
++ * still there at one of our picks is his survival, coupling and runs included.
++ *
++ * The opponent model is deliberately dull. It reads only what a drafter in the
++ * room can read: published ADP, the league's roster slots, and the picks
++ * already made. It is not tuned against any particular opponent, and it should
++ * not be — a model fitted to the drafters in one backtest is a model of that
++ * fixture, not of a draft room.
++ */
++
++// Runs per pick. Each one costs a sort of the live board and a scan per
++// intervening pick, and the answer is a proportion, so the error on a survival
++// near a half falls as 1/sqrt(runs): 64 buys about six points of resolution,
++// which is finer than the ADP guess feeding it.
++const ROOM_RUNS = 64;
++
++// How far down the perceived board a seat will look to satisfy a need. Beyond
++// this the need nudge can no longer beat the ADP gap anyway.
++const ROOM_WINDOW = 24;
++
++// How many picks early a seat will reach for a starting slot it has not filled,
++// and how far it pushes a position it already has enough of. Both are in picks,
++// which is the unit the perceived board is in.
++const ROOM_NEED_BONUS = 12;
++const ROOM_STOCKED_PENALTY = 60;
++
++// What a seat will carry at each position before it stops wanting more. Loose
++// on purpose: this is a cap on obvious nonsense (a fourth quarterback), not a
++// roster plan.
++const ROOM_CAP = { QB: 2, RB: 6, WR: 6, TE: 2, K: 1, DEF: 1 };
++
++/* Which draft slot owns a pick number — the inverse of `ourPicks`. */
++function slotAtPick(draft, pick) {
++  const teams = draft.teams;
++  const round = Math.ceil(pick / teams);
++  const n = pick - (round - 1) * teams;
++  let forward = round % 2 === 1;
++  const reversal = draft.reversal_round ?? 0;
++  if (reversal && round >= reversal) forward = !forward;
++  if (draft.type === "linear") forward = true;
++  return forward ? n : teams - n + 1;
++}
++
++/* Starting bodies each position owes, FLEX left out — it is filled by whoever
++ * is spare and so says nothing about what a seat still needs. */
++function starterCounts(slots) {
++  const need = {};
++  for (const slot of slots) {
++    if (slot === "BN" || slot === "FLEX") continue;
++    need[slot] = (need[slot] ?? 0) + 1;
++  }
++  return need;
++}
++
++/* A small deterministic generator, so two runs of the same board agree.
++ *
++ * xorshift32 rather than the LCG used for plan paths: this one is consumed as a
++ * stream of thousands of draws where the low bits matter, which is exactly the
++ * case an LCG is bad at.
++ */
++function rng(seed) {
++  let x = (seed | 0) || 0x9e3779b9;
++  return () => {
++    x ^= x << 13; x |= 0;
++    x ^= x >>> 17;
++    x ^= x << 5; x |= 0;
++    return ((x >>> 0) + 0.5) / 4294967296;
++  };
++}
++
++/* Standard normal, Box-Muller. One log and one cos per pair of draws. */
++function normals(next) {
++  let spare = null;
++  return () => {
++    if (spare !== null) { const s = spare; spare = null; return s; }
++    const r = Math.sqrt(-2 * Math.log(next()));
++    const theta = 2 * Math.PI * next();
++    spare = r * Math.sin(theta);
++    return r * Math.cos(theta);
++  };
++}
++
++/* What every seat already holds, read off the picks already made.
++ *
++ * `gone` is the draft record in pick order, so pick k took the k-th player in
++ * it and `slotAtPick` says whose pick that was. Nothing here comes from
++ * anywhere but the draft: no seat is assumed to have a strategy, only a roster.
++ */
++function seatRosters(draft, gone, byId) {
++  const held = Array.from({ length: draft.teams + 1 }, () => ({}));
++  let pick = 0;
++  for (const id of gone) {
++    pick++;
++    const player = byId.get(id);
++    if (!player) continue;
++    const seat = slotAtPick(draft, pick);
++    held[seat][player.position] = (held[seat][player.position] ?? 0) + 1;
++  }
++  return held;
++}
++
++/* Empirical survival for every player at each of our upcoming picks.
++ *
++ * Returns `{ picks, byId }` where `byId` maps a player to the share of runs in
++ * which he was still on the board at each of `picks`, or null when the draft
++ * record is not complete enough to replay — in which case every caller falls
++ * back to the analytic `survival` above.
++ */
++function roomChances({ pool, slots, draft, gone, atPick, upcoming, ahead }) {
++  if (!draft?.teams || !upcoming.length) return null;
++  // The record has to line up with the pick we are on, or the seats we
++  // reconstruct are somebody else's.
++  if (gone.size !== atPick - 1) return null;
++
++  const picks = upcoming.slice(0, Math.max(1, ahead));
++  const horizon = picks[picks.length - 1];
++  if (horizon <= atPick) return null;
++
++  const byId = new Map(pool.map((p) => [p.player_id, p]));
++  const held = seatRosters(draft, gone, byId);
++  const need = starterCounts(slots);
++  const ourSlot = slotAtPick(draft, atPick);
++
++  // Only players who could plausibly go before the horizon are worth
++  // simulating; everyone deeper survives with probability one and is left out
++  // of the arrays entirely.
++  const span = horizon - atPick + 1;
++  const universe = [];
++  for (const player of pool) {
++    if (gone.has(player.player_id)) continue;
++    if (player.adp == null || player.adp >= 999) continue;
++    universe.push(player);
++  }
++  universe.sort((a, b) => a.adp - b.adp || a.name.localeCompare(b.name));
++  const candidates = universe.slice(0, 2 * span + 60);
++  const size = candidates.length;
++  if (!size) return null;
++
++  const adp = new Float64Array(size), sigma = new Float64Array(size);
++  const position = new Array(size);
++  for (let i = 0; i < size; i++) {
++    adp[i] = candidates[i].adp;
++    sigma[i] = Math.max(ADP_SPREAD_FLOOR, ADP_SPREAD * candidates[i].adp);
++    position[i] = candidates[i].position;
++  }
++
++  const survivors = Array.from({ length: size }, () => new Float64Array(picks.length));
++  const ourPickSet = new Set(picks);
++  const perceived = new Float64Array(size);
++  const order = new Int32Array(size);
++  const taken = new Uint8Array(size);
++  const counts = new Array(draft.teams + 1);
++
++  const next = rng(atPick * 2654435761 + gone.size * 40503 + 1);
++  const normal = normals(next);
++
++  for (let run = 0; run < ROOM_RUNS; run++) {
++    for (let i = 0; i < size; i++) {
++      perceived[i] = adp[i] + sigma[i] * normal();
++      order[i] = i;
++      taken[i] = 0;
++    }
++    order.sort((a, b) => perceived[a] - perceived[b]);
++    const sorted = order;
++    for (let seat = 1; seat <= draft.teams; seat++) counts[seat] = { ...held[seat] };
++
++    let cursor = 0, pickIndex = 0;
++    for (let pick = atPick; pick <= horizon; pick++) {
++      if (pickIndex < picks.length && picks[pickIndex] === pick) {
++        for (let k = 0; k < size; k++) if (!taken[k]) survivors[k][pickIndex]++;
++        pickIndex++;
++      }
++      // Our own picks are ours to make; the room does not make them for us.
++      if (ourPickSet.has(pick) || slotAtPick(draft, pick) === ourSlot) continue;
++
++      const seat = slotAtPick(draft, pick);
++      const seatCounts = counts[seat];
++      while (cursor < size && taken[sorted[cursor]]) cursor++;
++      let bestAt = -1, bestScore = Infinity;
++      for (let w = cursor, seen = 0; w < size && seen < ROOM_WINDOW; w++) {
++        const i = sorted[w];
++        if (taken[i]) continue;
++        seen++;
++        const pos = position[i];
++        const have = seatCounts[pos] ?? 0;
++        let score = perceived[i];
++        if (!STREAMABLE.has(pos) && have < (need[pos] ?? 0)) score -= ROOM_NEED_BONUS;
++        if (have >= (ROOM_CAP[pos] ?? 6)) score += ROOM_STOCKED_PENALTY;
++        if (score < bestScore) { bestScore = score; bestAt = i; }
++      }
++      if (bestAt < 0) break;
++      taken[bestAt] = 1;
++      seatCounts[position[bestAt]] = (seatCounts[position[bestAt]] ?? 0) + 1;
++    }
++  }
++
++  const out = new Map();
++  for (let i = 0; i < size; i++) {
++    const row = survivors[i];
++    for (let j = 0; j < picks.length; j++) row[j] /= ROOM_RUNS;
++    out.set(candidates[i].player_id, row);
++  }
++  return { picks, byId: out };
++}
++
++/* Chance this player lasts to `pick`, from the simulated room where we have
++ * one and the analytic curve where we do not. */
++function chanceAt(chances, player, pick) {
++  if (chances) {
++    const at = chances.picks.indexOf(pick);
++    if (at >= 0) {
++      const row = chances.byId.get(player.player_id);
++      // Not in the simulated universe means too deep to be at risk before the
++      // horizon, which is survival one.
++      return row ? row[at] : 1;
++    }
++  }
++  return survival(player.adp, pick);
++}
++
+ // How deep into a position the wait search looks.
+ const WAIT_DEPTH = 40;
+ 
+@@ -355,11 +589,11 @@ function rankedAt(position, pool, roster, slots, base, held, filled) {
+  * returns the player we'd most likely end up with, which is what makes the plan
+  * search able to carry a roster forward.
+  */
+-export function wait(position, pool, pick, roster, slots, base, held, filled) {
++export function wait(position, pool, pick, roster, slots, base, held, filled, chances = null) {
+   const ranked = rankedAt(position, pool, roster, slots, base, held, filled);
+   let expected = 0, stillGone = 1, best = 0, likely = null;
+   for (const [value, player] of ranked) {
+-    const chance = survival(player.adp, pick);
++    const chance = chanceAt(chances, player, pick);
+     // The chance this is the one we actually end up with: he lasts, and nobody
+     // better did. That is also what makes him the right player to carry forward
+     // into a plan — the best player at the position is not, since by definition
+@@ -377,12 +611,12 @@ export function wait(position, pool, pick, roster, slots, base, held, filled) {
+ const MIN_CONTRIBUTION = 0.05;
+ 
+ /* The probable player outcomes for waiting on a position. */
+-function waitOutcomes(position, pool, pick, roster, slots, base, held, filled) {
++function waitOutcomes(position, pool, pick, roster, slots, base, held, filled, chances = null) {
+   const ranked = rankedAt(position, pool, roster, slots, base, held, filled);
+   let stillGone = 1;
+   const outcomes = [];
+   for (const [value, player] of ranked) {
+-    const chance = survival(player.adp, pick);
++    const chance = chanceAt(chances, player, pick);
+     const mine = stillGone * chance;
+     if (mine * value >= MIN_CONTRIBUTION) outcomes.push([mine, value, player]);
+     stillGone *= 1 - chance;
+@@ -487,7 +721,7 @@ export function planPositions(roster, slots, positions = PLAN_POSITIONS) {
+  * plans without making the live board enumerate an intractable
+  * player-by-player tree.
+  */
+-function continuationStats(picks, roster, available, slots, base, positions, sampleKey) {
++function continuationStats(picks, roster, available, slots, base, positions, sampleKey, chances) {
+   if (!picks.length) return [0, 0];
+ 
+   const held = lineup(roster, slots, base);
+@@ -495,16 +729,16 @@ function continuationStats(picks, roster, available, slots, base, positions, sam
+   const meanTotals = [], bestTotals = [];
+ 
+   planPositions(roster, slots, positions).forEach((position, index) => {
+-    const outcomes = waitOutcomes(position, available, picks[0], roster, slots, base, held, filled);
++    const outcomes = waitOutcomes(position, available, picks[0], roster, slots, base, held, filled, chances);
+     if (!outcomes.length) return;
+     const [got, player] = sampleOutcome(outcomes, sampleKey * 7 + index);
+ 
+     const [meanRest, bestRest] = player === null
+       ? continuationStats(picks.slice(1), roster, available, slots, base, positions,
+-                          sampleKey * 7 + index)
++                          sampleKey * 7 + index, chances)
+       : continuationStats(picks.slice(1), [...roster, player],
+                           available.filter((p) => p.player_id !== player.player_id),
+-                          slots, base, positions, sampleKey * 7 + index);
++                          slots, base, positions, sampleKey * 7 + index, chances);
+ 
+     meanTotals.push(got + meanRest);
+     bestTotals.push(got + bestRest);
+@@ -524,7 +758,7 @@ function continuationStats(picks, roster, available, slots, base, positions, sam
+  * each pick against the roster we hold today is not a plan, because by the
+  * third pick it is pricing against a roster we won't have.
+  */
+-function continuation(picks, roster, available, slots, base, positions) {
++function continuation(picks, roster, available, slots, base, positions, chances) {
+   if (!picks.length) return [0, []];
+ 
+   const held = lineup(roster, slots, base);
+@@ -532,12 +766,12 @@ function continuation(picks, roster, available, slots, base, positions) {
+   let best = null;
+ 
+   for (const position of planPositions(roster, slots, positions)) {
+-    const [got, player] = wait(position, available, picks[0], roster, slots, base, held, filled);
++    const [got, player] = wait(position, available, picks[0], roster, slots, base, held, filled, chances);
+     if (player === null) continue;
+     const [rest, taken] = continuation(
+       picks.slice(1), [...roster, player],
+       available.filter((p) => p.player_id !== player.player_id),
+-      slots, base, positions);
++      slots, base, positions, chances);
+     const total = got + rest;
+     if (best === null || total > best[0]) best = [total, [[picks[0], player], ...taken]];
+   }
+@@ -549,15 +783,20 @@ function continuation(picks, roster, available, slots, base, positions) {
+  * Shared so the board and the plan can't drift: they used to build this
+  * separately, which is exactly how they came to disagree about tight ends.
+  */
+-export function situation({ pool, slots, draft, gone, ours, atPick, userIds }) {
++export function situation({ pool, slots, draft, gone, ours, atPick, userIds, ahead = PLAN_AHEAD }) {
++  const upcoming = ourPicks(draft, userIds).filter((p) => p >= atPick);
+   return {
+     slots,
+     base: baselines(pool, draft.teams, draft.rounds),
+     roster: pool.filter((p) => ours.has(p.player_id)),
+     available: pool.filter((p) => !gone.has(p.player_id)),
+-    upcoming: ourPicks(draft, userIds).filter((p) => p >= atPick),
++    upcoming,
+     atPick,
+     round: draft.teams ? Math.ceil(atPick / draft.teams) : 1,
++    // The room, played forward once for the whole pick. Every candidate and
++    // every plan branch reads the same simulation, so it is paid for once
++    // rather than per row.
++    chances: roomChances({ pool, slots, draft, gone, atPick, upcoming, ahead }),
+   };
+ }
+ 
+@@ -587,7 +826,7 @@ function outlook(sit, candidates, gains, ahead) {
+     const [mean, bestRest] = continuationStats(
+       picks.slice(1), [...sit.roster, chosen],
+       sit.available.filter((p) => p.player_id !== chosen.player_id),
+-      sit.slots, sit.base, PLAN_POSITIONS, 1);
++      sit.slots, sit.base, PLAN_POSITIONS, 1, sit.chances);
+     restOf[position] = mean;
+     startingAverages.push(got + mean);
+     bestPlan[position] = got + bestRest;
+@@ -681,7 +920,7 @@ export function plans(sit, { ahead = PLAN_AHEAD, positions = PLAN_POSITIONS } =
+     const [rest, taken] = continuation(
+       picks.slice(1), [...sit.roster, chosen],
+       sit.available.filter((p) => p.player_id !== chosen.player_id),
+-      sit.slots, sit.base, positions);
++      sit.slots, sit.base, positions, sit.chances);
+     const plan = [[picks[0], chosen], ...taken];
+     scored.push({ total: got + rest, sequence: plan.map(([, p]) => p.position), plan });
+   }
