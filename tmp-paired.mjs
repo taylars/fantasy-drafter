@@ -1,0 +1,12 @@
+import { readFileSync } from "node:fs";
+const [, , a, b] = process.argv;
+const A = JSON.parse(readFileSync(a, "utf8"));
+const B = JSON.parse(readFileSync(b, "utf8"));
+if (A.length !== B.length) throw new Error("length mismatch");
+const d = B.map((v, i) => v - A[i]);
+const n = d.length;
+const mean = d.reduce((s, v) => s + v, 0) / n;
+const variance = d.reduce((s, v) => s + (v - mean) ** 2, 0) / (n - 1);
+const se = Math.sqrt(variance / n);
+const wins = d.filter((v) => v > 0).length;
+console.log(`paired delta (${b} - ${a}): ${mean.toFixed(1)} ±${se.toFixed(1)} (n=${n}, t=${(mean / se).toFixed(2)}, better in ${wins}/${n})`);

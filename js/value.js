@@ -495,9 +495,15 @@ function continuationStats(picks, roster, available, slots, base, positions, sam
   const meanTotals = [], bestTotals = [];
 
   planPositions(roster, slots, positions).forEach((position, index) => {
-    const outcomes = waitOutcomes(position, available, picks[0], roster, slots, base, held, filled);
-    if (!outcomes.length) return;
-    const [got, player] = sampleOutcome(outcomes, sampleKey * 7 + index);
+    let got, player;
+    if (globalThis.process?.env?.PLANNER === "tree-exact") {
+      [got, player] = wait(position, available, picks[0], roster, slots, base, held, filled);
+      if (player === null) return;
+    } else {
+      const outcomes = waitOutcomes(position, available, picks[0], roster, slots, base, held, filled);
+      if (!outcomes.length) return;
+      [got, player] = sampleOutcome(outcomes, sampleKey * 7 + index);
+    }
 
     const [meanRest, bestRest] = player === null
       ? continuationStats(picks.slice(1), roster, available, slots, base, positions,
@@ -512,6 +518,138 @@ function continuationStats(picks, roster, available, slots, base, positions, sam
 
   if (!meanTotals.length) return [0, 0];
   return [meanTotals.reduce((a, b) => a + b, 0) / meanTotals.length, Math.max(...bestTotals)];
+}
+
+/* ------------------------------------------------------------------ rollout */
+
+// How many whole-draft rollouts each first position is averaged over, and how
+// many players per live position the greedy inner policy looks at.
+const ROLLOUTS = Number(globalThis.process?.env?.ROLLOUTS ?? 16);
+const ROLLOUT_WIDTH = Number(globalThis.process?.env?.ROLLOUT_WIDTH ?? 5);
+// EXPERIMENT SWITCHES — removed before commit.
+const ROLLOUT = !String(globalThis.process?.env?.PLANNER ?? "").startsWith("tree");
+const INNER = globalThis.process?.env?.INNER ?? "uniform";
+
+/* Deterministic uniform stream. xorshift32, seeded from the pick number so two
+ * runs of the same board agree and the browser and the CLI cannot diverge. */
+function rng(seed) {
+  let s = (seed | 0) || 0x9e3779b9;
+  return () => {
+    s ^= s << 13; s |= 0;
+    s ^= s >>> 17;
+    s ^= s << 5; s |= 0;
+    return (s >>> 0) / 4294967296;
+  };
+}
+
+/* One draw of "when does each player come off the board".
+ *
+ * `survival` already says the chance a player lasts to a pick. Inverting it
+ * once per player per rollout — he is gone by pick P exactly when his uniform
+ * is above his survival at P — draws a whole *departure time* rather than an
+ * independent coin at every pick, so the sampled pool is consistent down the
+ * draft instead of resurrecting players. It is also the same uniform for every
+ * candidate branch, which pairs the comparison: the six first positions face an
+ * identical room, so the difference between them is signal, not draw.
+ */
+function departures(available, picks, seed) {
+  const n = available.length, k = picks.length;
+  const chance = new Float64Array(n * k);
+  for (let i = 0; i < n; i++) {
+    for (let j = 0; j < k; j++) chance[i * k + j] = survival(available[i].adp, picks[j]);
+  }
+  const random = rng(seed);
+  const rolls = [], orders = [];
+  for (let r = 0; r < ROLLOUTS; r++) {
+    const roll = new Float64Array(n);
+    for (let i = 0; i < n; i++) roll[i] = random();
+    rolls.push(roll);
+    orders.push(new Float64Array(k));
+  }
+  // The draw that decides which position each rollout spends a pick on is
+  // stratified rather than independent: at every pick the R rollouts are dealt
+  // one point from each of R equal slices of [0,1), shuffled. Sixteen
+  // independent draws over six positions leave holes — a position that never
+  // comes up at a pick is a plan that never gets priced — and the whole
+  // difference between candidates is smaller than that gap.
+  for (let j = 0; j < k; j++) {
+    const slice = [];
+    for (let r = 0; r < ROLLOUTS; r++) slice.push((r + random()) / ROLLOUTS);
+    for (let r = ROLLOUTS - 1; r > 0; r--) {
+      const swap = Math.floor(random() * (r + 1));
+      const held = slice[r]; slice[r] = slice[swap]; slice[swap] = held;
+    }
+    for (let r = 0; r < ROLLOUTS; r++) orders[r][j] = slice[r];
+  }
+  return { chance, rolls, orders, width: k };
+}
+
+/* The pick our greedy inner policy would make, out of the top few at each live
+ * position. Only a handful of players are ever in contention — within a
+ * position gain falls off with ADP — so the shortlist costs almost nothing and
+ * the rollout only has to be relatively right across the candidate branches. */
+function greedyPick(alive, available, roster, slots, base, picksLeft, draw) {
+  const forced = mustFill(roster, slots, picksLeft);
+  let open = forced.size ? forced : new Set(planPositions(roster, slots));
+  // A greedy line is one line. The value of a first pick is what it is worth
+  // over the *spread* of ways the rest of the draft can go, so with `draw` the
+  // rollout commits to a uniformly chosen live position at this pick and takes
+  // the best player there — the same uniform-over-positions average the shallow
+  // search takes, carried to the end of the draft instead of stopping at four.
+  if (draw !== null && open.size > 1) {
+    const live = [...open];
+    open = new Set([live[Math.min(live.length - 1, Math.floor(draw * live.length))]]);
+  }
+  const held = lineup(roster, slots, base);
+  const filled = lineupFilled(roster, slots);
+
+  const seen = {};
+  let best = -1, bestValue = -Infinity;
+  for (const index of alive) {
+    const player = available[index];
+    const position = player.position;
+    if (!open.has(position)) continue;
+    const count = seen[position] ?? 0;
+    if (count >= ROLLOUT_WIDTH) continue;
+    seen[position] = count + 1;
+    const value = draftGain(player, roster, slots, base, held, filled);
+    if (value > bestValue) { best = index; bestValue = value; }
+  }
+  return best < 0 ? null : [bestValue, best];
+}
+
+/* Total gain over the *rest of the draft*, averaged over sampled rooms.
+ *
+ * This is the rollout step of a tree search: rather than pricing a four-pick
+ * prefix by branching on position, it plays every remaining pick out to the
+ * fifteenth round against a sampled ADP room and scores the roster we finish
+ * with. That is the thing the season is actually graded on.
+ */
+function rolloutValue(picks, roster, available, slots, base, sample, taken) {
+  if (picks.length < 2) return [0, 0];
+  const { chance, rolls, orders, width } = sample;
+  let total = 0, best = -Infinity;
+
+  for (let r = 0; r < rolls.length; r++) {
+    const roll = rolls[r], order = orders[r];
+    const ours = new Set(taken);
+    let rosterNow = roster, gained = 0;
+    for (let j = 1; j < picks.length; j++) {
+      const alive = [];
+      for (let i = 0; i < available.length; i++) {
+        if (!ours.has(i) && chance[i * width + j] >= roll[i]) alive.push(i);
+      }
+      const chosen = greedyPick(alive, available, rosterNow, slots, base, picks.length - j,
+                                INNER === "greedy" ? null : order[j]);
+      if (!chosen) break;
+      gained += chosen[0];
+      ours.add(chosen[1]);
+      rosterNow = [...rosterNow, available[chosen[1]]];
+    }
+    total += gained;
+    if (gained > best) best = gained;
+  }
+  return [total / rolls.length, best];
 }
 
 /* Best total gain over `picks`, and who we'd expect to end up with.
@@ -576,6 +714,12 @@ function outlook(sit, candidates, gains, ahead) {
   const positions = new Set();
   for (const player of candidates) if (open.has(player.position)) positions.add(player.position);
 
+  // One sampled room, shared by every candidate branch, so the six positions
+  // are compared against the same draw rather than against each other's noise.
+  const sorted = ROLLOUT ? sit.available.slice().sort((a, b) => a.adp - b.adp) : null;
+  const index = ROLLOUT ? new Map(sorted.map((p, i) => [p.player_id, i])) : null;
+  const sample = ROLLOUT && picks.length > 1 ? departures(sorted, picks, sit.atPick) : null;
+
   for (const position of positions) {
     // The player the board would take, which is simply the best gain now that
     // upside is inside it rather than added on afterwards.
@@ -584,10 +728,13 @@ function outlook(sit, candidates, gains, ahead) {
       if (player.position !== position) continue;
       if (gains[player.player_id] > got) { got = gains[player.player_id]; chosen = player; }
     }
-    const [mean, bestRest] = continuationStats(
-      picks.slice(1), [...sit.roster, chosen],
-      sit.available.filter((p) => p.player_id !== chosen.player_id),
-      sit.slots, sit.base, PLAN_POSITIONS, 1);
+    const [mean, bestRest] = ROLLOUT
+      ? (sample ? rolloutValue(picks, [...sit.roster, chosen], sorted, sit.slots, sit.base,
+                               sample, [index.get(chosen.player_id)]) : [0, 0])
+      : continuationStats(
+          picks.slice(1), [...sit.roster, chosen],
+          sit.available.filter((p) => p.player_id !== chosen.player_id),
+          sit.slots, sit.base, PLAN_POSITIONS, 1);
     restOf[position] = mean;
     startingAverages.push(got + mean);
     bestPlan[position] = got + bestRest;
