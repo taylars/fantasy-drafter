@@ -78,7 +78,7 @@ const UPSIDE_WEIGHT = 0.0175;
 // term applies only after the roster can already field every starting slot, so
 // it cannot inflate a player being drafted to fill the lineup.
 const BENCH_OPTION_WEIGHT = 0.02;
-const BENCH_UPSIDE_POINTS = 10.0;
+const BENCH_UPSIDE_POINTS = 0;
 
 // ADP is a mean and players go in a range around it. Sleeper publishes no
 // spread, so this is assumed, and it is the least evidenced number in the file:
