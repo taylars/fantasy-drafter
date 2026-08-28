@@ -1,15 +1,29 @@
-# streamable — paused 2026-08-27
+# streamable — resumed 2026-08-27
 
-Branch `algo/streamable`. User requested stop to conserve credits. Agents interrupted; final process check found no matching experiment subprocesses.
+Branch `algo/streamable`. Original negative rung tests finished; original comment-only commit c13502d already integrated by root.
 
-## State
+## Active bounded continuation
 
-Claude completed; not resumed by Codex. Comment-only commit c13502d. All tested K/DEF baseline rungs lost on old board; original28 tests pass. No strategy change. BUP0 interaction untested.
+Testing BUP0 (flat BENCH_UPSIDE_POINTS = 0) plus K/DEF replacement baseline moved 40% and 100% from last starter toward best projected player. Eight discovery seeds, 12 seats, production ahead=4/board=250; evaluator, opponents and data unchanged. No ceiling interaction. Snapshots and runner saved under handoff-artifacts/streamable-bup0; live per-seed checkpoints in /private/tmp/streamable-bup0-{0.4,1.0}/progress.json. Full results will be copied as each finishes. Control is bench-option handoff-artifacts/fantasy-bench-validation/bup0/results.json (2004.6 ±7.4).
 
-## Resume
+No production source changes. Original context: handoff-artifacts/original-session-audit.md. Held-out room seeds are not held-out seasons.
 
-Read handoff-artifacts/experiment-report.md if present, then original-session-audit.md. Source snapshot and dirty patch preserved; this handoff does not approve experimental code. Reports may still say running: output-file existence is not verification. Saved scripts can contain old /private/tmp paths; update paths before rerunning. Preserve evaluator, policy and data. Only2025 outcomes exist; held-out rooms are not held-out seasons.
+## First checkpoint (partial, not final)
 
-Shared controls: bench-option worktree handoff-artifacts/fantasy-bench-validation/{baseline,bup0,bss05}/results.json. Original Claude log: ~/.claude/projects/-Users-taylor-larsen-Code-fantasy-drafter/fea0e246-7ebd-4223-8e8e-8f1ab60d4b49/subagents/agent-acb061e0212be2a2b.jsonl.
+0.4: 1=1952.6, 2=1977.7, 3=1944
 
-PR intended algo-improvements into main documenting every success and failure; not opened. Do not resume until user asks.
+1.0: 1=1865.1, 2=1922.7
+
+Both directions below BUP0 so far; await all eight seeds before verdict.
+
+## Second checkpoint (partial)
+
+0.4: 1=1952.6, 2=1977.7, 3=1944, 4=1977.1, 5=2015.5, 6=1971.9, 7=1979.7
+
+1.0: 1=1865.1, 2=1922.7, 3=1821.9, 4=1861.4, 5=1898.5
+
+Unchanged branch tests passed 28/28. Both rungs remain negative on every completed seed.
+
+## Final checkpoint — COMPLETE
+
+Both jobs finished successfully. 40%: **1977.6 ±8.2**, paired **−27.0 ±4.9** vs BUP0; 100%: **1876.2 ±9.2**, paired **−128.4 ±5.7**. Every seed loses for both candidates. Reject; do not merge either strategy. No additional heldout/production experiment warranted. Tests on unchanged branch passed28/28; js/value.js, evaluator, policy and data remain untouched. Raw results, candidate snapshots, paired statistics and full original/fresh trial report saved in handoff-artifacts/streamable-bup0/REPORT.md. No running experiments remain.
