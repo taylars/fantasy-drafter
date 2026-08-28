@@ -57,13 +57,13 @@ recorded below as verification completes.
 | Rollout | Uniform-position 48-sample, 15-pick rollout adds 28.7 discovery / 34.6 held-out points above the bench fix. Combined with spread, held-out mean is 2058.9, +20.7 above spread alone. Expanded 10-team classic checks lose 31.5 points, all four seed averages negative. | Defer: cross-format sensitivity, prematurely truncated sampled drafts, and incorrect remaining-pick demand beyond a 15-pick horizon. Promising default gains and speed do not justify shipping those limitations. |
 
 Full bench trials, sensitivity checks and seed tables are in
-[bench-option-experiment.md](../bench-option-experiment.md). Depth and replacement
-trials are in [qb-depth.md](qb-depth.md) and
-[replacement-baselines.md](replacement-baselines.md). Completed follow-ups are
-in [correlation.md](correlation.md) and [room-simulation.md](room-simulation.md).
-The K/DEF follow-up is in [streamable.md](streamable.md); the spread assumptions,
-ablations and checks are in [ceiling-experiment.md](../ceiling-experiment.md).
-The rollout record is in [rollout.md](rollout.md). Its deferred fixes are separate
+[2026-08-27-001-bench-option.md](2026-08-27-001-bench-option.md). Depth and replacement
+trials are in [2026-08-27-002-qb-depth.md](2026-08-27-002-qb-depth.md) and
+[2026-08-27-003-replacement-baselines.md](2026-08-27-003-replacement-baselines.md). Completed follow-ups are
+in [2026-08-27-006-correlation.md](2026-08-27-006-correlation.md) and [2026-08-27-005-room-simulation.md](2026-08-27-005-room-simulation.md).
+The K/DEF follow-up is in [2026-08-27-004-streamable.md](2026-08-27-004-streamable.md); the spread assumptions,
+ablations and checks are in [2026-08-27-007-ceiling.md](2026-08-27-007-ceiling.md).
+The rollout record is in [2026-08-27-008-rollout.md](2026-08-27-008-rollout.md). Its deferred fixes are separate
 future work; no rollout implementation or planning-horizon change is shipped.
 
 ## Interpretation
