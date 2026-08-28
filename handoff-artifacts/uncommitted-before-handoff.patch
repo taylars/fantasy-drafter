@@ -1,0 +1,137 @@
+diff --git a/js/value.js b/js/value.js
+index e933366..a4a225d 100644
+--- a/js/value.js
++++ b/js/value.js
+@@ -80,6 +80,19 @@ const UPSIDE_WEIGHT = 0.0175;
+ const BENCH_OPTION_WEIGHT = 0.02;
+ const BENCH_UPSIDE_POINTS = 10.0;
+ 
++/* Same-team correlation. EXPERIMENTAL — see the block comment on `teamEffect`.
++ *
++ * Every other term here treats a roster as a bag of independent income streams.
++ * Two players on the same NFL team are not independent, in two opposite ways: a
++ * quarterback and his own receiver are paid twice for the same touchdown, and
++ * two backs in the same committee are splitting one workload. These weights are
++ * the share of the smaller of the two contributions each pairing is worth.
++ */
++const E = globalThis.process?.env ?? {};
++const STACK_WEIGHT = Number(E.STACK_W ?? 0.05);
++const COLLISION_WEIGHT = Number(E.COLL_W ?? 0.06);
++const CROWD_WEIGHT = Number(E.CROWD_W ?? 0.03);
++
+ // ADP is a mean and players go in a range around it. Sleeper publishes no
+ // spread, so this is assumed, and it is the least evidenced number in the file:
+ // it drives every `wait`. Measuring it from repeated mock drafts would be
+@@ -215,7 +228,11 @@ function wire(base) {
+  */
+ function coverage(roster, need, flex, base) {
+   let total = 0;
+-  const spare = []; // [adjusted, weeks] left over for the FLEX
++  const spare = []; // [adjusted, weeks, player] left over for the FLEX
++  // [player, slot-seasons he actually starts]. Only players who beat the wire
++  // are here, because a week we would not start him is a week he contributes
++  // nothing to share with — or to collide with.
++  const started = [];
+ 
+   const positions = new Set(Object.keys(need));
+   for (const player of roster) if (FLEXABLE.has(player.position)) positions.add(player.position);
+@@ -229,8 +246,9 @@ function coverage(roster, need, flex, base) {
+       const covered = Math.min(player.availability, remaining);
+       total += covered * Math.max(adjusted(player), floor);
+       remaining -= covered;
++      if (covered > 0 && adjusted(player) >= floor) started.push([player, covered]);
+       if (player.availability > covered && FLEXABLE.has(position)) {
+-        spare.push([adjusted(player), player.availability - covered]);
++        spare.push([adjusted(player), player.availability - covered, player]);
+       }
+     }
+     total += remaining * floor;
+@@ -239,12 +257,86 @@ function coverage(roster, need, flex, base) {
+   const floor = wire(base);
+   let remaining = flex;
+   spare.sort((a, b) => b[0] - a[0] || b[1] - a[1]);
+-  for (const [value, weeks] of spare) {
++  for (const [value, weeks, player] of spare) {
+     const covered = Math.min(weeks, remaining);
+     total += covered * Math.max(value, floor);
+     remaining -= covered;
++    if (covered > 0 && value >= floor) started.push([player, covered]);
++  }
++  return total + remaining * floor + teamEffect(started);
++}
++
++// A -2..+2 offence grade read as a 0..1 multiplier. A stack is only worth
++// having if the offence it is a stack of scores; on a bottom-quartile offence
++// the pair share nothing worth sharing.
++function offenceScale(player) {
++  return Math.min(1, Math.max(0, (2 + (player.offense ?? 0)) / 4));
++}
++
++/* What holding two players from one NFL team does, beyond their two means.
++ *
++ * The rest of this file prices a roster as a sum of independent income streams.
++ * Within one week that is wrong twice over, in opposite directions:
++ *
++ *   A quarterback and his own pass-catcher are paid twice for one touchdown, so
++ *   the weeks that offence goes off are weeks our whole roster goes off. That
++ *   does not change our season mean at all — it changes the shape. In a format
++ *   where each week is a coin flip against one opponent and a title is three
++ *   single-elimination games, a fatter ceiling is not the same as the same
++ *   points spread evenly.
++ *
++ *   Two backs from one committee are dividing one workload, and the good weeks
++ *   of the one are the bad weeks of the other. Buying the second is buying the
++ *   same uncertainty twice.
++ *
++ * Both are scaled by the *smaller* of the two players' started contributions,
++ * which is what keeps a stack bonus from talking us into a bad receiver: a
++ * fortieth-ranked receiver's bonus is a fraction of a fortieth-ranked
++ * receiver, so it can close a small gap and never a real one. The scaling by
++ * started weeks does the handcuff case for free — a backup back who never
++ * cracks the lineup has no contribution to collide with, so the hedge is not
++ * charged as a collision.
++ *
++ * `team` can be missing (one kicker in the 2025 pool has none), and a player
++ * with no team is simply not correlated with anyone.
++ */
++function teamEffect(started) {
++  if (!STACK_WEIGHT && !COLLISION_WEIGHT && !CROWD_WEIGHT) return 0;
++  const byTeam = new Map();
++  let paired = false;
++  for (const [player, weeks] of started) {
++    if (!player.team) continue;
++    let group = byTeam.get(player.team);
++    if (!group) byTeam.set(player.team, group = []);
++    else paired = true;
++    group.push([player, weeks * adjusted(player)]);
++  }
++  if (!paired) return 0;
++
++  let delta = 0;
++  for (const group of byTeam.values()) {
++    if (group.length < 2) continue;
++    const passers = [], catchers = [], backs = [];
++    for (const entry of group) {
++      const position = entry[0].position;
++      if (position === "QB") passers.push(entry);
++      else if (position === "WR" || position === "TE") catchers.push(entry);
++      else if (position === "RB") backs.push(entry);
++    }
++
++    for (const [, passed] of passers) {
++      for (const [catcher, caught] of catchers) {
++        delta += STACK_WEIGHT * offenceScale(catcher) * Math.min(passed, caught);
++      }
++    }
++
++    backs.sort((a, b) => b[1] - a[1]);
++    for (let i = 1; i < backs.length; i++) delta -= COLLISION_WEIGHT * backs[i][1];
++
++    catchers.sort((a, b) => b[1] - a[1]);
++    for (let i = 2; i < catchers.length; i++) delta -= CROWD_WEIGHT * catchers[i][1];
+   }
+-  return total + remaining * floor;
++  return delta;
+ }
+ 
+ /* Season points from the best legal lineup this roster can field.

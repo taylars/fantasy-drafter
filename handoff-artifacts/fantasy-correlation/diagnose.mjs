@@ -1,0 +1,13 @@
+import {readFileSync} from 'node:fs';
+const source=readFileSync('/private/tmp/fantasy-correlation/value-original.js','utf8');
+const module=await import('data:text/javascript;base64,'+Buffer.from(source+'\nexport {teamEffect};').toString('base64'));
+const p={position:'RB',team:'TEST',_adjusted:200};
+console.log('one RB split across slots:',module.teamEffect([[p,.3],[p,.5]]));
+console.log('same one RB merged:',module.teamEffect([[p,.8]]));
+const fixed=source.replace('  const byTeam = new Map();', `  const unique = new Map();
+  for (const [p,w] of started) unique.set(p, (unique.get(p) ?? 0) + w);
+  started = [...unique];
+  const byTeam = new Map();`);
+const mod2=await import('data:text/javascript;base64,'+Buffer.from(fixed+'\nexport {teamEffect};').toString('base64'));
+console.log('deduplicated one RB split:',mod2.teamEffect([[p,.3],[p,.5]]));
+console.log('two distinct RBs correctly penalized:',mod2.teamEffect([[p,.3],[{...p},.5]]));
