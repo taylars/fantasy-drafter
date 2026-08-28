@@ -46,7 +46,7 @@ const STREAMABLE = new Set(["K", "DEF"]);
 // start is not optional. This is judgment rather than measurement — without it
 // the model preferred a fourth receiver to a third back by 4.1 points, so it
 // was nearly indifferent and the floor buys the insurance cheaply.
-const DEPTH = { RB: 3, WR: 3, QB: 1, TE: 1, K: 1, DEF: 1 };
+const DEPTH = JSON.parse(globalThis?.process?.env?.DEPTH_OVERRIDE ?? "null") ?? { RB: 3, WR: 3, QB: 1, TE: 1, K: 1, DEF: 1 };
 
 // How far a -2..+2 context grade moves a projection. Deliberately small: we are
 // correcting a provider's number, not replacing it with our own. A maximum
