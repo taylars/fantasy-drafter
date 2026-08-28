@@ -1,0 +1,64 @@
+
+> fantasy-drafter@0.1.0 test
+> node --test test/*.test.js
+
+✔ the 2025 fixture is a complete frozen regular-season sample (3.572416ms)
+✔ grades stay attached only to the season in which they were researched (2.148875ms)
+✔ draft strategies consume only season grades, never actuals or current injury status (0.184209ms)
+✔ the exhaustive matrix covers every requested environment combination (0.345666ms)
+✔ a simulated draft is deterministic and leaves every team with a legal roster (2483.057292ms)
+✔ weekly scoring starts the highest projected legal players, not hindsight winners (0.536833ms)
+✔ replacement baseline selects top ten free agents by projection, averages actuals (0.333666ms)
+✔ injured slots use replacement scores only when selected; bench depth still competes (0.195542ms)
+✔ weekly inputs never leak to draft strategies and missing archives fail explicitly (0.989041ms)
+✔ historical injury mapping excludes suspension, retirement and questionable status (0.6175ms)
+✔ season replacement pool excludes other teams and respects scoring format (1.64475ms)
+✔ frozen data distinguishes scored games from injury absences and byes (0.996ms)
+✔ scripted rooms vary by seed while preserving full roster legality (87.203209ms)
+✔ the current board is graded against actual 2025 outcomes and an ADP baseline (14950.776334ms)
+✔ scripted ADP fills a needed starter before a similarly priced backup QB (0.836584ms)
+✔ a large ADP bargain can override the late-QB script (0.126125ms)
+✔ K and DEF usually wait until late and are not duplicated (0.114833ms)
+✔ completion constraints reserve the final pick for an unfilled FLEX (0.703959ms)
+✔ seeded wiggle room is repeatable but changes close calls across seeds (4.587ms)
+✔ all preserved player IDs remain in their canonical season grade files (5.36ms)
+✔ grade payloads cannot be duplicated under another data filename (62.159375ms)
+✔ the app loader fetches only the newest season and its grades reach the pricing model (18.938084ms)
+✔ latest selection ignores index ordering and never fills gaps from older seasons (1.274292ms)
+✔ missing or mismatched newest data fails instead of silently falling back (0.307166ms)
+✔ canonical season index matches disk and no duplicate grade stores remain (5.064458ms)
+✔ canonical historical grades reject invalid evidence metadata and grades (15.989417ms)
+✔ a player strictly better than the best on the board is the recommendation (535.995625ms)
+✔ a player strictly worse than the best on the board does not take the top of it (459.316375ms)
+✖ bench upside has no independent value below the waiver projection (6.724417ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 28
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 17716.074666
+
+✖ failing tests:
+
+test at test/recommends.test.js:63:1
+✖ bench upside has no independent value below the waiver projection (6.724417ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(optionValue({ ...player, points: 200 }, [], [], wire, true) > 0)
+  
+      at TestContext.<anonymous> (file:///Users/taylor-larsen/Code/fantasy-drafter/.claude/worktrees/agent-a5d21c2822ff46535/test/recommends.test.js:68:10)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

@@ -1,0 +1,1429 @@
+{
+  "seconds": 194.70097066600002,
+  "train": {
+    "score": 76.1,
+    "letter": "C",
+    "averagePoints": 1896.4,
+    "pointsStandardError": 9.5,
+    "samples": 96,
+    "averageFinish": 5.05,
+    "pointsPercentile": 63.2,
+    "allPlayWinRate": 55.1,
+    "weeklyHighScoreRate": 10,
+    "playoffRate": 50,
+    "championshipRate": 25,
+    "benchContribution": 218.6,
+    "benchStarts": 29.1,
+    "positionalPoints": {
+      "QB": 252.9,
+      "RB": 708.6,
+      "WR": 404.7,
+      "TE": 249.2,
+      "K": 176.6,
+      "DEF": 104.4
+    }
+  },
+  "holdout": {
+    "score": 76.2,
+    "letter": "C",
+    "averagePoints": 1893.6,
+    "pointsStandardError": 7.9,
+    "samples": 96,
+    "averageFinish": 5.01,
+    "pointsPercentile": 63.5,
+    "allPlayWinRate": 54.7,
+    "weeklyHighScoreRate": 11,
+    "playoffRate": 46.9,
+    "championshipRate": 25,
+    "benchContribution": 216,
+    "benchStarts": 28.9,
+    "positionalPoints": {
+      "QB": 250.3,
+      "RB": 701.7,
+      "WR": 415,
+      "TE": 244.8,
+      "K": 176.6,
+      "DEF": 105.2
+    }
+  },
+  "perSeed": [
+    {
+      "seed": 1,
+      "grade": {
+        "score": 72.5,
+        "letter": "C-",
+        "averagePoints": 1869.3,
+        "pointsStandardError": 15.1,
+        "samples": 12,
+        "averageFinish": 5.58,
+        "pointsPercentile": 58.3,
+        "allPlayWinRate": 53.4,
+        "weeklyHighScoreRate": 8.8,
+        "playoffRate": 25,
+        "championshipRate": 16.7,
+        "benchContribution": 230.7,
+        "benchStarts": 31.2,
+        "positionalPoints": {
+          "QB": 249.8,
+          "RB": 703.3,
+          "WR": 413.3,
+          "TE": 224.6,
+          "K": 176.6,
+          "DEF": 101.7
+        }
+      }
+    },
+    {
+      "seed": 2,
+      "grade": {
+        "score": 79.1,
+        "letter": "C+",
+        "averagePoints": 1899.1,
+        "pointsStandardError": 26.3,
+        "samples": 12,
+        "averageFinish": 5.17,
+        "pointsPercentile": 62.1,
+        "allPlayWinRate": 54.2,
+        "weeklyHighScoreRate": 13.7,
+        "playoffRate": 58.3,
+        "championshipRate": 41.7,
+        "benchContribution": 232.1,
+        "benchStarts": 31.8,
+        "positionalPoints": {
+          "QB": 249.8,
+          "RB": 687.2,
+          "WR": 438.8,
+          "TE": 245.1,
+          "K": 176.6,
+          "DEF": 101.7
+        }
+      }
+    },
+    {
+      "seed": 3,
+      "grade": {
+        "score": 72,
+        "letter": "C-",
+        "averagePoints": 1851.5,
+        "pointsStandardError": 29.1,
+        "samples": 12,
+        "averageFinish": 6,
+        "pointsPercentile": 54.5,
+        "allPlayWinRate": 52.8,
+        "weeklyHighScoreRate": 9.8,
+        "playoffRate": 25,
+        "championshipRate": 16.7,
+        "benchContribution": 194.7,
+        "benchStarts": 27.4,
+        "positionalPoints": {
+          "QB": 253.8,
+          "RB": 713,
+          "WR": 380.4,
+          "TE": 221.7,
+          "K": 176.6,
+          "DEF": 106
+        }
+      }
+    },
+    {
+      "seed": 4,
+      "grade": {
+        "score": 76.9,
+        "letter": "C",
+        "averagePoints": 1895.3,
+        "pointsStandardError": 23.9,
+        "samples": 12,
+        "averageFinish": 4.67,
+        "pointsPercentile": 66.7,
+        "allPlayWinRate": 55,
+        "weeklyHighScoreRate": 7.8,
+        "playoffRate": 50,
+        "championshipRate": 41.7,
+        "benchContribution": 193.5,
+        "benchStarts": 25.8,
+        "positionalPoints": {
+          "QB": 249.9,
+          "RB": 701.8,
+          "WR": 411.4,
+          "TE": 249.6,
+          "K": 176.6,
+          "DEF": 106
+        }
+      }
+    },
+    {
+      "seed": 5,
+      "grade": {
+        "score": 77.1,
+        "letter": "C+",
+        "averagePoints": 1921.7,
+        "pointsStandardError": 26.9,
+        "samples": 12,
+        "averageFinish": 4,
+        "pointsPercentile": 72.7,
+        "allPlayWinRate": 56.3,
+        "weeklyHighScoreRate": 11.8,
+        "playoffRate": 50,
+        "championshipRate": 8.3,
+        "benchContribution": 195.8,
+        "benchStarts": 26.1,
+        "positionalPoints": {
+          "QB": 249.1,
+          "RB": 737.4,
+          "WR": 388.7,
+          "TE": 264,
+          "K": 176.6,
+          "DEF": 106
+        }
+      }
+    },
+    {
+      "seed": 6,
+      "grade": {
+        "score": 75.7,
+        "letter": "C",
+        "averagePoints": 1888.7,
+        "pointsStandardError": 38.8,
+        "samples": 12,
+        "averageFinish": 6,
+        "pointsPercentile": 54.5,
+        "allPlayWinRate": 54.5,
+        "weeklyHighScoreRate": 10.8,
+        "playoffRate": 66.7,
+        "championshipRate": 25,
+        "benchContribution": 238.9,
+        "benchStarts": 30.4,
+        "positionalPoints": {
+          "QB": 249.8,
+          "RB": 695.6,
+          "WR": 404.4,
+          "TE": 258.6,
+          "K": 176.6,
+          "DEF": 103.8
+        }
+      }
+    },
+    {
+      "seed": 7,
+      "grade": {
+        "score": 76.9,
+        "letter": "C",
+        "averagePoints": 1902.8,
+        "pointsStandardError": 24.6,
+        "samples": 12,
+        "averageFinish": 4.92,
+        "pointsPercentile": 64.4,
+        "allPlayWinRate": 55.3,
+        "weeklyHighScoreRate": 6.4,
+        "playoffRate": 66.7,
+        "championshipRate": 33.3,
+        "benchContribution": 224.7,
+        "benchStarts": 29.4,
+        "positionalPoints": {
+          "QB": 250,
+          "RB": 723.4,
+          "WR": 382.7,
+          "TE": 266.3,
+          "K": 176.6,
+          "DEF": 103.8
+        }
+      }
+    },
+    {
+      "seed": 8,
+      "grade": {
+        "score": 78.4,
+        "letter": "C+",
+        "averagePoints": 1943.2,
+        "pointsStandardError": 24.3,
+        "samples": 12,
+        "averageFinish": 4.08,
+        "pointsPercentile": 72,
+        "allPlayWinRate": 59.1,
+        "weeklyHighScoreRate": 10.8,
+        "playoffRate": 58.3,
+        "championshipRate": 16.7,
+        "benchContribution": 238.9,
+        "benchStarts": 31.2,
+        "positionalPoints": {
+          "QB": 271.2,
+          "RB": 707.2,
+          "WR": 418.4,
+          "TE": 263.7,
+          "K": 176.6,
+          "DEF": 106
+        }
+      }
+    },
+    {
+      "seed": 9,
+      "grade": {
+        "score": 79.9,
+        "letter": "C+",
+        "averagePoints": 1906.3,
+        "pointsStandardError": 23.2,
+        "samples": 12,
+        "averageFinish": 4.75,
+        "pointsPercentile": 65.9,
+        "allPlayWinRate": 55.6,
+        "weeklyHighScoreRate": 13.7,
+        "playoffRate": 66.7,
+        "championshipRate": 41.7,
+        "benchContribution": 182.6,
+        "benchStarts": 24,
+        "positionalPoints": {
+          "QB": 249.8,
+          "RB": 704.1,
+          "WR": 422.1,
+          "TE": 247.7,
+          "K": 176.6,
+          "DEF": 106
+        }
+      }
+    },
+    {
+      "seed": 10,
+      "grade": {
+        "score": 77.6,
+        "letter": "C+",
+        "averagePoints": 1896,
+        "pointsStandardError": 24.4,
+        "samples": 12,
+        "averageFinish": 4.17,
+        "pointsPercentile": 71.2,
+        "allPlayWinRate": 53.7,
+        "weeklyHighScoreRate": 12.3,
+        "playoffRate": 41.7,
+        "championshipRate": 25,
+        "benchContribution": 223.3,
+        "benchStarts": 30.3,
+        "positionalPoints": {
+          "QB": 249.6,
+          "RB": 737.4,
+          "WR": 378.7,
+          "TE": 247.7,
+          "K": 176.6,
+          "DEF": 106
+        }
+      }
+    },
+    {
+      "seed": 11,
+      "grade": {
+        "score": 74.5,
+        "letter": "C",
+        "averagePoints": 1866.4,
+        "pointsStandardError": 26.2,
+        "samples": 12,
+        "averageFinish": 5.67,
+        "pointsPercentile": 57.6,
+        "allPlayWinRate": 52.5,
+        "weeklyHighScoreRate": 9.8,
+        "playoffRate": 50,
+        "championshipRate": 25,
+        "benchContribution": 230.6,
+        "benchStarts": 29.9,
+        "positionalPoints": {
+          "QB": 249.8,
+          "RB": 654.4,
+          "WR": 414.9,
+          "TE": 264.7,
+          "K": 176.6,
+          "DEF": 106
+        }
+      }
+    },
+    {
+      "seed": 12,
+      "grade": {
+        "score": 76.9,
+        "letter": "C",
+        "averagePoints": 1909.1,
+        "pointsStandardError": 21.1,
+        "samples": 12,
+        "averageFinish": 5.08,
+        "pointsPercentile": 62.9,
+        "allPlayWinRate": 55.3,
+        "weeklyHighScoreRate": 11.8,
+        "playoffRate": 41.7,
+        "championshipRate": 33.3,
+        "benchContribution": 229.6,
+        "benchStarts": 31.1,
+        "positionalPoints": {
+          "QB": 253.9,
+          "RB": 703.7,
+          "WR": 418.1,
+          "TE": 250.7,
+          "K": 176.6,
+          "DEF": 106
+        }
+      }
+    },
+    {
+      "seed": 13,
+      "grade": {
+        "score": 70.1,
+        "letter": "C-",
+        "averagePoints": 1857.7,
+        "pointsStandardError": 11.5,
+        "samples": 12,
+        "averageFinish": 7,
+        "pointsPercentile": 45.5,
+        "allPlayWinRate": 50.2,
+        "weeklyHighScoreRate": 5.9,
+        "playoffRate": 33.3,
+        "championshipRate": 25,
+        "benchContribution": 210.1,
+        "benchStarts": 29,
+        "positionalPoints": {
+          "QB": 249.8,
+          "RB": 677.9,
+          "WR": 432.3,
+          "TE": 215.2,
+          "K": 176.6,
+          "DEF": 106
+        }
+      }
+    },
+    {
+      "seed": 14,
+      "grade": {
+        "score": 78.3,
+        "letter": "C+",
+        "averagePoints": 1911.3,
+        "pointsStandardError": 16.2,
+        "samples": 12,
+        "averageFinish": 3.58,
+        "pointsPercentile": 76.5,
+        "allPlayWinRate": 56.6,
+        "weeklyHighScoreRate": 11.8,
+        "playoffRate": 58.3,
+        "championshipRate": 8.3,
+        "benchContribution": 172.4,
+        "benchStarts": 23.4,
+        "positionalPoints": {
+          "QB": 249.7,
+          "RB": 723,
+          "WR": 431.4,
+          "TE": 224.7,
+          "K": 176.6,
+          "DEF": 106
+        }
+      }
+    },
+    {
+      "seed": 15,
+      "grade": {
+        "score": 75.8,
+        "letter": "C",
+        "averagePoints": 1906.4,
+        "pointsStandardError": 27.7,
+        "samples": 12,
+        "averageFinish": 5.08,
+        "pointsPercentile": 62.9,
+        "allPlayWinRate": 57.5,
+        "weeklyHighScoreRate": 10.8,
+        "playoffRate": 41.7,
+        "championshipRate": 16.7,
+        "benchContribution": 233.4,
+        "benchStarts": 29.8,
+        "positionalPoints": {
+          "QB": 250.3,
+          "RB": 701.6,
+          "WR": 400.2,
+          "TE": 271.7,
+          "K": 176.6,
+          "DEF": 106
+        }
+      }
+    },
+    {
+      "seed": 16,
+      "grade": {
+        "score": 76.6,
+        "letter": "C",
+        "averagePoints": 1895.3,
+        "pointsStandardError": 24.4,
+        "samples": 12,
+        "averageFinish": 4.75,
+        "pointsPercentile": 65.9,
+        "allPlayWinRate": 56.2,
+        "weeklyHighScoreRate": 12.3,
+        "playoffRate": 41.7,
+        "championshipRate": 25,
+        "benchContribution": 246.2,
+        "benchStarts": 33.7,
+        "positionalPoints": {
+          "QB": 249.7,
+          "RB": 711.2,
+          "WR": 422,
+          "TE": 236.3,
+          "K": 176.6,
+          "DEF": 99.5
+        }
+      }
+    }
+  ],
+  "points": [
+    {
+      "seed": 1,
+      "seat": 1,
+      "points": 1864.756
+    },
+    {
+      "seed": 1,
+      "seat": 2,
+      "points": 1843.596
+    },
+    {
+      "seed": 1,
+      "seat": 3,
+      "points": 1854.9819999999997
+    },
+    {
+      "seed": 1,
+      "seat": 4,
+      "points": 1940.592
+    },
+    {
+      "seed": 1,
+      "seat": 5,
+      "points": 1940.592
+    },
+    {
+      "seed": 1,
+      "seat": 6,
+      "points": 1835.2120000000002
+    },
+    {
+      "seed": 1,
+      "seat": 7,
+      "points": 1792.2619999999997
+    },
+    {
+      "seed": 1,
+      "seat": 8,
+      "points": 1805.642
+    },
+    {
+      "seed": 1,
+      "seat": 9,
+      "points": 1935.4520000000002
+    },
+    {
+      "seed": 1,
+      "seat": 10,
+      "points": 1826.8519999999999
+    },
+    {
+      "seed": 1,
+      "seat": 11,
+      "points": 1908.3319999999999
+    },
+    {
+      "seed": 1,
+      "seat": 12,
+      "points": 1882.842
+    },
+    {
+      "seed": 2,
+      "seat": 1,
+      "points": 1711.0059999999999
+    },
+    {
+      "seed": 2,
+      "seat": 2,
+      "points": 1950.8560000000002
+    },
+    {
+      "seed": 2,
+      "seat": 3,
+      "points": 2016.0120000000002
+    },
+    {
+      "seed": 2,
+      "seat": 4,
+      "points": 2019.432
+    },
+    {
+      "seed": 2,
+      "seat": 5,
+      "points": 1961.8320000000003
+    },
+    {
+      "seed": 2,
+      "seat": 6,
+      "points": 1908.592
+    },
+    {
+      "seed": 2,
+      "seat": 7,
+      "points": 1883.5119999999997
+    },
+    {
+      "seed": 2,
+      "seat": 8,
+      "points": 1957.692
+    },
+    {
+      "seed": 2,
+      "seat": 9,
+      "points": 1829.152
+    },
+    {
+      "seed": 2,
+      "seat": 10,
+      "points": 1815.6420000000003
+    },
+    {
+      "seed": 2,
+      "seat": 11,
+      "points": 1827.1220000000003
+    },
+    {
+      "seed": 2,
+      "seat": 12,
+      "points": 1908.842
+    },
+    {
+      "seed": 3,
+      "seat": 1,
+      "points": 1887.496
+    },
+    {
+      "seed": 3,
+      "seat": 2,
+      "points": 1837.1660000000002
+    },
+    {
+      "seed": 3,
+      "seat": 3,
+      "points": 2024.4700000000003
+    },
+    {
+      "seed": 3,
+      "seat": 4,
+      "points": 1967.5919999999999
+    },
+    {
+      "seed": 3,
+      "seat": 5,
+      "points": 1948.6319999999998
+    },
+    {
+      "seed": 3,
+      "seat": 6,
+      "points": 1932.0520000000001
+    },
+    {
+      "seed": 3,
+      "seat": 7,
+      "points": 1841.8779999999997
+    },
+    {
+      "seed": 3,
+      "seat": 8,
+      "points": 1770.352
+    },
+    {
+      "seed": 3,
+      "seat": 9,
+      "points": 1721.452
+    },
+    {
+      "seed": 3,
+      "seat": 10,
+      "points": 1731.462
+    },
+    {
+      "seed": 3,
+      "seat": 11,
+      "points": 1745.4420000000005
+    },
+    {
+      "seed": 3,
+      "seat": 12,
+      "points": 1809.462
+    },
+    {
+      "seed": 4,
+      "seat": 1,
+      "points": 1945.038
+    },
+    {
+      "seed": 4,
+      "seat": 2,
+      "points": 1982.3779999999997
+    },
+    {
+      "seed": 4,
+      "seat": 3,
+      "points": 1858.7679999999996
+    },
+    {
+      "seed": 4,
+      "seat": 4,
+      "points": 1915.3879999999997
+    },
+    {
+      "seed": 4,
+      "seat": 5,
+      "points": 2048.288
+    },
+    {
+      "seed": 4,
+      "seat": 6,
+      "points": 1935.558
+    },
+    {
+      "seed": 4,
+      "seat": 7,
+      "points": 1749.768
+    },
+    {
+      "seed": 4,
+      "seat": 8,
+      "points": 1888.438
+    },
+    {
+      "seed": 4,
+      "seat": 9,
+      "points": 1852.518
+    },
+    {
+      "seed": 4,
+      "seat": 10,
+      "points": 1772.668
+    },
+    {
+      "seed": 4,
+      "seat": 11,
+      "points": 1885.512
+    },
+    {
+      "seed": 4,
+      "seat": 12,
+      "points": 1909.2680000000003
+    },
+    {
+      "seed": 5,
+      "seat": 1,
+      "points": 1898.6259999999997
+    },
+    {
+      "seed": 5,
+      "seat": 2,
+      "points": 2097.796
+    },
+    {
+      "seed": 5,
+      "seat": 3,
+      "points": 2000.3360000000002
+    },
+    {
+      "seed": 5,
+      "seat": 4,
+      "points": 2022.322
+    },
+    {
+      "seed": 5,
+      "seat": 5,
+      "points": 2007.3920000000003
+    },
+    {
+      "seed": 5,
+      "seat": 6,
+      "points": 1895.462
+    },
+    {
+      "seed": 5,
+      "seat": 7,
+      "points": 1876.412
+    },
+    {
+      "seed": 5,
+      "seat": 8,
+      "points": 1876.412
+    },
+    {
+      "seed": 5,
+      "seat": 9,
+      "points": 1748.1820000000002
+    },
+    {
+      "seed": 5,
+      "seat": 10,
+      "points": 1866.7519999999995
+    },
+    {
+      "seed": 5,
+      "seat": 11,
+      "points": 1885.512
+    },
+    {
+      "seed": 5,
+      "seat": 12,
+      "points": 1885.512
+    },
+    {
+      "seed": 6,
+      "seat": 1,
+      "points": 1717.6060000000002
+    },
+    {
+      "seed": 6,
+      "seat": 2,
+      "points": 2014.0259999999998
+    },
+    {
+      "seed": 6,
+      "seat": 3,
+      "points": 2050.8920000000003
+    },
+    {
+      "seed": 6,
+      "seat": 4,
+      "points": 2050.8920000000003
+    },
+    {
+      "seed": 6,
+      "seat": 5,
+      "points": 2049.192
+    },
+    {
+      "seed": 6,
+      "seat": 6,
+      "points": 1925.612
+    },
+    {
+      "seed": 6,
+      "seat": 7,
+      "points": 1748.1820000000002
+    },
+    {
+      "seed": 6,
+      "seat": 8,
+      "points": 1748.1820000000002
+    },
+    {
+      "seed": 6,
+      "seat": 9,
+      "points": 1707.6019999999999
+    },
+    {
+      "seed": 6,
+      "seat": 10,
+      "points": 1905.1319999999998
+    },
+    {
+      "seed": 6,
+      "seat": 11,
+      "points": 1853.482
+    },
+    {
+      "seed": 6,
+      "seat": 12,
+      "points": 1894.0820000000003
+    },
+    {
+      "seed": 7,
+      "seat": 1,
+      "points": 1883.9780000000003
+    },
+    {
+      "seed": 7,
+      "seat": 2,
+      "points": 1960.436
+    },
+    {
+      "seed": 7,
+      "seat": 3,
+      "points": 1950.6919999999998
+    },
+    {
+      "seed": 7,
+      "seat": 4,
+      "points": 2049.192
+    },
+    {
+      "seed": 7,
+      "seat": 5,
+      "points": 2049.192
+    },
+    {
+      "seed": 7,
+      "seat": 6,
+      "points": 1895.462
+    },
+    {
+      "seed": 7,
+      "seat": 7,
+      "points": 1820.4319999999998
+    },
+    {
+      "seed": 7,
+      "seat": 8,
+      "points": 1837.5919999999999
+    },
+    {
+      "seed": 7,
+      "seat": 9,
+      "points": 1837.5919999999999
+    },
+    {
+      "seed": 7,
+      "seat": 10,
+      "points": 1871.8719999999998
+    },
+    {
+      "seed": 7,
+      "seat": 11,
+      "points": 1782.7720000000002
+    },
+    {
+      "seed": 7,
+      "seat": 12,
+      "points": 1894.0820000000003
+    },
+    {
+      "seed": 8,
+      "seat": 1,
+      "points": 1852.5659999999998
+    },
+    {
+      "seed": 8,
+      "seat": 2,
+      "points": 1916.1160000000002
+    },
+    {
+      "seed": 8,
+      "seat": 3,
+      "points": 1950.6919999999998
+    },
+    {
+      "seed": 8,
+      "seat": 4,
+      "points": 2049.192
+    },
+    {
+      "seed": 8,
+      "seat": 5,
+      "points": 2049.192
+    },
+    {
+      "seed": 8,
+      "seat": 6,
+      "points": 1891.092
+    },
+    {
+      "seed": 8,
+      "seat": 7,
+      "points": 1891.092
+    },
+    {
+      "seed": 8,
+      "seat": 8,
+      "points": 2055.0400000000004
+    },
+    {
+      "seed": 8,
+      "seat": 9,
+      "points": 1798.8020000000001
+    },
+    {
+      "seed": 8,
+      "seat": 10,
+      "points": 1989.28
+    },
+    {
+      "seed": 8,
+      "seat": 11,
+      "points": 1989.28
+    },
+    {
+      "seed": 8,
+      "seat": 12,
+      "points": 1885.512
+    },
+    {
+      "seed": 9,
+      "seat": 1,
+      "points": 1887.496
+    },
+    {
+      "seed": 9,
+      "seat": 2,
+      "points": 1750.8660000000004
+    },
+    {
+      "seed": 9,
+      "seat": 3,
+      "points": 1884.6319999999998
+    },
+    {
+      "seed": 9,
+      "seat": 4,
+      "points": 1967.182
+    },
+    {
+      "seed": 9,
+      "seat": 5,
+      "points": 2039.092
+    },
+    {
+      "seed": 9,
+      "seat": 6,
+      "points": 1932.0520000000001
+    },
+    {
+      "seed": 9,
+      "seat": 7,
+      "points": 1883.5119999999997
+    },
+    {
+      "seed": 9,
+      "seat": 8,
+      "points": 1996.4519999999998
+    },
+    {
+      "seed": 9,
+      "seat": 9,
+      "points": 1956.8719999999998
+    },
+    {
+      "seed": 9,
+      "seat": 10,
+      "points": 1848.5720000000006
+    },
+    {
+      "seed": 9,
+      "seat": 11,
+      "points": 1920.0820000000003
+    },
+    {
+      "seed": 9,
+      "seat": 12,
+      "points": 1808.262
+    },
+    {
+      "seed": 10,
+      "seat": 1,
+      "points": 1925.2759999999998
+    },
+    {
+      "seed": 10,
+      "seat": 2,
+      "points": 1936.3359999999998
+    },
+    {
+      "seed": 10,
+      "seat": 3,
+      "points": 2077.316
+    },
+    {
+      "seed": 10,
+      "seat": 4,
+      "points": 1937.7720000000002
+    },
+    {
+      "seed": 10,
+      "seat": 5,
+      "points": 1984.692
+    },
+    {
+      "seed": 10,
+      "seat": 6,
+      "points": 1795.4779999999998
+    },
+    {
+      "seed": 10,
+      "seat": 7,
+      "points": 1876.412
+    },
+    {
+      "seed": 10,
+      "seat": 8,
+      "points": 1893.8420000000003
+    },
+    {
+      "seed": 10,
+      "seat": 9,
+      "points": 1876.412
+    },
+    {
+      "seed": 10,
+      "seat": 10,
+      "points": 1809.882
+    },
+    {
+      "seed": 10,
+      "seat": 11,
+      "points": 1861.7820000000004
+    },
+    {
+      "seed": 10,
+      "seat": 12,
+      "points": 1776.6020000000003
+    },
+    {
+      "seed": 11,
+      "seat": 1,
+      "points": 1769.4359999999997
+    },
+    {
+      "seed": 11,
+      "seat": 2,
+      "points": 1912.8419999999999
+    },
+    {
+      "seed": 11,
+      "seat": 3,
+      "points": 1821.3919999999996
+    },
+    {
+      "seed": 11,
+      "seat": 4,
+      "points": 2062.192
+    },
+    {
+      "seed": 11,
+      "seat": 5,
+      "points": 2004.592
+    },
+    {
+      "seed": 11,
+      "seat": 6,
+      "points": 1895.462
+    },
+    {
+      "seed": 11,
+      "seat": 7,
+      "points": 1846.692
+    },
+    {
+      "seed": 11,
+      "seat": 8,
+      "points": 1837.5919999999999
+    },
+    {
+      "seed": 11,
+      "seat": 9,
+      "points": 1826.3519999999999
+    },
+    {
+      "seed": 11,
+      "seat": 10,
+      "points": 1752.4019999999998
+    },
+    {
+      "seed": 11,
+      "seat": 11,
+      "points": 1815.1419999999998
+    },
+    {
+      "seed": 11,
+      "seat": 12,
+      "points": 1853.1220000000003
+    },
+    {
+      "seed": 12,
+      "seat": 1,
+      "points": 1791.166
+    },
+    {
+      "seed": 12,
+      "seat": 2,
+      "points": 2021.97
+    },
+    {
+      "seed": 12,
+      "seat": 3,
+      "points": 2019.432
+    },
+    {
+      "seed": 12,
+      "seat": 4,
+      "points": 1995.9019999999998
+    },
+    {
+      "seed": 12,
+      "seat": 5,
+      "points": 1921.032
+    },
+    {
+      "seed": 12,
+      "seat": 6,
+      "points": 1891.092
+    },
+    {
+      "seed": 12,
+      "seat": 7,
+      "points": 1876.412
+    },
+    {
+      "seed": 12,
+      "seat": 8,
+      "points": 1855.3020000000001
+    },
+    {
+      "seed": 12,
+      "seat": 9,
+      "points": 1933.3719999999998
+    },
+    {
+      "seed": 12,
+      "seat": 10,
+      "points": 1826.8519999999999
+    },
+    {
+      "seed": 12,
+      "seat": 11,
+      "points": 1885.512
+    },
+    {
+      "seed": 12,
+      "seat": 12,
+      "points": 1890.6119999999996
+    },
+    {
+      "seed": 13,
+      "seat": 1,
+      "points": 1852.5659999999998
+    },
+    {
+      "seed": 13,
+      "seat": 2,
+      "points": 1917.8359999999998
+    },
+    {
+      "seed": 13,
+      "seat": 3,
+      "points": 1890.7419999999997
+    },
+    {
+      "seed": 13,
+      "seat": 4,
+      "points": 1887.522
+    },
+    {
+      "seed": 13,
+      "seat": 5,
+      "points": 1887.522
+    },
+    {
+      "seed": 13,
+      "seat": 6,
+      "points": 1891.092
+    },
+    {
+      "seed": 13,
+      "seat": 7,
+      "points": 1829.152
+    },
+    {
+      "seed": 13,
+      "seat": 8,
+      "points": 1813.4019999999998
+    },
+    {
+      "seed": 13,
+      "seat": 9,
+      "points": 1798.552
+    },
+    {
+      "seed": 13,
+      "seat": 10,
+      "points": 1798.552
+    },
+    {
+      "seed": 13,
+      "seat": 11,
+      "points": 1866.7519999999995
+    },
+    {
+      "seed": 13,
+      "seat": 12,
+      "points": 1859.1120000000003
+    },
+    {
+      "seed": 14,
+      "seat": 1,
+      "points": 1911.7759999999998
+    },
+    {
+      "seed": 14,
+      "seat": 2,
+      "points": 1980.4159999999997
+    },
+    {
+      "seed": 14,
+      "seat": 3,
+      "points": 1776.6359999999997
+    },
+    {
+      "seed": 14,
+      "seat": 4,
+      "points": 1897.496
+    },
+    {
+      "seed": 14,
+      "seat": 5,
+      "points": 1926.722
+    },
+    {
+      "seed": 14,
+      "seat": 6,
+      "points": 1932.0520000000001
+    },
+    {
+      "seed": 14,
+      "seat": 7,
+      "points": 1932.0520000000001
+    },
+    {
+      "seed": 14,
+      "seat": 8,
+      "points": 1891.092
+    },
+    {
+      "seed": 14,
+      "seat": 9,
+      "points": 1933.722
+    },
+    {
+      "seed": 14,
+      "seat": 10,
+      "points": 1871.8719999999998
+    },
+    {
+      "seed": 14,
+      "seat": 11,
+      "points": 1885.512
+    },
+    {
+      "seed": 14,
+      "seat": 12,
+      "points": 1996.372
+    },
+    {
+      "seed": 15,
+      "seat": 1,
+      "points": 1868.018
+    },
+    {
+      "seed": 15,
+      "seat": 2,
+      "points": 1868.018
+    },
+    {
+      "seed": 15,
+      "seat": 3,
+      "points": 2049.192
+    },
+    {
+      "seed": 15,
+      "seat": 4,
+      "points": 2034.2920000000001
+    },
+    {
+      "seed": 15,
+      "seat": 5,
+      "points": 2049.192
+    },
+    {
+      "seed": 15,
+      "seat": 6,
+      "points": 1892.302
+    },
+    {
+      "seed": 15,
+      "seat": 7,
+      "points": 1925.612
+    },
+    {
+      "seed": 15,
+      "seat": 8,
+      "points": 1822.9119999999998
+    },
+    {
+      "seed": 15,
+      "seat": 9,
+      "points": 1860.012
+    },
+    {
+      "seed": 15,
+      "seat": 10,
+      "points": 1731.462
+    },
+    {
+      "seed": 15,
+      "seat": 11,
+      "points": 1885.512
+    },
+    {
+      "seed": 15,
+      "seat": 12,
+      "points": 1890.6119999999996
+    },
+    {
+      "seed": 16,
+      "seat": 1,
+      "points": 1810.4759999999997
+    },
+    {
+      "seed": 16,
+      "seat": 2,
+      "points": 1995.0159999999998
+    },
+    {
+      "seed": 16,
+      "seat": 3,
+      "points": 1885.946
+    },
+    {
+      "seed": 16,
+      "seat": 4,
+      "points": 2049.192
+    },
+    {
+      "seed": 16,
+      "seat": 5,
+      "points": 2004.592
+    },
+    {
+      "seed": 16,
+      "seat": 6,
+      "points": 1891.092
+    },
+    {
+      "seed": 16,
+      "seat": 7,
+      "points": 1891.092
+    },
+    {
+      "seed": 16,
+      "seat": 8,
+      "points": 1876.412
+    },
+    {
+      "seed": 16,
+      "seat": 9,
+      "points": 1748.1820000000002
+    },
+    {
+      "seed": 16,
+      "seat": 10,
+      "points": 1837.232
+    },
+    {
+      "seed": 16,
+      "seat": 11,
+      "points": 1877.442
+    },
+    {
+      "seed": 16,
+      "seat": 12,
+      "points": 1877.442
+    }
+  ]
+}

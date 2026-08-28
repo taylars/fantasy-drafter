@@ -1,0 +1,21 @@
+{
+  "name": "fantasy-drafter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A draft board that runs entirely in the browser, off the Sleeper API.",
+  "scripts": {
+    "historical:grades": "node bin/grades.mjs check --season 2025",
+    "start": "node scripts/start.mjs",
+    "board": "node bin/board.mjs",
+    "backtest": "node bin/backtest.mjs",
+    "historical:draft": "node bin/historical-draft.mjs",
+    "historical:week": "node bin/historical-week.mjs",
+    "fixture": "node bin/fixture.mjs",
+    "grades": "node bin/grades.mjs",
+    "test": "node --test test/*.test.js"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
