@@ -1,0 +1,157 @@
+diff --git a/js/value.js b/js/value.js
+index e933366..c8b0b3a 100644
+--- a/js/value.js
++++ b/js/value.js
+@@ -78,7 +78,7 @@ const UPSIDE_WEIGHT = 0.0175;
+ // term applies only after the roster can already field every starting slot, so
+ // it cannot inflate a player being drafted to fill the lineup.
+ const BENCH_OPTION_WEIGHT = 0.02;
+-const BENCH_UPSIDE_POINTS = 10.0;
++const BENCH_UPSIDE_POINTS = 0;
+ 
+ // ADP is a mean and players go in a range around it. Sleeper publishes no
+ // spread, so this is assumed, and it is the least evidenced number in the file:
+@@ -104,6 +104,69 @@ const PLAN_POSITIONS = ["RB", "WR", "TE", "QB", "K", "DEF"];
+ // strategy nothing in production ran.
+ export const BOARD_LIMIT = 250;
+ 
++/* --- the weekly distribution, not just its mean ---------------------------
++ *
++ * A season is not a points race: you beat one opponent a week, then win three
++ * single-elimination games. That is a function of the *distribution* of a
++ * roster's weekly score, and everything above prices only its mean.
++ *
++ * So each player also carries a weekly standard deviation, built from the same
++ * preseason fields the rest of the file uses — never from realised weeks, which
++ * would be reading the answer key. A constant coefficient of variation per
++ * position is the whole model: tight ends and defenses are famously spiky,
++ * quarterbacks are not, and a player's absolute spread scales with his mean.
++ */
++const WEEKLY_CV = { QB: 0.33, RB: 0.55, WR: 0.60, TE: 0.65, K: 0.45, DEF: 0.70 };
++const DEFAULT_CV = 0.60;
++
++// An upside grade is a wider role outcome as well as a higher mean, so it also
++// widens the week. Small: the mean correction above is the main claim.
++const UPSIDE_SPREAD = 0.06;
++
++let FLAT_CV = 0; // ablation: one coefficient of variation for every position
++
++function sigmaFor(position, weeklyMean, upside = 0) {
++  const base = FLAT_CV || (WEEKLY_CV[position] ?? DEFAULT_CV);
++  const cv = base * (1 + UPSIDE_SPREAD * Math.max(0, upside));
++  return cv * Math.max(0, weeklyMean);
++}
++
++/* One player's weekly standard deviation, memoised like `adjusted`. */
++export function weeklySigma(player) {
++  if (player._sigma === undefined) {
++    player._sigma = sigmaFor(player.position, adjusted(player) / SEASON_GAMES, player.upside);
++  }
++  return player._sigma;
++}
++
++/* How a roster's weekly spread is priced, in season points.
++ *
++ * RISK_LAMBDA is the exchange rate: season points we would pay to remove one
++ * point of weekly standard deviation. Positive prefers a floor, negative buys a
++ * ceiling, zero is the pure points model this file has always been.
++ */
++let RISK_LAMBDA = 0;
++
++// Weeks 15-17 are single elimination, where a ceiling is worth more than a
++// floor. Season points paid per point of weekly spread bought, over those
++// weeks only. Zero disables it.
++let CEILING_LAMBDA = 0;
++const PLAYOFF_WEEKS = 3;
++
++/* Experimental knobs, set by the sweep harness. */
++export function configureRisk({ risk = 0, ceiling = 0, flatCv = 0 } = {}) {
++  RISK_LAMBDA = risk;
++  CEILING_LAMBDA = ceiling;
++  FLAT_CV = flatCv;
++}
++
++/* Season value of a roster whose weeks have this mean and this variance. */
++function objective(points, variance) {
++  if (!RISK_LAMBDA && !CEILING_LAMBDA) return points;
++  const sigma = Math.sqrt(Math.max(0, variance));
++  return points - RISK_LAMBDA * SEASON_GAMES * sigma + CEILING_LAMBDA * PLAYOFF_WEEKS * sigma;
++}
++
+ /* Season points if he played every week, corrected for context.
+  *
+  * Deliberately *not* scaled by availability. The games he misses are priced
+@@ -187,11 +250,11 @@ function slotDemand(slots) {
+  * our own players for the spot.
+  */
+ function wire(base) {
+-  let best = 0;
++  let best = 0, from = null;
+   for (const position of FLEXABLE) {
+-    if (position in base && base[position] > best) best = base[position];
++    if (position in base && base[position] > best) { best = base[position]; from = position; }
+   }
+-  return best;
++  return [best, from];
+ }
+ 
+ /* Season points this roster covers against a given demand.
+@@ -214,37 +277,49 @@ function wire(base) {
+  * a player could be punished for.
+  */
+ function coverage(roster, need, flex, base) {
+-  let total = 0;
+-  const spare = []; // [adjusted, weeks] left over for the FLEX
++  let total = 0, variance = 0;
++  const spare = []; // [adjusted, weeks, sigma] left over for the FLEX
++
++  // A slot filled for `weeks` slot-seasons occupies that many slots in a
++  // typical week, so its share of the weekly variance is weighted the same way
++  // its share of the points is. Weeks are taken as independent draws.
++  const spend = (weeks, value, sigma) => { total += weeks * value; variance += weeks * sigma * sigma; };
+ 
+   const positions = new Set(Object.keys(need));
+   for (const player of roster) if (FLEXABLE.has(player.position)) positions.add(player.position);
+ 
+   for (const position of positions) {
+     const floor = base[position] ?? 0;
++    const floorSigma = sigmaFor(position, floor / SEASON_GAMES);
+     let remaining = need[position] ?? 0;
+     const mine = roster.filter((p) => p.position === position)
+                        .sort((a, b) => adjusted(b) - adjusted(a));
+     for (const player of mine) {
+       const covered = Math.min(player.availability, remaining);
+-      total += covered * Math.max(adjusted(player), floor);
++      // A week we would not start him in is a week the wire plays, so it takes
++      // the wire's spread along with the wire's points.
++      if (adjusted(player) >= floor) spend(covered, adjusted(player), weeklySigma(player));
++      else spend(covered, floor, floorSigma);
+       remaining -= covered;
+       if (player.availability > covered && FLEXABLE.has(position)) {
+-        spare.push([adjusted(player), player.availability - covered]);
++        spare.push([adjusted(player), player.availability - covered, weeklySigma(player)]);
+       }
+     }
+-    total += remaining * floor;
++    spend(remaining, floor, floorSigma);
+   }
+ 
+-  const floor = wire(base);
++  const [floor, floorPosition] = wire(base);
++  const floorSigma = sigmaFor(floorPosition ?? "WR", floor / SEASON_GAMES);
+   let remaining = flex;
+   spare.sort((a, b) => b[0] - a[0] || b[1] - a[1]);
+-  for (const [value, weeks] of spare) {
++  for (const [value, weeks, sigma] of spare) {
+     const covered = Math.min(weeks, remaining);
+-    total += covered * Math.max(value, floor);
++    if (value >= floor) spend(covered, value, sigma);
++    else spend(covered, floor, floorSigma);
+     remaining -= covered;
+   }
+-  return total + remaining * floor;
++  spend(remaining, floor, floorSigma);
++  return objective(total, variance);
+ }
+ 
+ /* Season points from the best legal lineup this roster can field.
