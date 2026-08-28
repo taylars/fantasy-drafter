@@ -6,7 +6,7 @@ All eight experiment families have final decisions. The five resumed agents upda
 
 Production/backtest defaults and multi-seed reporting; flat bench-upside removal; fixed preseason spread preference (ceiling production commit66a0b77 integrated as7b2cc9b). Planning remains4 picks /250 candidates. Rollout is not shipped.
 
-Fresh merged normal backtest: seeds1–8,96 drafts,2047.4 ±8.4 points versus original production-aligned1896.4 ±9.5 and ADP1846.1 ±14. Saved held-out spread result2038.2 versus bench-only2005.0. Full216-environment matrix on merged code NOT run. Targeted checks are not a substitute. See docs/experiments/2025-algorithm-diagnosis.md and final-2025-seeds-1-8.json. Integrated strategy suite33 tests passed; final publishing gate repeats it.
+Fresh merged normal backtest: seeds1–8,96 drafts,2047.4 ±8.4 points versus original production-aligned1896.4 ±9.5 and ADP1846.1 ±14. Saved held-out spread result2038.2 versus bench-only2005.0. Full216-environment matrix on merged code NOT run. Targeted checks are not a substitute. See docs/experiments/2025-algorithm-diagnosis.md and final-2025-seeds-1-8.json. Final publishing gate:33 tests passed; app/worker syntax checks passed.
 
 ## Branch outcomes and final note commits
 
@@ -23,7 +23,7 @@ Each worktree retains HANDOFF.md and handoff-artifacts. Original dirty experimen
 
 ## Publishing
 
-Existing PR#1 was discovered during resume: https://github.com/taylars/fantasy-drafter/pull/1 (algo-improvements -> main). Update that PR with final reports; do not create another. Final body prepared in /private/tmp/fantasy-pr-final.md. Publishing confirmation is the final remaining step at this checkpoint. Do not merge the PR automatically.
+Existing PR#1 was discovered during resume: https://github.com/taylars/fantasy-drafter/pull/1 (algo-improvements -> main). PR updated with completed reports, final results, and explicit full-matrix-not-run caveat. Branch pushed through a2b0dbb before this final note. Title: Align backtests and improve bench and lineup valuation. No automatic PR merge.
 
 ## Caveats
 
